@@ -29,5 +29,5 @@ public class InvoiceDetail implements Serializable {
 	@ManyToOne
 	@JsonIgnore
 	Invoice invoice;
-
+//bagrallah mara o5raaa
 }
