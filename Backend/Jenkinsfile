@@ -15,27 +15,32 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                // Run Maven clean and package commands
-                sh 'mvn clean package'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                // Run tests with Maven (JUnit and Mockito included)
-                sh 'mvn test'
-            }
-        }
-
         stage('MySQL Setup') {
             steps {
                 script {
                     // Ensure MySQL is running before running the tests
                     docker.image('mysql:latest').withRun('-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=devops -p 3306:3306') {
-                            sh 'sleep 30' // Wait for the MySQL container to initialize  // Give MySQL some time to initialize
+                        sh 'sleep 30' // Give MySQL some time to initialize
                     }
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Change directory to Backend to run Maven commands
+                dir('Backend') {
+                    // Run Maven clean and package commands
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir('Backend') {
+                    // Run tests with Maven (JUnit and Mockito included)
+                    sh 'mvn test'
                 }
             }
         }
@@ -44,14 +49,17 @@ pipeline {
     post {
         success {
             // Archive and display test results
-            junit 'target/surefire-reports/*.xml'
+            junit 'Backend/target/surefire-reports/*.xml'
             echo 'Build and tests succeeded!'
         }
         failure {
             // Handle failures (optional email notifications)
+            emailext (
+                subject: "Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                body: "Build failed. Check console output at ${env.BUILD_URL}",
+                to: 'your-email@example.com' // Update with your email address
+            )
             echo 'Build or test failed.'
-                 subject: "Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
-                 body: "Build failed. Check console output at ${env.BUILD_URL}"
         }
     }
 }
