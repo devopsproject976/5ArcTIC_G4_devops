@@ -53,12 +53,7 @@ pipeline {
             echo 'Build and tests succeeded!'
         }
         failure {
-            // Handle failures (optional email notifications)
-            emailext (
-                subject: "Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
-                body: "Build failed. Check console output at ${env.BUILD_URL}",
-                to: 'your-email@example.com' // Update with your email address
-            )
+            
             echo 'Build or test failed.'
         }
     }
