@@ -20,7 +20,7 @@ pipeline {
         stage('MySQL Setup') {
             steps {
                 script {
-                    // Ensure MySQL is running before running the tests
+                    // Ensure MySQL is running before running the test
                     docker.image('mysql:latest').withRun('-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=devops -p 3306:3306') {
                         sh 'sleep 30' // Give MySQL some time to initialize
                     }
