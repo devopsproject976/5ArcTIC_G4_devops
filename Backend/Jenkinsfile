@@ -13,7 +13,7 @@ pipeline {
                 // Pull the code from the specified branch of your GitHub repository
                 git branch: 'SofienDaad', 
                     url: 'https://github.com/devopsproject976/devops.git', 
-                    credentialsId: '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' // Use the credentials ID you created
+                    credentialsId: 'jenkinss' // Use the credentials ID you created
             }
         }
 
