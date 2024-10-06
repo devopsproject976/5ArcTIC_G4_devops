@@ -20,10 +20,9 @@ pipeline {
         stage('MySQL Setup') {
             steps {
                 script {
-                    // Ensure MySQL is running before running the test
-                    docker.image('mysql:latest').withRun('-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=devops -p 3306:3306') {
-                        sh 'sleep 30' // Give MySQL some time to initialize
-                    }
+                    // Ensure MySQL is running before running the tests
+                    echo 'Ensure MySQL is running and the devops database is created.'
+                    // You can add commands here to check if MySQL is running
                 }
             }
         }
@@ -55,7 +54,6 @@ pipeline {
             echo 'Build and tests succeeded!'
         }
         failure {
-            
             echo 'Build or test failed.'
         }
     }
