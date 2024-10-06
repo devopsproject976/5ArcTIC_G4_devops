@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        DB_URL = 'jdbc:mysql://localhost:3306/devops'
+        DB_USER = 'root'
+        DB_PASSWORD = '' // Update with your actual password
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pull the code from the specified branch of your GitHub repository
+                git branch: 'SofienDaad', url: 'https://github.com/devopsproject976/devops.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Run Maven clean and package commands
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Run tests with Maven (JUnit and Mockito included)
+                sh 'mvn test'
+            }
+        }
+
+        stage('MySQL Setup') {
+            steps {
+                script {
+                    // Ensure MySQL is running before running the tests
+                    docker.image('mysql:latest').withRun('-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=devops -p 3306:3306') {
+                            sh 'sleep 30' // Wait for the MySQL container to initialize  // Give MySQL some time to initialize
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            // Archive and display test results
+            junit 'target/surefire-reports/*.xml'
+            echo 'Build and tests succeeded!'
+        }
+        failure {
+            // Handle failures (optional email notifications)
+            echo 'Build or test failed.'
+                 subject: "Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                 body: "Build failed. Check console output at ${env.BUILD_URL}"
+        }
+    }
+}
