@@ -6,7 +6,7 @@ pipeline {
         DB_USER = 'root'
         DB_PASSWORD = '' // Update with your actual password
     }
-
+//nour
     stages {
         stage('Checkout') {
             steps {
