@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub_credentials') // Update with your DockerHub credentials
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub_credentials')
         DOCKER_REPO = 'your-dockerhub-username/springboot-project'
     }
 
@@ -23,11 +23,23 @@ pipeline {
             }
         }
 
+        stage('Find Jar Version') {
+            steps {
+                dir('Backend') {
+                    // Find the latest jar file in the target folder and store it in an environment variable
+                    script {
+                        env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                    }
+                    echo "Using JAR file: ${env.JAR_FILE}"
+                }
+            }
+        }
+
         stage('Docker Build Spring') {
             steps {
                 dir('Backend') {
                     script {
-                        docker.build("${DOCKER_REPO}:${env.BUILD_NUMBER}", "-f Dockerfile .")
+                        docker.build("${DOCKER_REPO}:${env.BUILD_NUMBER}", "--build-arg JAR_FILE=${env.JAR_FILE} .")
                     }
                 }
             }
