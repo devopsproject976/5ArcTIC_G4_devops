@@ -36,14 +36,16 @@ pipeline {
         }
 
         stage('Docker Build Spring') {
-            steps {
-                dir('Backend') {
-                    script {
-                        docker.build("${DOCKER_REPO}:${env.BUILD_NUMBER}", "--build-arg JAR_FILE=${env.JAR_FILE} .")
-                    }
-                }
+    steps {
+        dir('Backend') {
+            script {
+                // Replace "your-dockerhub-username" and "springboot-project" with your actual DockerHub details
+                def dockerImage = docker.build("soufi2001/devopsfront:${env.BUILD_NUMBER}", "-f Dockerfile .")
             }
         }
+    }
+}
+
 
         stage('Docker Push Spring') {
             steps {
