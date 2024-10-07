@@ -2,59 +2,54 @@ pipeline {
     agent any
 
     environment {
-        DB_URL = 'jdbc:mysql://localhost:3306/devops'
-        DB_USER = 'root'
-        DB_PASSWORD = '' // Update with your actual password
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub_credentials') // Update with your DockerHub credentials
+        DOCKER_REPO = 'your-dockerhub-username/springboot-project'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Pull the code from the specified branch of your GitHub repository
                 git branch: 'SofienDaad', 
                     url: 'https://github.com/devopsproject976/devops.git', 
-                    credentialsId: 'jenkinss' // Use the credentials ID you created
+                    credentialsId: 'jenkinss'
             }
         }
 
-        stage('MySQL Setup') {
+        stage('Build Spring Boot') {
             steps {
-                script {
-                    // Ensure MySQL is running before running the tests
-                    echo 'Ensure MySQL is running and the devops database is created.'
-                    // You can add commands here to check if MySQL is running
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                // Change directory to Backend to run Maven commands
                 dir('Backend') {
-                    // Run Maven clean and package commands
                     sh 'mvn clean package'
                 }
             }
         }
 
-        stage('Test') {
+        stage('Docker Build Spring') {
             steps {
                 dir('Backend') {
-                    // Run tests with Maven (JUnit and Mockito included)
-                    sh 'mvn test'
+                    script {
+                        docker.build("${DOCKER_REPO}:${env.BUILD_NUMBER}", "-f Dockerfile .")
+                    }
+                }
+            }
+        }
+
+        stage('Docker Push Spring') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
+                        sh "docker push ${DOCKER_REPO}:${env.BUILD_NUMBER}"
+                    }
                 }
             }
         }
     }
-
+    
     post {
         success {
-            // Archive and display test results
-            junit 'Backend/target/surefire-reports/*.xml'
-            echo 'Build and tests succeeded!'
+            echo 'Build and Docker push succeeded!'
         }
         failure {
-            echo 'Build or test failed.'
+            echo 'Build or Docker push failed.'
         }
     }
 }
