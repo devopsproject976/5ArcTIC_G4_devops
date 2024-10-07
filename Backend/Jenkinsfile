@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Pull the code from the specified branch of your GitHub repository
-                git branch: 'SofienDaad', 
+                git branch: 'nourbenkhairia', 
                     url: 'https://github.com/devopsproject976/devops.git', 
                     credentialsId: 'devops' // Use the credentials ID you created
             }
