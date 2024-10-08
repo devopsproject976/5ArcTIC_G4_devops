@@ -15,6 +15,14 @@ pipeline {
             }
         }
 
+        stage('Test DockerHub Login') {
+    steps {
+        script {
+            sh "docker login -u ${DOCKER_REPO} -p ${DOCKERHUB_CREDENTIALS}"
+        }
+    }
+}
+
         stage('Build Spring Boot') {
             steps {
                 dir('Backend') {
