@@ -36,21 +36,21 @@ pipeline {
         }
 
         stage('Docker Build Spring') {
-    steps {
-        dir('Backend') {
-            script {
-                // Replace "your-dockerhub-username" and "springboot-project" with your actual DockerHub details
-                def dockerImage = docker.build("soufi2001/devopsfront:${env.BUILD_NUMBER}", "-f Dockerfile .")
+            steps {
+                dir('Backend') {
+                    script {
+                        // Build Docker image using the DockerHub repository and build number
+                        def dockerImage = docker.build("${DOCKER_REPO}:${env.BUILD_NUMBER}", "-f Dockerfile .")
+                    }
+                }
             }
         }
-    }
-}
-
 
         stage('Docker Push Spring') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
+                    // Push the built Docker image to DockerHub
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKERHUB_CREDENTIALS}") {
                         sh "docker push ${DOCKER_REPO}:${env.BUILD_NUMBER}"
                     }
                 }
