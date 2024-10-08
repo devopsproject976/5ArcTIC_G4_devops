@@ -6,4 +6,4 @@ COPY target/${JAR_FILE} /app/5Arctic3-G4-AichaNciri.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/5Arctic3-G4-AichaNciris.jar"]
+ENTRYPOINT ["java", "-jar", "/app/5Arctic3-G4-AichaNciri.jar"]
