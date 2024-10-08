@@ -47,8 +47,8 @@ pipeline {
                 }
             }
         }
-    }
-    stage('Docker Build') {
+
+        stage('Docker Build') {
             steps {
                 script {
                     // Build Docker image using the Dockerfile
@@ -58,7 +58,8 @@ pipeline {
                 }
             }
         }
-    stage('Docker Push') {
+
+        stage('Docker Push') {
             steps {
                 script {
                     // Use Docker Hub credentials
