@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub_credentials')
-        DOCKER_REPO = 'your-dockerhub-username/springboot-project'
+        DOCKERHUB_CREDENTIALS = credentials('dckr_pat_vSBuW-cXDqas-Nr0dr_rx7w4-So')
+        DOCKER_REPO = 'soufi2001/devopsfront'
     }
 
     stages {
