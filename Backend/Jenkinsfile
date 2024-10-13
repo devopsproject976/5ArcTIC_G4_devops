@@ -58,7 +58,7 @@ pipeline {
         }
     }
 
-    stages {
+    
         // Backend stages
         stage('Build Spring Boot') {
             steps {
