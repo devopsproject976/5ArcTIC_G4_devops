@@ -57,8 +57,6 @@ pipeline {
             echo 'Build or test failed.'
         }
     }
-    pipeline {
-    agent any
 
     stages {
         // Backend stages
