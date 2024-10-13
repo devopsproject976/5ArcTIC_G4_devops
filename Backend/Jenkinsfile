@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Pull the code from the specified branch of your GitHub repository
-                git branch: 'SofienDaad', 
+                git branch: 'MohamedamineTrabelsi_5Arctic3_G4', 
                     url: 'https://github.com/devopsproject976/devops.git', 
                     credentialsId: 'Jenkins_devops' // Use the credentials ID you created
             }
@@ -57,4 +57,37 @@ pipeline {
             echo 'Build or test failed.'
         }
     }
+    pipeline {
+    agent any
+
+    stages {
+        // Backend stages
+        stage('Build Spring Boot') {
+            steps {
+                dir('Backend') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Find Jar Version') {
+            steps {
+                dir('Backend') {
+                    script {
+                        // Find the latest jar file in the target folder and store it in an environment variable
+                        env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                    }
+                    echo "Using JAR file: ${env.JAR_FILE}"
+                }
+            }
+        }
+
+        stage('Build Spring Docker Image') {
+            steps {
+                script {
+                    sh 'ls -al'  // List files to check if Dockerfile exists
+                    sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
+                }
+            }
+        }
 }
