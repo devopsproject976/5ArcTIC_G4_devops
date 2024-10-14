@@ -39,6 +39,12 @@ public class Invoice implements Serializable {
     @ManyToOne
     @JsonIgnore
     Supplier supplier;
+
+//////////////////////////////////////
+	@ManyToOne
+	@JsonIgnore
+	Customer customer;
+
 //aicha and nour are bagrallah fi zar3allah
 	
 }
