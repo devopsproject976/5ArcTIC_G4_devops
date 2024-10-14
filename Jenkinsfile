@@ -4,16 +4,16 @@ pipeline {
     stages {
 
         stage('Start MySQL Container') {
-    steps {
-        echo 'Starting MySQL container...'
-        script {
-            // Pull and run the MySQL container without a root password
-            sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
-            // Wait for MySQL to be fully up and running
-            sh 'sleep 30'
+            steps {
+                script {
+                    // Remove existing container if it exists
+                    sh 'docker rm -f mysql-test || true'
+                    
+                    // Start a new MySQL container
+                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
+                }
+            }
         }
-    }
-}
         
        // Backend stages
         stage('Build Spring Boot') {
@@ -58,6 +58,10 @@ pipeline {
     }
         
     post {
+        always {
+            // Clean up the MySQL container after the build
+            sh 'docker rm -f mysql-test || true'
+        }
         success {
             echo 'Build and Docker push succeeded for  backend !'
         }
