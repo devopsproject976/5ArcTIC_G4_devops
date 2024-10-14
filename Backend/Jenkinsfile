@@ -5,8 +5,12 @@ pipeline {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
         DB_USER = 'root'
         DB_PASSWORD = '' // Update with your actual password
+        DOCKER_USERNAME = credentials('nourbkh') // Use credentials from Jenkins
+        DOCKER_PASSWORD = credentials('223JFT1730') // Use credentials from Jenkins
+        IMAGE_NAME = 'nourbkh/devops-backend' // Docker Hub repository name
+        IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devops' // Tag for the image
     }
-//nour
+
     stages {
         stage('Checkout') {
             steps {
@@ -45,6 +49,38 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Change directory to Backend
+                    dir('Backend') {
+                        // Build the Docker image using the specified tag format
+                        sh 'docker build -t nourbenkhairia-5arctic3-g4-devops .'
+                    }
+                }
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    // Tag the Docker image for Docker Hub
+                    sh "docker tag nourbenkhairia-5arctic3-g4-devops ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Login to Docker Hub
+                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    // Push the Docker image to Docker Hub
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
     }
 
     post {
@@ -58,3 +94,4 @@ pipeline {
         }
     }
 }
+
