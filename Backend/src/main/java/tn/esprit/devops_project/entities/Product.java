@@ -26,6 +26,9 @@ public class Product implements Serializable {
     @JsonIgnore
     Stock stock;
 
+    @ManyToOne // Assuming a many-to-one relationship with Supplier
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier; // Adjust this according to your relationship
     //test jenkins
     //test jenkins
 

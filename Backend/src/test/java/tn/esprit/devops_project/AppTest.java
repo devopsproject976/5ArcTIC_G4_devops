@@ -1,114 +1,96 @@
 package tn.esprit.devops_project;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import tn.esprit.devops_project.entities.Invoice;
-import tn.esprit.devops_project.entities.InvoiceDetail;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tn.esprit.devops_project.entities.Product;
-import tn.esprit.devops_project.repositories.InvoiceRepository;
+import tn.esprit.devops_project.entities.Supplier;
+import tn.esprit.devops_project.entities.Stock;
+import tn.esprit.devops_project.entities.ProductCategory;
+import tn.esprit.devops_project.entities.SupplierCategory;
 import tn.esprit.devops_project.repositories.ProductRepository;
+import tn.esprit.devops_project.repositories.StockRepository;
+import tn.esprit.devops_project.repositories.SupplierRepository;
 import tn.esprit.devops_project.services.ProductServiceImpl;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+public class AppTest {
 
-class AppTest {
+    @Autowired
+    private ProductRepository productRepository;
 
-    @Mock
-    ProductRepository productRepository;
+    @Autowired
+    private SupplierRepository supplierRepository;
 
-    @Mock
-    InvoiceRepository invoiceRepository;
+    @Autowired
+    private StockRepository stockRepository;
 
-    @InjectMocks
-    ProductServiceImpl productService;
+    @Autowired
+    private ProductServiceImpl productService;
+
+    private Product product;
+    private Supplier supplier;
+    private Stock stock;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
+        // Create and save supplier
+        supplier = new Supplier();
+        supplier.setCode("SUP001");
+        supplier.setLabel("Test Supplier");
+        supplier.setSupplierCategory(SupplierCategory.CONVENTIONNE); // Set to CONVENTIONNE
+        supplier = supplierRepository.save(supplier); // Save to DB
+
+        // Create and save stock
+        stock = new Stock();
+        stock.setTitle("Main Stock");
+        stock.setSupplier(supplier); // Associate supplier with stock
+        stock = stockRepository.save(stock); // Save to DB
+
+        // Create and save product
+        product = new Product();
+        product.setTitle("Test Product");
+        product.setPrice(100f); // Set base price
+        product.setQuantity(50);
+        product.setCategory(ProductCategory.ELECTRONICS);
+        product.setStock(stock); // Associate product with stock
+        product.setSupplier(supplier); // Associate product with supplier
+        product = productRepository.save(product); // Save the product here
     }
 
-    // JUnit test without using Mockito
     @Test
-    void testCalculateTotalPriceForInvoiceDetails() {
-        // Arrange
-        Product product = new Product();
-        product.setIdProduct(1L);
-        product.setPrice(50.0f);
+    public void testCalculateTotalPrice() {
+        // Call the method to test with a quantity of 2
+        float result = productService.calculateTotalPrice(product.getIdProduct(), 2);
 
-        InvoiceDetail detail1 = new InvoiceDetail();
-        detail1.setProduct(product);
-        detail1.setQuantity(2);
+        // Calculate expected result (with discounts and taxes)
+        float basePrice = 100f * 2; // Base price for 2 products
+        float discountedPrice = basePrice * 0.9f; // 10% discount for CONVENTIONNE supplier
+        float additionalDiscountedPrice = discountedPrice * 0.9f; // Additional 10% discount for electronics
+        float expected = additionalDiscountedPrice * 1.15f; // 15% tax for electronics
 
-        InvoiceDetail detail2 = new InvoiceDetail();
-        detail2.setProduct(product);
-        detail2.setQuantity(3);
-
-        // Act - We are directly calculating the total without mocks
-        float total = detail1.getQuantity() * product.getPrice() + detail2.getQuantity() * product.getPrice();
-
-        // Assert
-        assertEquals(250.0f, total);
+        // Compare the result with the expected value
+        assertEquals(expected, result, "The calculated total price is not as expected.");
     }
 
-    // Mockito test with mocking
-    @Test
-    void testCalculateTotalInvoiceAmountForProductWithMockito() {
-        // Arrange
-        Product product = new Product();
-        product.setIdProduct(1L);
-        product.setPrice(100.0f);
-
-        InvoiceDetail invoiceDetail1 = new InvoiceDetail();
-        invoiceDetail1.setProduct(product);
-        invoiceDetail1.setQuantity(2);
-        invoiceDetail1.setPrice(50.0f);
-
-        Invoice invoice1 = new Invoice();
-        Set<InvoiceDetail> details1 = new HashSet<>();
-        details1.add(invoiceDetail1);
-        invoice1.setInvoiceDetails(details1);
-
-        // Use mocks for repository calls
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-        when(invoiceRepository.findAll()).thenReturn(List.of(invoice1));
-
-        // Act
-        float totalAmount = productService.calculateTotalInvoiceAmountForProduct(1L);
-
-        // Assert
-        assertEquals(100.0f, totalAmount);
-        verify(productRepository, times(1)).findById(1L); // Verifies the mock was called once
-    }
-
-    // Another Mockito test example
-    @Test
-    void testGetLowStockProductsWithMockito() {
-        // Arrange
-        Product product1 = new Product();
-        product1.setIdProduct(1L);
-        product1.setQuantity(5);
-
-        Product product2 = new Product();
-        product2.setIdProduct(2L);
-        product2.setQuantity(20);
-
-        when(productRepository.findAll()).thenReturn(List.of(product1, product2));
-
-        // Act
-        List<Product> lowStockProducts = productService.getLowStockProducts(10);
-
-        // Assert
-        assertEquals(1, lowStockProducts.size());
-        assertEquals(product1.getIdProduct(), lowStockProducts.get(0).getIdProduct());
-        verify(productRepository, times(1)).findAll();
+    @AfterEach
+    public void tearDown() {
+        // Clean up the test data in reverse order of creation to avoid foreign key issues
+        if (product != null) {
+            productRepository.delete(product);
+        }
+        if (stock != null) {
+            stockRepository.delete(stock);
+        }
+        if (supplier != null) {
+            supplierRepository.delete(supplier);
+        }
     }
 }

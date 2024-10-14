@@ -24,5 +24,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 	@Modifying
 	@Query("update Invoice i set i.archived=true where i.idInvoice=?1")
 	void updateInvoice(Long id);
-	
+
+	@Query("SELECT i FROM Invoice i JOIN FETCH i.invoiceDetails WHERE i.idInvoice = :id")
+	List<Invoice> findInvoiceWithDetails(@Param("id") Long id);
+
+	@Query("SELECT i FROM Invoice i JOIN FETCH i.invoiceDetails")
+	List<Invoice> findAllWithDetails(); // Added this method to fetch all invoices with their details
 }

@@ -3,8 +3,10 @@ package tn.esprit.devops_project.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.devops_project.entities.*;
 import tn.esprit.devops_project.repositories.InvoiceRepository;
+import tn.esprit.devops_project.repositories.SupplierRepository;
 import tn.esprit.devops_project.services.Iservices.IProductService;
 import tn.esprit.devops_project.repositories.ProductRepository;
 import tn.esprit.devops_project.repositories.StockRepository;
@@ -20,12 +22,17 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements IProductService {
 
     final ProductRepository productRepository;
-    final StockRepository stockRepository;
+     final StockRepository stockRepository;
     final InvoiceRepository invoiceRepository;
+    final SupplierRepository supplierRepository;
+
+
+
+
 
     @Override
     public Product addProduct(Product product, Long idStock) {
-        Stock stock = stockRepository.findById(idStock).orElseThrow(() -> new NullPointerException("stock not found"));
+        Stock stock = stockRepository.findById(idStock).orElseThrow(() -> new NullPointerException("Stock not found"));
         product.setStock(stock);
         return productRepository.save(product);
     }
@@ -55,35 +62,48 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findByStockIdStock(id);
     }
 
-    // Advanced Service 1: Calculate Total Invoice Amount for a Product
-    public float calculateTotalInvoiceAmountForProduct(Long productId) {
+
+
+
+    public float calculateTotalPrice(Long productId, int quantity) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NullPointerException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        float totalAmount = 0;
+        Supplier supplier = product.getStock().getSupplier();
+        float price = product.getPrice() * quantity;
 
-        // Loop through all invoices and get their details
-        List<Invoice> invoices = invoiceRepository.findAll();
-
-        for (Invoice invoice : invoices) {
-            Set<InvoiceDetail> invoiceDetails = invoice.getInvoiceDetails();
-            for (InvoiceDetail detail : invoiceDetails) {
-                if (detail.getProduct().getIdProduct().equals(product.getIdProduct())) {
-                    totalAmount += detail.getQuantity() * detail.getPrice();
-                }
-            }
+        if (supplier.getSupplierCategory() == SupplierCategory.CONVENTIONNE) {
+            price *= 0.9; // 10% discount
         }
 
-        return totalAmount;
+        // Assume we have a method to get discount and tax rates
+        Discount discount = getDiscountForProduct(product);
+        if (discount != null) {
+            price *= (1 - discount.getPercentage());
+        }
+
+        float taxRate = getTaxRateForProduct(product);
+        price *= (1 + taxRate);
+
+        return price;
     }
 
-    // Advanced Service 2: Generate Stock Alert for Low Inventory Products
-    public List<Product> getLowStockProducts(int threshold) {
-        List<Product> products = productRepository.findAll();
-
-        // Filter products based on quantity
-        return products.stream()
-                .filter(product -> product.getQuantity() < threshold)
-                .collect(Collectors.toList());
+    private Discount getDiscountForProduct(Product product) {
+        // Example logic: return a discount based on product category
+        if (product.getCategory() == ProductCategory.ELECTRONICS) {
+            return new Discount(0.1f); // 10% discount for electronics
+        }
+        return null; // No discount for other categories
     }
+
+    private float getTaxRateForProduct(Product product) {
+        // Example logic: return a tax rate based on product category
+        if (product.getCategory() == ProductCategory.ELECTRONICS) {
+            return 0.15f; // 15% tax for electronics
+        }
+        return 0.10f; // Default tax rate for other categories
+    }
+
+
+
 }
