@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_USERNAME = credentials('nourbkh') // Use credentials from Jenkins
+        DOCKER_PASSWORD = credentials('223JFT1730') // Use credentials from Jenkins
+        IMAGE_NAME = 'nourbkh/devops-frontend' // Docker Hub repository name
+        IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devopsfrontend' // Tag for the image
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pull the code from the specified branch of your GitHub repository
+                git branch: 'nourbenkhairia', 
+                    url: 'https://github.com/devopsproject976/devops.git', 
+                    credentialsId: 'devops' // Use the credentials ID you created
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Change directory to Frontend to build the Angular app
+                dir('Frontend') {
+                    // Build the Docker image for the Angular app
+                    sh 'docker build -t nourbenkhairia-5arctic3-g4-devopsfrontend .'
+                }
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    // Tag the Docker image for Docker Hub
+                    sh "docker tag nourbenkhairia-5arctic3-g4-devopsfrontend ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Login to Docker Hub
+                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    // Push the Docker image to Docker Hub
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Frontend build and image push succeeded!'
+        }
+        failure {
+            echo 'Frontend build or image push failed.'
+        }
+    }
+}
