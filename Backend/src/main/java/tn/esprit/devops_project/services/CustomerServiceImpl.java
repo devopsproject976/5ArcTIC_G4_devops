@@ -9,6 +9,7 @@ import tn.esprit.devops_project.repositories.CustomerRepository;
 import tn.esprit.devops_project.services.Iservices.ICustomerService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -32,13 +33,32 @@ public class CustomerServiceImpl implements ICustomerService {
         customerRepository.deleteById(id);
     }
 
-    @Override
-    public Customer updateCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public Customer updateCustomer(Long idCustomer, Customer customer) {
+
+        Customer existingCustomer = customerRepository.findById(idCustomer)
+                .orElseThrow(() -> new NullPointerException("Customer not found"));
+        existingCustomer.setName(customer.getName());
+        existingCustomer.setEmail(customer.getEmail());
+        existingCustomer.setPhone(customer.getPhone());
+        return customerRepository.save(existingCustomer);
     }
+
 
     @Override
     public Customer retrieveCustomer(Long id) {
         return customerRepository.findById(id).orElseThrow(() -> new NullPointerException("Customer not found"));
+    }
+
+    // New methods added for searching
+    public Optional<Customer> findCustomerByEmail(String email) {
+        return customerRepository.findByEmail(email);
+    }
+
+    public List<Customer> findCustomersByPhone(String phone) {
+        return customerRepository.findByPhone(phone);
+    }
+
+    public List<Customer> findCustomersByName(String name) {
+        return customerRepository.findByNameContainingIgnoreCase(name);
     }
 }
