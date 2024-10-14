@@ -59,7 +59,7 @@ pipeline {
         
     post {
         always {
-            // Clean up the MySQL container after the build
+            // Clean up the MySQL container after the build test
             sh 'docker rm -f mysql-test || true'
         }
         success {
