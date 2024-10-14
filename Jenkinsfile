@@ -40,7 +40,7 @@ pipeline {
         stage('Build Spring Docker Image') {
             steps {
                 echo 'Building Docker image for Spring Boot...'
-                sh 'docker build -t soufi2001/devopsback -f Backend/Dockerfile .'
+                sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
             }
         }
 
