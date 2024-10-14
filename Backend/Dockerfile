@@ -8,7 +8,7 @@ WORKDIR /app
 ARG JAR_FILE
 
 # Copy the dynamic Spring Boot jar file to the container
-COPY ${JAR_FILE} 5ArcTIC3-G4-SofienDaadoucha.jar
+COPY ${JAR_FILE} 5ArcTIC3-G4-AttiaHamouda.jar
 
 # Expose the application port (you can update the port if needed)
 EXPOSE 8082
