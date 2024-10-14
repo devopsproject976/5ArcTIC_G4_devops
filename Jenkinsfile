@@ -9,6 +9,14 @@ pipeline {
                     // Remove existing container if it exists
                     sh 'docker rm -f mysql-test || true'
                     
+                    // Check if the MySQL port is in use
+                    script {
+                        def portInUse = sh(script: 'lsof -i :3306', returnStatus: true)
+                        if (portInUse == 0) {
+                            error("Port 3306 is already in use. Please stop the service using this port.")
+                        }
+                    }
+
                     // Start a new MySQL container with root password
                     sh 'docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=hamouda -p 3306:3306 mysql:5.7'
                 }
