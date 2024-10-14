@@ -56,45 +56,10 @@ pipeline {
             }
         }
 
-        // Frontend stages
-        stage('Build Angular') {
-            steps {
-                dir('Frontend') {
-                    echo 'Installing dependencies and building Angular application...'
-                    script {
-                        // Use Node.js Docker container to run npm commands
-                        sh '''
-                        docker run --rm -v $PWD:/app -w /app node:16-alpine npm install
-                        docker run --rm -v $PWD:/app -w /app node:16-alpine npm run build --prod
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Build Angular Docker Image') {
-            steps {
-                echo 'Building Docker image for Angular...'
-                sh 'docker build -t soufi2001/devopsfront -f Frontend/Dockerfile .'
-            }
-        }
-
-        stage('Push Angular Docker Image to Docker Hub') {
-            steps {
-                echo 'Pushing Angular Docker image to Docker Hub...'
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
-                    }
-                    sh 'docker push soufi2001/devopsfront'
-                }
-            }
-        }
-    }
-
+        
     post {
         success {
-            echo 'Build and Docker push succeeded for both backend and frontend!'
+            echo 'Build and Docker push succeeded for  backend !'
         }
         failure {
             echo 'Build or Docker push failed.'
