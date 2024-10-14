@@ -49,7 +49,8 @@ pipeline {
                 echo 'Pushing Spring Boot Docker image to Docker Hub...'
                 script {
                     withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
+                       // sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
+                        sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin'
                     }
                     sh 'docker push medaminetrabelsi/devopsback'
                 }
