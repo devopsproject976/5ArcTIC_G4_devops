@@ -14,4 +14,4 @@ COPY ${JAR_FILE} 5ArcTIC3-G4-SofienDaadoucha.jar
 EXPOSE 8082
 
 # Run the jar file
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-SofienDaadoucha.jar"]
