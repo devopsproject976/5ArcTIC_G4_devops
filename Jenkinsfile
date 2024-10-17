@@ -33,7 +33,7 @@ pipeline {
             steps {
                 dir('Backend') {
                     echo 'Running SonarQube analysis...'
-                    withSonarQubeEnv('SonarQube') { // SonarQube env configuration
+                    withSonarQubeEnv('sonar-jenkins') { // SonarQube env configuration
                         sh 'mvn sonar:sonar'
                     }
                 }
