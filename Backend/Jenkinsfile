@@ -17,7 +17,7 @@ pipeline {
                 // Pull the code from the specified branch of your GitHub repository
                 git branch: 'nourbenkhairia_5Arctic3_G4', 
                     url: 'https://github.com/devopsproject976/5ArcTIC_G4_devops.git', 
-                    credentialsId: 'devops' // Use the credentials ID you created
+                    credentialsId: 'devops-pipeline' // Use the credentials ID you created
             }
         }
 
