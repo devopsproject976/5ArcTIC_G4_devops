@@ -9,7 +9,14 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByCategory(ProductCategory category);
-    List<Product> findByStockIdStock(Long idStock);
+
+    List<Product> findByQuantityLessThan(int threshold);
+
+    List<Product> findByTitleContainingIgnoreCase(String title);
+
+    List<Product> findByPriceBetween(float minPrice, float maxPrice);
+
+    List<Product> findByStockIdStock(Long stockId);
 }
 
 
