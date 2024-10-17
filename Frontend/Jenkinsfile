@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = credentials('nourbkh') // Use credentials from Jenkins
-        DOCKER_PASSWORD = credentials('223JFT1730') // Use credentials from Jenkins
+        DOCKER_USERNAME = credentials('devops-pipeline') // Use credentials from Jenkins
+        DOCKER_PASSWORD = credentials('devops-pipeline') // Use credentials from Jenkins
         IMAGE_NAME = 'nourbkh/devops-frontend' // Docker Hub repository name
         IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devopsfrontend' // Tag for the image
     }
@@ -12,9 +12,9 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Pull the code from the specified branch of your GitHub repository
-                git branch: 'nourbenkhairia', 
-                    url: 'https://github.com/devopsproject976/devops.git', 
-                    credentialsId: 'devops' // Use the credentials ID you created
+                git branch: 'nourbenkhairia_5Arctic3_G4', 
+                    url: 'https://github.com/devopsproject976/5ArcTIC_G4_devops.git', 
+                    credentialsId: 'devops-pipeline' // Use the credentials ID you created
             }
         }
 
@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     // Login to Docker Hub
-                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    sh "echo '223JFT1730' | docker login -u 'nourbkh' --password-stdin"
                     // Push the Docker image to Docker Hub
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
