@@ -5,8 +5,8 @@ pipeline {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
         DB_USER = 'root'
         DB_PASSWORD = '' // Update with your actual password
-        DOCKER_USERNAME = credentials('nourbkh') // Use credentials from Jenkins
-        DOCKER_PASSWORD = credentials('223JFT1730') // Use credentials from Jenkins
+        DOCKER_USERNAME = credentials('devops-pipeline') // Use credentials from Jenkins
+        DOCKER_PASSWORD = credentials('devops-pipeline') // Use credentials from Jenkins
         IMAGE_NAME = 'nourbkh/devops-backend' // Docker Hub repository name
         IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devops' // Tag for the image
     }
