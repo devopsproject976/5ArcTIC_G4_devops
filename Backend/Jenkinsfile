@@ -58,17 +58,8 @@ pipeline {
                     // Change directory to Backend
                     dir('Backend') {
                         // Build the Docker image using the specified tag format
-                        sh 'docker build -t nourbenkhairia-5arctic3-g4-devops .'
+                        sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                     }
-                }
-            }
-        }
-
-        stage('Tag Docker Image') {
-            steps {
-                script {
-                    // Tag the Docker image for Docker Hub
-                    sh "docker tag nourbenkhairia-5arctic3-g4-devops ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
@@ -77,7 +68,7 @@ pipeline {
             steps {
                 script {
                     // Login to Docker Hub
-                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin"
                     // Push the Docker image to Docker Hub
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
@@ -86,6 +77,12 @@ pipeline {
     }
 
     post {
+        always {
+            script {
+                // Cleanup - Stop and remove MySQL container
+                sh 'docker rm -f mysql-test || true'
+            }
+        }
         success {
             // Archive and display test results
             junit 'Backend/target/surefire-reports/*.xml'
@@ -96,4 +93,3 @@ pipeline {
         }
     }
 }
-
