@@ -66,8 +66,8 @@ pipeline {
                 script {
                     // Use Docker Hub credentials
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
-                        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
+                        sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
+                       sh 'docker push aichanciri/devopsback'
                     }
                 }
             }
@@ -75,6 +75,10 @@ pipeline {
     }
 
     post {
+        always {
+            // Clean up the MySQL container after the build
+            sh 'docker rm -f mysql-test || true'
+        }
         success {
             // Archive and display test results
             junit 'Backend/target/surefire-reports/*.xml'
