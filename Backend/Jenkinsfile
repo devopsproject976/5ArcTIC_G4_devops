@@ -22,9 +22,11 @@ pipeline {
         stage('MySQL Setup') {
             steps {
                 script {
-                    // Ensure MySQL is running before running the tests
-                    echo 'Ensure MySQL is running and the devops database is created.'
-                    // You can add commands here to check if MySQL is running
+                    // Remove existing container if it exists
+                    sh 'docker rm -f mysql-test || true'
+                    
+                    // Start a new MySQL container
+                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
                 }
             }
         }
