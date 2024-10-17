@@ -97,6 +97,22 @@ pipeline {
         }
     }
 
+    /*stage('Build and Push Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t SofienDaadoucha-5ArcTIC3-G4-devops .'
+
+                echo 'Pushing Docker image to DockerHub...'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
+                    }
+                    sh 'docker push SofienDaadoucha-5ArcTIC3-G4-devops'
+                }
+            }
+        }
+    }*/
+
     post {
         always {
             sh 'docker rm -f mysql-test || true'
