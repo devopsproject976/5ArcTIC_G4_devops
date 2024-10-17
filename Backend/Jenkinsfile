@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     // Login to Docker Hub
-                    sh "echo \$223JFT1730 | docker login -u \$nourbkh --password-stdin"
+                    sh "echo '223JFT1730' | docker login -u 'nourbkh' --password-stdin"
                     // Push the Docker image to Docker Hub
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
