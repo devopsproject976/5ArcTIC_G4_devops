@@ -1,6 +1,6 @@
 pipeline {
     agent any
-
+//test
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
