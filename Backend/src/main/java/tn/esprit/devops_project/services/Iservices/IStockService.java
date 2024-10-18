@@ -9,5 +9,7 @@ public interface IStockService {
     Stock addStock(Stock stock);
     Stock retrieveStock(Long id);
     List<Stock> retrieveAllStock();
+    Stock updateStock(Long id, Stock updatedStock);
+    void deleteStock(Long id);
 
 }
