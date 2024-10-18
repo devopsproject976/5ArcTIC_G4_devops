@@ -1,6 +1,5 @@
 pipeline {
     agent any
-//test
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
@@ -23,12 +22,11 @@ pipeline {
             steps {
                 dir('Backend') {
                     echo 'Building Spring Boot application...'
-                    sh 'mvn clean package -DskipTests=true '
+                    sh 'mvn clean package -DskipTests=true'
                 }
             }
         }
 
-        // SonarQube analysis
         stage('SonarQube Analysis') {
             steps {
                 dir('Backend') {
@@ -39,14 +37,6 @@ pipeline {
                 }
             }
         }
-
-        // Ensure SonarQube analysis has passed
-        /*stage('Quality Gate') {
-            steps {
-                echo 'Checking SonarQube Quality Gate...'
-                waitForQualityGate abortPipeline: true // Abort the pipeline if the quality gate fails
-            }
-        }*/
 
         stage('Find JAR Version') {
             steps {
@@ -59,62 +49,40 @@ pipeline {
             }
         }
 
-         stage("publish to nexus") {
+        stage('Publish to Nexus') {
             steps {
                 script {
-                    // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-                    pom = readMavenPom file: "pom.xml";
-                    // Find built artifact under target folder
-                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
-                    // Print some info from the artifact found
+                    pom = readMavenPom file: "pom.xml"
+                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
                     echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
-                    // Extract the path from the File found
-                    artifactPath = filesByGlob[0].path;
-                    // Assign to a boolean response verifying If the artifact name exists
-                    artifactExists = fileExists artifactPath;
+                    artifactPath = filesByGlob[0].path
+                    artifactExists = fileExists artifactPath
 
-                    if(artifactExists) {
-                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
+                    if (artifactExists) {
+                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
 
                         nexusArtifactUploader(
                             nexusVersion: NEXUS_VERSION,
                             protocol: NEXUS_PROTOCOL,
                             nexusUrl: NEXUS_URL,
                             groupId: pom.groupId,
-                            version: ARTIFACT_VERSION,
+                            version: pom.version, // Use the version from POM
                             repository: NEXUS_REPOSITORY,
                             credentialsId: NEXUS_CREDENTIAL_ID,
                             artifacts: [
-                                // Artifact generated such as .jar, .ear and .war files.
                                 [artifactId: pom.artifactId,
-                                classifier: '',
-                                file: artifactPath,
-                                type: pom.packaging]
+                                 classifier: '',
+                                 file: artifactPath,
+                                 type: pom.packaging]
                             ]
-                        );
-
+                        )
                     } else {
-                        error "*** File: ${artifactPath}, could not be found";
+                        error "*** File: ${artifactPath}, could not be found"
                     }
                 }
             }
         }
-
-    /*stage('Build and Push Docker Image') {
-            steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t SofienDaadoucha-5ArcTIC3-G4-devops .'
-
-                echo 'Pushing Docker image to DockerHub...'
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
-                    }
-                    sh 'docker push SofienDaadoucha-5ArcTIC3-G4-devops'
-                }
-            }
-        }
-    }*/
+    }
 
     post {
         always {
