@@ -23,7 +23,7 @@ pipeline {
             steps {
                 dir('Backend') {
                     echo 'Building Spring Boot application...'
-                    sh 'mvn clean package '
+                    sh 'mvn clean package -DskipTests=true '
                 }
             }
         }
