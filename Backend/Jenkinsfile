@@ -7,7 +7,9 @@ pipeline {
         DB_PASSWORD = '' // Update with your actual password
         DOCKER_REGISTRY = 'aichanciri'
         DOCKER_IMAGE = 'devopsback'
-        SONAR_TOKEN = credentials('SonarQube_Token')
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
+        SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
+        SONAR_TOKEN = credentials('SonarQube_Token') // Make sure the ID matches your Jenkins credential
     }
 
 
@@ -52,18 +54,21 @@ pipeline {
             }
         }
          stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube Scanner') { // Name matches SonarQube server configuration
-                    sh """
-                    sonar-scanner \
-                        -Dsonar.projectKey=5ArcTIC_G4_devops \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.login=$SONAR_TOKEN
-                    """
-                }
-            }
-        }
+             steps {
+                 script {
+                     dir('Backend') {
+                         withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' matches your configured server in Jenkins
+                             sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                 "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
+                                 "-Dsonar.sources=src " +
+                                 "-Dsonar.java.binaries=target/classes " +
+                                 "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
+                                 "-Dsonar.login=${env.SONAR_TOKEN}" // Use the correct token
+                         }
+                     }
+                 }
+             }
+         }
         stage('Docker Build') {
             steps {
                 script {
