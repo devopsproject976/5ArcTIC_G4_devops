@@ -63,7 +63,7 @@ pipeline {
                                 "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
                                 "-Dsonar.sources=src " +
                                 "-Dsonar.java.binaries=target/classes " +
-                                "-Dsonar.host.url=http://your-sonarqube-url " +
+                                "-Dsonar.host.url=http://localhost:9000 " +
                                 "-Dsonar.login=${env.SONAR_TOKEN}"
                         }
                     }
