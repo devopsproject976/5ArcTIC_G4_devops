@@ -9,9 +9,7 @@ pipeline {
         DOCKER_IMAGE = 'devopsback'
         SONAR_TOKEN = credentials('sonar')
     }
-    tools {
-            sonarQubeScanner 'SonarDevops' // Use the configured SonarQube scanner
-        }
+
 
     stages {
         stage('Checkout') {
