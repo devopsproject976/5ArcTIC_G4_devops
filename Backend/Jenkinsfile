@@ -57,7 +57,7 @@ pipeline {
              steps {
                  script {
                      dir('Backend') {
-                         withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' matches your configured server in Jenkins
+                         withSonarQubeEnv('SonarQube Scanner') { // Ensure 'SonarQube' matches your configured server in Jenkins
                              sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
                                  "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
                                  "-Dsonar.sources=src " +
