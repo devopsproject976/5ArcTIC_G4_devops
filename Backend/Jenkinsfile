@@ -71,9 +71,14 @@ pipeline {
         stage('Publish JaCoCo Report') {
             steps {
                 publishCoverage(
-                    adapters: [jacocoAdapter('**/target/site/jacoco/jacoco.xml')],
-                    sourceDirectories: ['Backend/src/main/java']
+                    adapters: [
+                        jacocoAdapter(path: '**/target/site/jacoco/jacoco.xml')
+                    ],
+                    sourceDirectories: [
+                        sourceCodeDirectory(path: 'Backend/src/main/java')
+                    ]
                 )
+
             }
         }
 
