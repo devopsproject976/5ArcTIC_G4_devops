@@ -7,7 +7,11 @@ pipeline {
         DB_PASSWORD = '' // Update with your actual password
         DOCKER_REGISTRY = 'aichanciri'
         DOCKER_IMAGE = 'devopsback'
+        SONAR_TOKEN = credentials('sonar')
     }
+    tools {
+            sonarQubeScanner 'SonarDevops' // Use the configured SonarQube scanner
+        }
 
     stages {
         stage('Checkout') {
@@ -49,7 +53,19 @@ pipeline {
                 }
             }
         }
-
+         stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarDevops') { // Name matches SonarQube server configuration
+                    sh """
+                    sonar-scanner \
+                        -Dsonar.projectKey=5ArcTIC_G4_devops \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.login=$SONAR_TOKEN
+                    """
+                }
+            }
+        }
         stage('Docker Build') {
             steps {
                 script {
