@@ -7,7 +7,7 @@ pipeline {
         DB_PASSWORD = '' // Update with your actual password
         DOCKER_REGISTRY = 'aichanciri'
         DOCKER_IMAGE = 'devopsback'
-        SONAR_TOKEN = credentials('sonar')
+        SONAR_TOKEN = credentials('SonarQube_Token')
     }
 
 
