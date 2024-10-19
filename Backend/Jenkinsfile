@@ -73,14 +73,17 @@ pipeline {
              }
          }
          stage('Publish JaCoCo Report') {
-             steps {
-                 jacoco(
-                     execPattern: '**/target/jacoco.exec',
-                     classDirectories: '**/target/classes',
-                     sourceDirectories: '**/src/main/java'
-                 )
+                     steps {
+                         // Use the coverage plugin to publish JaCoCo report
+                         publishCoverage(
+                             adapters: [jacocoAdapter('**/target/site/jacoco/jacoco.xml')],
+                             sourceDirectories: ['Backend/src/main/java'],
+                             failBuildIfCoverageDecreased: true
+                         )
+                     }
+                 }
              }
-         }
+
 
 
         stage('Docker Build') {
