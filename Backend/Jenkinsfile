@@ -73,13 +73,15 @@ pipeline {
              }
          }
          stage('Publish JaCoCo Report') {
-                     steps {
-                         jacoco(execPattern: '**/target/jacoco.exec',
-                                classPattern: '**/target/classes',
-                                sourcePattern: '**/src/main/java',
-                                inclusionPattern: '**/*.class')
-                     }
-                 }
+             steps {
+                 jacoco(
+                     execPattern: '**/target/jacoco.exec',
+                     classDirectories: '**/target/classes',
+                     sourceDirectories: '**/src/main/java'
+                 )
+             }
+         }
+
 
         stage('Docker Build') {
             steps {
