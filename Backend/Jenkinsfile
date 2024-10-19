@@ -53,7 +53,7 @@ pipeline {
         }
          stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarDevops') { // Name matches SonarQube server configuration
+                withSonarQubeEnv('SonarQube Scanner') { // Name matches SonarQube server configuration
                     sh """
                     sonar-scanner \
                         -Dsonar.projectKey=5ArcTIC_G4_devops \
