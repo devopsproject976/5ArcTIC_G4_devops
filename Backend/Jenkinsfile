@@ -74,14 +74,13 @@ pipeline {
          }
          stage('Publish JaCoCo Report') {
                      steps {
-                         // Publish the JaCoCo code coverage report to Jenkins
                          jacoco(execPattern: '**/target/jacoco.exec',
                                 classPattern: '**/target/classes',
                                 sourcePattern: '**/src/main/java',
                                 inclusionPattern: '**/*.class')
                      }
                  }
-             }
+
         stage('Docker Build') {
             steps {
                 script {
