@@ -1,8 +1,8 @@
 pipeline {
     agent any
     parameters {
-            string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
-        }
+        string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
+    }
 
     environment {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
@@ -12,27 +12,22 @@ pipeline {
         DOCKER_IMAGE = 'devopsback'
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
         SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
-        SONAR_TOKEN = credentials('SonarQube_Token') // Make sure the ID matches your Jenkins credential
+        SONAR_TOKEN = credentials('SonarQube_Token') // Ensure this matches your Jenkins credential ID
     }
-
 
     stages {
         stage('Checkout') {
             steps {
-                // Pull the code from the specified branch of your GitHub repository
-                git branch: 'AichaNciri_5Arctic3_G4', 
-                    url: 'https://github.com/devopsproject976/devops.git', 
-                    credentialsId: 'dev' // Use the credentials ID you created
+                git branch: 'AichaNciri_5Arctic3_G4',
+                    url: 'https://github.com/devopsproject976/devops.git',
+                    credentialsId: 'dev'
             }
         }
 
         stage('MySQL Setup') {
             steps {
                 script {
-                    // Remove existing container if it exists
                     sh 'docker rm -f mysql-test || true'
-                    
-                    // Start a new MySQL container
                     sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
                 }
             }
@@ -40,9 +35,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Change directory to Backend to run Maven commands
                 dir('Backend') {
-                    // Run Maven clean and package commands
                     sh 'mvn clean package'
                 }
             }
@@ -51,43 +44,44 @@ pipeline {
         stage('Test') {
             steps {
                 dir('Backend') {
-                    // Run tests with Maven (JUnit and Mockito included)
                     sh 'mvn test'
                 }
             }
         }
-         stage('SonarQube Analysis') {
-             steps {
-                 script {
-                     dir('Backend') {
-                         withSonarQubeEnv('SonarQube Scanner') { // Ensure 'SonarQube' matches your configured server in Jenkins
-                             sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                                 "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
-                                 "-Dsonar.sources=src " +
-                                 "-Dsonar.java.binaries=target/classes " +
-                                 "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
-                                 "-Dsonar.login=${env.SONAR_TOKEN}" // Use the correct token
-                         }
-                     }
-                 }
-             }
-         }
-         stage('Publish JaCoCo Report') {
-             steps {
-                 jacoco(
-                     execPattern: '**/target/jacoco.exec',
-                     classPattern: '**/target/classes',
-                     sourcePattern: '**/src/main/java'
-                 )
-             }
-         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    dir('Backend') {
+                        withSonarQubeEnv('SonarQube Scanner') {
+                            sh '''
+                                ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                                -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                                -Dsonar.sources=src \
+                                -Dsonar.java.binaries=target/classes \
+                                -Dsonar.host.url=${SONARQUBE_URL} \
+                                -Dsonar.login=${SONAR_TOKEN}
+                            '''
+                        }
+                    }
+                }
+            }
+        }
 
+        stage('Publish JaCoCo Report') {
+            steps {
+                // Use the Coverage Plugin to publish the JaCoCo report
+                publishCoverage(
+                    adapters: [jacocoAdapter('**/target/site/jacoco/jacoco.xml')],
+                    sourceDirectories: ['Backend/src/main/java'],
+                    failBuildIfCoverageDecreased: true
+                )
+            }
+        }
 
         stage('Docker Build') {
             steps {
                 script {
-                    // Build Docker image using the Dockerfile
                     dir('Backend') {
                         sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest ."
                     }
@@ -98,10 +92,9 @@ pipeline {
         stage('Docker Push') {
             steps {
                 script {
-                    // Use Docker Hub credentials
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
-                       sh 'docker push aichanciri/devopsback'
+                        sh 'docker push aichanciri/devopsback'
                     }
                 }
             }
@@ -110,11 +103,9 @@ pipeline {
 
     post {
         always {
-            // Clean up the MySQL container after the build
             sh 'docker rm -f mysql-test || true'
         }
         success {
-            // Archive and display test results
             junit 'Backend/target/surefire-reports/*.xml'
             echo 'Build and tests succeeded!'
         }
