@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
-	
 	@Query("SELECT i FROM Invoice i where i.supplier=:supplier and i.archived=false")
 	public List<Invoice> retrieveInvoicesBySupplier(@Param("supplier") Supplier supplier);
 
@@ -24,5 +23,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 	@Modifying
 	@Query("update Invoice i set i.archived=true where i.idInvoice=?1")
 	void updateInvoice(Long id);
+
+
 	
 }
