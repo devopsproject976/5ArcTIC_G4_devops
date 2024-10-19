@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    parameters {
+            string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
+        }
 
     environment {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
@@ -7,9 +10,7 @@ pipeline {
         DB_PASSWORD = '' // Update with your actual password
         DOCKER_REGISTRY = 'aichanciri'
         DOCKER_IMAGE = 'devopsback'
-        SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
-        SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
-        SONAR_TOKEN = credentials('SonarQube_Token') // Make sure the ID matches your Jenkins credential
+        SONARQUBE_CREDENTIALS = 'SonarQube_Token' // Make sure the ID matches your Jenkins credential
     }
 
 
@@ -58,12 +59,7 @@ pipeline {
                  script {
                      dir('Backend') {
                          withSonarQubeEnv('SonarQube Scanner') { // Ensure 'SonarQube' matches your configured server in Jenkins
-                             sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                                 "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
-                                 "-Dsonar.sources=src " +
-                                 "-Dsonar.java.binaries=target/classes " +
-                                 "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
-                                 "-Dsonar.login=${env.SONAR_TOKEN}" // Use the correct token
+                              sh 'mvn sonar:sonar'
                          }
                      }
                  }
