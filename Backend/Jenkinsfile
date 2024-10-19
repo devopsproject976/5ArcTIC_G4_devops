@@ -9,7 +9,7 @@ pipeline {
         DOCKER_PASSWORD = credentials('devops-pipeline') // Use credentials from Jenkins
         IMAGE_NAME = 'nourbkh/devops-backend' // Docker Hub repository name
         IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devops' // Tag for the image
-        SONAR_SCANNER_HOME = tool 'SonarQube' // Sonar Scanner tool configured in Jenkins
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
         SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
     }
 
