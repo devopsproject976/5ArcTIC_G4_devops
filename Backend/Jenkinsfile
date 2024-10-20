@@ -85,6 +85,8 @@ pipeline {
             }
         }
 
+
+    
         stage('Build Docker Image') {
             steps {
                 script {
@@ -108,16 +110,10 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus') {
-            steps {
-                dir('Backend') {
-                    script {
-                        // Deploy artifacts to Nexus using Maven
-                        sh 'mvn deploy -DaltDeploymentRepository=${MAVEN_REPO_ID}::default::${NEXUS_URL} -DskipTests'
-                    }
-                }
-            }
-        }
+    
+
+
+        
     }
 
     post {
