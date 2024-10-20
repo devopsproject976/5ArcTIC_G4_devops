@@ -87,7 +87,7 @@ pipeline {
                         -Dversion=1.0.0 \
                         -Dpackaging=jar \
                         -Dfile=Backend/target/DevOps_Project-1.0.jar \
-                        -DrepositoryId=mymaven-repo \
+                        -DrepositoryId=nexus \
                         -Durl=${NEXUS_URL} \
                         -Dusername=${nexusCredentials.username} \
                         -Dpassword=${nexusCredentials.password}
