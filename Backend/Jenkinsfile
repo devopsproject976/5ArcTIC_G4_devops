@@ -86,32 +86,53 @@ pipeline {
                     steps {
                         dir('Backend') {
                             script {
-                                def pom = readMavenPom file: "pom.xml"
-                                def filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
-                                def artifactPath = filesByGlob[0]?.path
+                                // Define artifact details based on the known pom.xml values
+                                def groupId = "tn.esprit"
+                                def artifactId = "DevOps_Project"
+                                def version = "1.0"
+                                def packaging = "jar"  // Based on your project packaging
+                                def artifactPath = "target/DevOps_Project-1.0.jar"
+                                def pomFile = "pom.xml"
 
-                                if (artifactPath && fileExists(artifactPath)) {
-                                    echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
+                                // Check if the artifact exists
+                                if (fileExists(artifactPath)) {
+                                    echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
+
+                                    // Upload artifact and POM to Nexus
                                     nexusArtifactUploader(
                                         nexusVersion: NEXUS_VERSION,
                                         protocol: NEXUS_PROTOCOL,
                                         nexusUrl: params.NEXUS_URL,
-                                        groupId: pom.groupId,
-                                        version: pom.version,
+                                        groupId: groupId,
+                                        artifactId: artifactId,
+                                        version: version,
                                         repository: params.NEXUS_REPOSITORY,
                                         credentialsId: 'nexus-credentials',
                                         artifacts: [
-                                            [artifactId: pom.artifactId, classifier: '', file: artifactPath, type: pom.packaging],
-                                            [artifactId: pom.artifactId, classifier: '', file: "pom.xml", type: "pom"]
+                                            [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
+                                            [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
                                         ]
                                     )
                                 } else {
-                                    error "*** File could not be found or does not exist."
+                                    error "*** File could not be found or does not exist at ${artifactPath}."
                                 }
                             }
                         }
                     }
                 }
+
+                stage('Docker Build') {
+                    steps {
+                        script {
+                            dir('Backend') {
+                                sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest ."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
                 stage('Docker Build') {
                     steps {
