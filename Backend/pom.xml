@@ -124,10 +124,13 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>mymaven-repo</id>
-            <url>http://localhost:8081/repository/mymaven-repo/</url>
+            <id>nexus</id>
+            <url>http://localhost:8081/repository/maven-releases/</url>
         </repository>
-
+        <snapshotRepository>
+            <id>nexus</id>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
 
 
