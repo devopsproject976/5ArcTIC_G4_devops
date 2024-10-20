@@ -12,7 +12,7 @@ pipeline {
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
         SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
         SONAR_TOKEN = credentials('sonarqube-token') // Make sure the ID matches your Jenkins credential
-        NEXUS_URL = 'http://localhost:8081/#browse/browse:my-maven-repo/' // Nexus repository URL
+        NEXUS_URL = 'http://localhost:8081/repository/my-maven-repo/' // Nexus repository URL
         NEXUS_CREDENTIALS = credentials('nexus-credentials') // Credentials for Nexus repo in Jenkins
         MAVEN_REPO_ID = 'nexus' // Nexus repository ID in Maven settings.xml
     }
