@@ -21,6 +21,15 @@ pipeline {
             }
         }
 
+        stage('Deploy to Nexus') { // Nouvelle étape de déploiement
+            steps {
+                dir('Backend') {
+                    echo 'Deploying to Nexus...'
+                    sh 'mvn deploy -DskipTests'
+                }
+            }
+        }
+
         stage('Find JAR Version') {
             steps {
                 dir('Backend') {
@@ -64,4 +73,3 @@ pipeline {
         }
     }
 }
-
