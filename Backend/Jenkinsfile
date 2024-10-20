@@ -86,33 +86,31 @@ pipeline {
         }
 
         stage('Deploy to Nexus') {
-            steps {
-                script {
-                    // Use the credentials object directly
-                    def nexusCredentials = NEXUS_CREDENTIALS
-                    def nexusUsername = nexusCredentials.getUserName()
-                    def nexusPassword = nexusCredentials.getPassword()
-
-                    sh """
-                    mvn deploy:deploy-file \
-                        -DgroupId=tn.esprit \
-                        -DartifactId=DevOps_Project \
-                        -Dversion=1.0 \
-                        -Dpackaging=jar \
-                        -Dfile=Backend/target/DevOps_Project-1.0.jar \
-                        -DrepositoryId=${MAVEN_REPO_ID} \
-                        -Durl=${NEXUS_URL} \
-                        -Dusername=${nexusUsername} \
-                        -Dpassword=${nexusPassword}
-                    """
-                }
+    steps {
+        script {
+            // Use the withCredentials block to retrieve the username and password
+            withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                sh """
+                mvn deploy:deploy-file \
+                    -DgroupId=tn.esprit \
+                    -DartifactId=DevOps_Project \
+                    -Dversion=1.0 \
+                    -Dpackaging=jar \
+                    -Dfile=Backend/target/DevOps_Project-1.0.jar \
+                    -DrepositoryId=${MAVEN_REPO_ID} \
+                    -Durl=${NEXUS_URL} \
+                    -Dusername=${NEXUS_USERNAME} \
+                    -Dpassword=${NEXUS_PASSWORD}
+                """
             }
         }
+    }
+}
 
 
 
     
-        stage('Build Docker Image') {
+        /*stage('Build Docker Image') {
             steps {
                 script {
                     // Change directory to Backend
@@ -133,7 +131,7 @@ pipeline {
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
-        }
+        }*/
 
    
 
