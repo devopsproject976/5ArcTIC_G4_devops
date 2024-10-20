@@ -1,26 +1,12 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
-        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
-        string(name: 'MYSQL_VERSION', defaultValue: '5.7', description: 'MySQL Docker Image Version')
-        string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
-    }
-
-    environment {
-        NEXUS_VERSION = "nexus3"
-        NEXUS_PROTOCOL = "http"
-        NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS" // Jenkins credentials ID for Nexus
-        SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
-    }
-
     stages {
         stage('Start MySQL Container') {
             steps {
                 script {
-                    sh "docker rm -f mysql-test || true"
-                    sh "docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:${MYSQL_VERSION}"
+                    sh 'docker rm -f mysql-test || true'
+                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
                 }
             }
         }
@@ -30,7 +16,7 @@ pipeline {
             steps {
                 dir('Backend') {
                     echo 'Building Spring Boot application...'
-                    sh "mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=admin -Dsonar.password=hamma1234 -Dsonar.host.url=${SONARQUBE_URL}"
+                    sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=admin -Dsonar.password=hamma1234'
                 }
             }
         }
@@ -40,8 +26,8 @@ pipeline {
                 dir('Backend') {
                     echo 'Deploying to Nexus...'
                     script {
-                        withCredentials([usernamePassword(credentialsId: "${NEXUS_CREDENTIAL_ID}", usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
-                            sh "mvn deploy -DskipTests -DaltDeploymentRepository=nexus-releases::default::${NEXUS_PROTOCOL}://${NEXUS_USER}:${NEXUS_PASSWORD}@${NEXUS_URL}/repository/${NEXUS_REPOSITORY}/"
+                        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
+                            sh "mvn deploy -DskipTests -DaltDeploymentRepository=nexus-releases::default::http://${NEXUS_USER}:${NEXUS_PASSWORD}@192.168.157.135:8081/repository/maven-releases/"
                         }
                     }
                 }
@@ -66,8 +52,6 @@ pipeline {
             }
         }
 
-        // Commented out stage for pushing to Docker Hub
-        /*
         stage('Push Spring Docker Image to Docker Hub') {
             steps {
                 echo 'Pushing Spring Boot Docker image to Docker Hub...'
@@ -79,7 +63,6 @@ pipeline {
                 }
             }
         }
-        */
     }
 
     post {
@@ -93,5 +76,4 @@ pipeline {
             echo 'Build or Docker push failed.'
         }
     }
-    //test
 }
