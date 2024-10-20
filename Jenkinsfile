@@ -29,41 +29,42 @@ pipeline {
             }
         }
 
-        stage('Publish to Nexus') {
-            steps {
-                dir('Backend') {
-                    script {
-                        // Hardcoded values for groupId, artifactId, packaging, and version
-                        def groupId = 'tn.esprit'
-                        def artifactId = 'DevOps_Project'
-                        def version = '1.0'
-                        def packaging = 'jar'
-                        def artifactPath = "target/${artifactId}-${version}.${packaging}"
+     stage('Publish to Nexus') {
+    steps {
+        dir('Backend') {
+            script {
+                // Hardcoded values for groupId, artifactId, packaging, and version
+                def groupId = 'tn.esprit'
+                def artifactId = 'DevOps_Project'
+                def version = "1.0-${env.BUILD_NUMBER}" // Using build number for versioning
+                def packaging = 'jar'
+                def artifactPath = "target/${artifactId}-${version}.${packaging}"
 
-                        if (fileExists(artifactPath)) {
-                            echo "* File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
+                if (fileExists(artifactPath)) {
+                    echo "* File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
 
-                            // Upload the artifact to Nexus
-                            nexusArtifactUploader(
-                                nexusVersion: NEXUS_VERSION,
-                                protocol: NEXUS_PROTOCOL,
-                                nexusUrl: params.NEXUS_URL,
-                                groupId: groupId,
-                                version: version,
-                                repository: params.NEXUS_REPOSITORY,
-                                credentialsId: NEXUS_CREDENTIAL_ID,
-                                artifacts: [
-                                    [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
-                                    [artifactId: artifactId, classifier: '', file: "pom.xml", type: "pom"]
-                                ]
-                            )
-                        } else {
-                            error "* File could not be found or does not exist: ${artifactPath}"
-                        }
-                    }
+                    // Upload the artifact to Nexus
+                    nexusArtifactUploader(
+                        nexusVersion: NEXUS_VERSION,
+                        protocol: NEXUS_PROTOCOL,
+                        nexusUrl: params.NEXUS_URL,
+                        groupId: groupId,
+                        version: version,
+                        repository: params.NEXUS_REPOSITORY,
+                        credentialsId: NEXUS_CREDENTIAL_ID,
+                        artifacts: [
+                            [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
+                            [artifactId: artifactId, classifier: '', file: "pom.xml", type: "pom"]
+                        ]
+                    )
+                } else {
+                    error "* File could not be found or does not exist: ${artifactPath}"
                 }
             }
         }
+    }
+}
+
 
         stage('Build Spring Docker Image') {
             steps {
