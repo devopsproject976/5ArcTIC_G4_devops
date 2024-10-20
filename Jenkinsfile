@@ -10,7 +10,7 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS" // Jenkins credentials ID for Nexus
-        SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
+       // SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
     }
     stages {
         stage('Start MySQL Container') {
