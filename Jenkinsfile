@@ -21,14 +21,15 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus') { // Nouvelle étape de déploiement
-            steps {
-                dir('Backend') {
-                    echo 'Deploying to Nexus...'
-                    sh 'mvn deploy -DskipTests'
-                }
-            }
+        stage('Deploy to Nexus') {
+    steps {
+        dir('Backend') {
+            echo 'Deploying to Nexus...'
+            sh 'mvn deploy -DskipTests -DaltDeploymentRepository=nexus-releases::default::http://192.168.157.135:8081/repository/maven-releases/'
         }
+    }
+}
+
 
         stage('Find JAR Version') {
             steps {
