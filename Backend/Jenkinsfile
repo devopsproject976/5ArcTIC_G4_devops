@@ -89,6 +89,7 @@ pipeline {
             steps {
                 dir('Backend') {
                     script {
+                        // Define artifact details
                         def groupId = "tn.esprit"
                         def artifactId = "DevOps_Project"
                         def version = "1.0"
@@ -96,20 +97,34 @@ pipeline {
                         def artifactPath = "target/DevOps_Project-1.0.jar"
                         def pomFile = "pom.xml"
 
+                        // Check if the artifact exists
                         if (fileExists(artifactPath)) {
-                            echo "* File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
+                            echo "* Uploading artifact: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
+
+                            // Upload artifact to Nexus
                             nexusArtifactUploader(
                                 nexusVersion: NEXUS_VERSION,
                                 protocol: NEXUS_PROTOCOL,
                                 nexusUrl: params.NEXUS_URL,
-                                groupId: groupId,
-                                artifactId: artifactId,
-                                version: version,
                                 repository: params.NEXUS_REPOSITORY,
                                 credentialsId: 'nexus-credentials',
                                 artifacts: [
-                                    [artifactId: artifactId, classifier: null, file: artifactPath, type: packaging],
-                                    [artifactId: artifactId, classifier: null, file: pomFile, type: 'pom']
+                                    [
+                                        artifactId: artifactId,
+                                        classifier: '',
+                                        file: artifactPath,
+                                        type: packaging,
+                                        groupId: groupId,
+                                        version: version
+                                    ],
+                                    [
+                                        artifactId: artifactId,
+                                        classifier: '',
+                                        file: pomFile,
+                                        type: 'pom',
+                                        groupId: groupId,
+                                        version: version
+                                    ]
                                 ]
                             )
                         } else {
