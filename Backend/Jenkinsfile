@@ -99,9 +99,9 @@ pipeline {
 
                         // Check if the artifact exists
                         if (fileExists(artifactPath)) {
-                            echo "* Uploading artifact: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
+                            echo "* Uploading artifact: ${artifactPath}, group: ${groupId}, artifact: ${artifactId}, version: ${version}"
 
-                            // Upload artifact to Nexus
+                            // Corrected Upload to Nexus
                             nexusArtifactUploader(
                                 nexusVersion: NEXUS_VERSION,
                                 protocol: NEXUS_PROTOCOL,
@@ -110,19 +110,17 @@ pipeline {
                                 credentialsId: 'nexus-credentials',
                                 artifacts: [
                                     [
-                                        artifactId: artifactId,
-                                        classifier: '',
                                         file: artifactPath,
                                         type: packaging,
                                         groupId: groupId,
+                                        artifactId: artifactId,
                                         version: version
                                     ],
                                     [
-                                        artifactId: artifactId,
-                                        classifier: '',
                                         file: pomFile,
                                         type: 'pom',
                                         groupId: groupId,
+                                        artifactId: artifactId,
                                         version: version
                                     ]
                                 ]
