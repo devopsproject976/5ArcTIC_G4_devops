@@ -48,38 +48,35 @@ pipeline {
                 }
             }
         }
-        stage('JaCoCo Report') {
-                            steps {
-                                dir('Backend') {
-                                    // Generate the JaCoCo report
-                                    sh 'mvn jacoco:report'
-                                }
-                            }
-                        }
 
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    dir('Backend') {
-                        withSonarQubeEnv('SonarQube Scanner') {
-                            sh '''
-                                ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                                -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                                -Dsonar.sources=src \
-                                -Dsonar.java.binaries=target/classes \
-                                -Dsonar.host.url=${SONARQUBE_URL} \
-                                -Dsonar.login=${SONAR_TOKEN}
-                                -Dsonar.jacoco.reportPaths=target/jacoco.exec
-                            '''
+
+
+        stage('JaCoCo Report') {
+                    steps {
+                        dir('Backend') {
+                            // Generate the JaCoCo report
+                            sh 'mvn jacoco:report'
                         }
                     }
                 }
-            }
-        }
 
-
-
-
+                stage('SonarQube Analysis') {
+                    steps {
+                        script {
+                            dir('Backend') {
+                                withSonarQubeEnv('SonarQube Scanner') { // Ensure 'SonarQube' matches your configured server in Jenkins
+                                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                        "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
+                                        "-Dsonar.sources=src " +
+                                        "-Dsonar.java.binaries=target/classes " +
+                                        "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
+                                        "-Dsonar.login=${env.SONAR_TOKEN} " +
+                                        "-Dsonar.jacoco.reportPaths=target/jacoco.exec" // Path to the JaCoCo execution data
+                                }
+                            }
+                        }
+                    }
+                }
 
         stage('Docker Build') {
             steps {
