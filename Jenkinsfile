@@ -1,6 +1,17 @@
 pipeline {
     agent any
-
+    parameters {
+        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
+        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
+        //string(name: 'MYSQL_VERSION', defaultValue: '5.7', description: 'MySQL Docker Image Version')
+       // string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
+    }
+    environment {
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
+        NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS" // Jenkins credentials ID for Nexus
+        SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
+    }
     stages {
         stage('Start MySQL Container') {
             steps {
@@ -21,18 +32,39 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus') {
-            steps {
-                dir('Backend') {
-                    echo 'Deploying to Nexus...'
-                    script {
-                        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
-                            sh "mvn deploy -DskipTests -DaltDeploymentRepository=nexus-releases::default::http://${NEXUS_USER}:${NEXUS_PASSWORD}@192.168.157.135:8081/repository/maven-releases/"
+         stage('Publish to Nexus and Build Docker Image') {
+            parallel {
+                stage('Publish to Nexus') {
+                    steps {
+                        dir('Backend') {
+                            script {
+                                pom = readMavenPom file: "pom.xml"
+                                filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
+                                artifactPath = filesByGlob[0]?.path
+
+                                if (artifactPath && fileExists(artifactPath)) {
+                                    echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
+                                    nexusArtifactUploader(
+                                        nexusVersion: NEXUS_VERSION,
+                                        protocol: NEXUS_PROTOCOL,
+                                        nexusUrl: params.NEXUS_URL,
+                                        groupId: pom.groupId,
+                                        version: pom.version,
+                                        repository: params.NEXUS_REPOSITORY,
+                                        credentialsId: NEXUS_CREDENTIAL_ID,
+                                        artifacts: [
+                                            [artifactId: pom.artifactId, classifier: '', file: artifactPath, type: pom.packaging],
+                                            [artifactId: pom.artifactId, classifier: '', file: "pom.xml", type: "pom"]
+                                        ]
+                                    )
+                                } else {
+                                    error "*** File could not be found or does not exist."
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
+
 
         stage('Find JAR Version') {
             steps {
