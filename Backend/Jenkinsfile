@@ -128,7 +128,7 @@ pipeline {
                 }
 
                 // Uncomment if Docker image building and pushing are needed
-               /* stage('Build Docker Image') {
+                stage('Build Docker Image') {
                     steps {
                         script {
                             dir('Backend') {
@@ -148,7 +148,7 @@ pipeline {
                 }
             }
         }
-    }*/
+
 
     post {
         always {
