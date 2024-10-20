@@ -86,46 +86,45 @@ pipeline {
             }
         }
 
-        stage('Publish to Nexus and Build Docker Image') {
-            parallel {
-                stage('Publish to Nexus') {
-                    steps {
-                        dir('Backend') {
-                            script {
-                                // Define artifact details based on the known pom.xml values
-                                def groupId = "tn.esprit"
-                                def artifactId = "DevOps_Project"
-                                def version = "1.0"
-                                def packaging = "jar"  // Based on your project packaging
-                                def artifactPath = "target/DevOps_Project-1.0.jar"
-                                def pomFile = "pom.xml"
+        stage('Publish to Nexus') {
+            steps {
+                dir('Backend') {
+                    script {
+                        // Define artifact details based on the known pom.xml values
+                        def groupId = "tn.esprit"
+                        def artifactId = "DevOps_Project"
+                        def version = "1.0"
+                        def packaging = "jar"  // Based on your project packaging
+                        def artifactPath = "target/DevOps_Project-1.0.jar"
+                        def pomFile = "pom.xml"
 
-                                // Check if the artifact exists
-                                if (fileExists(artifactPath)) {
-                                    echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
+                        // Check if the artifact exists
+                        if (fileExists(artifactPath)) {
+                            echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
 
-                                    // Upload artifact and POM to Nexus
-                                    nexusArtifactUploader(
-                                        nexusVersion: NEXUS_VERSION,
-                                        protocol: NEXUS_PROTOCOL,
-                                        nexusUrl: params.NEXUS_URL,
-                                        groupId: groupId,
-                                        artifactId: artifactId,
-                                        version: version,
-                                        repository: params.NEXUS_REPOSITORY,
-                                        credentialsId: 'nexus-credentials',
-                                        artifacts: [
-                                            [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
-                                            [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
-                                        ]
-                                    )
-                                } else {
-                                    error "*** File could not be found or does not exist at ${artifactPath}."
-                                }
-                            }
+                            // Upload artifact and POM to Nexus
+                            nexusArtifactUploader(
+                                nexusVersion: NEXUS_VERSION,
+                                protocol: NEXUS_PROTOCOL,
+                                nexusUrl: params.NEXUS_URL,
+                                groupId: groupId,
+                                artifactId: artifactId,
+                                version: version,
+                                repository: params.NEXUS_REPOSITORY,
+                                credentialsId: 'nexus-credentials',
+                                artifacts: [
+                                    [artifactId: artifactId, classifier: null, file: artifactPath, type: packaging],
+                                    [artifactId: artifactId, classifier: null, file: pomFile, type: 'pom']
+                                ]
+                            )
+                        } else {
+                            error "*** File could not be found or does not exist at ${artifactPath}."
                         }
                     }
                 }
+            }
+        }
+
 
                 // Uncomment if Docker image building and pushing are needed
                 stage('Build Docker Image') {
