@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>tn.esprit</groupId>
-    <artifactId>5ArcTIC3-G4-devops</artifactId>
+    <artifactId>5ArcTIC3-G4-devopss</artifactId>
     <version>1.0</version>
     <name>DevOps_Project</name>
     <description>DevOps_Project</description>
