@@ -78,6 +78,8 @@ pipeline {
         stage('Deploy to Nexus') {
             steps {
                 script {
+                    // Assume credentials is a single entry giving both username and password
+                    def nexusCredentials = credentials('nexus-credentials')
                     sh """
                     mvn deploy:deploy-file \
                         -DgroupId=com.example \
@@ -87,12 +89,13 @@ pipeline {
                         -Dfile=Backend/target/DevOps_Project-1.0.jar \
                         -DrepositoryId=mymaven-repo \
                         -Durl=${NEXUS_URL} \
-                        -Dusername=${NEXUS_CREDENTIALS_USR} \
-                        -Dpassword=${NEXUS_CREDENTIALS_PSW}
+                        -Dusername=${nexusCredentials.username} \
+                        -Dpassword=${nexusCredentials.password}
                     """
                 }
             }
         }
+
 
         stage('Build Docker Image') {
             steps {
