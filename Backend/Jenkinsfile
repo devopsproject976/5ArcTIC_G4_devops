@@ -12,7 +12,7 @@ pipeline {
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
         SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
         SONAR_TOKEN = credentials('sonarqube-token') // Make sure the ID matches your Jenkins credential
-        NEXUS_URL = 'http://localhost:8081/repository/my-maven-repo/' // Correct Nexus repository URL
+        NEXUS_URL = 'http://localhost:8081/repository/my-maven-repo/' // Nexus repository URL
         NEXUS_CREDENTIALS = credentials('nexus-credentials') // Credentials for Nexus repo in Jenkins
         MAVEN_REPO_ID = 'nexus' // Nexus repository ID in Maven settings.xml
     }
@@ -20,25 +20,31 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                // Pull the code from the specified branch of your GitHub repository
                 git branch: 'nourbenkhairia_5Arctic3_G4',
                     url: 'https://github.com/devopsproject976/5ArcTIC_G4_devops.git',
-                    credentialsId: 'devops-pipeline'
+                    credentialsId: 'devops-pipeline' // Use the credentials ID you created
             }
         }
 
         stage('Start MySQL Container') {
             steps {
                 script {
-                    sh 'docker rm -f mysql-test || true' // Remove existing container if it exists
-                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7' // Start new MySQL container
+                    // Remove existing container if it exists
+                    sh 'docker rm -f mysql-test || true'
+
+                    // Start a new MySQL container
+                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
                 }
             }
         }
 
         stage('Build') {
             steps {
+                // Change directory to Backend to run Maven commands
                 dir('Backend') {
-                    sh 'mvn clean package' // Run Maven build
+                    // Run Maven clean and package commands
+                    sh 'mvn clean package'
                 }
             }
         }
@@ -46,7 +52,8 @@ pipeline {
         stage('Test') {
             steps {
                 dir('Backend') {
-                    sh 'mvn test' // Run tests with Maven
+                    // Run tests with Maven (JUnit and Mockito included)
+                    sh 'mvn test'
                 }
             }
         }
@@ -54,53 +61,40 @@ pipeline {
         stage('JaCoCo Report') {
             steps {
                 dir('Backend') {
-                    sh 'mvn jacoco:report' // Generate the JaCoCo report
+                    // Generate the JaCoCo report
+                    sh 'mvn jacoco:report'
                 }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                dir('Backend') {
-                    withSonarQubeEnv('SonarQube') {
-                        sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                            "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
-                            "-Dsonar.sources=src " +
-                            "-Dsonar.java.binaries=target/classes " +
-                            "-Dsonar.host.url=http://localhost:9000 " +
-                            "-Dsonar.login=${env.SONAR_TOKEN} " +
-                            "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
+                script {
+                    dir('Backend') {
+                        withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' matches your configured server in Jenkins
+                            sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
+                                "-Dsonar.sources=src " +
+                                "-Dsonar.java.binaries=target/classes " +
+                                "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
+                                "-Dsonar.login=${env.SONAR_TOKEN} " +
+                                "-Dsonar.jacoco.reportPaths=target/jacoco.exec" // Path to the JaCoCo execution data
+                        }
                     }
                 }
             }
         }
 
-        stage('Deploy to Nexus') {
-            steps {
-                script {
-                    // Assume credentials is a single entry giving both username and password
-                    def nexusCredentials = credentials('nexus-credentials')
-                    sh """
-                    mvn deploy:deploy-file \
-                        -DgroupId=com.example \
-                        -DartifactId=my-artifact \
-                        -Dversion=1.0.0 \
-                        -Dpackaging=jar \
-                        -Dfile=Backend/target/DevOps_Project-1.0.jar \
-                        -DrepositoryId=nexus \
-                        -Durl=${NEXUS_URL} \
-                        -Dusername=${nexusCredentials.username} \
-                        -Dpassword=${nexusCredentials.password}
-                    """
-                }
-            }
-        }
 
 
         stage('Build Docker Image') {
             steps {
-                dir('Backend') {
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ." // Build Docker image
+                script {
+                    // Change directory to Backend
+                    dir('Backend') {
+                        // Build the Docker image using the specified tag format
+                        sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                    }
                 }
             }
         }
@@ -108,21 +102,48 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh "echo '223JFT1730' | docker login -u 'nourbkh' --password-stdin" // Docker login
-                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}" // Push Docker image to Docker Hub
+                    // Login to Docker Hub
+                    sh "echo '223JFT1730' | docker login -u 'nourbkh' --password-stdin"
+                    // Push the Docker image to Docker Hub
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
+
+        stage('Deploy to Nexus') {
+            steps {
+                script {
+                    def nexusCredentials = "${NEXUS_CREDENTIALS}" // Store the credentials
+                    sh """
+                    mvn deploy:deploy-file \
+                        -DgroupId=tn.esprit \
+                        -DartifactId=DevOps_Project \
+                        -Dversion=1.0 \
+                        -Dpackaging=jar \
+                        -Dfile=Backend/target/DevOps_Project-1.0.jar \
+                        -DrepositoryId=${MAVEN_REPO_ID} \
+                        -Durl=${NEXUS_URL} \
+                        -Dusername=${nexusCredentials_USR} \
+                        -Dpassword=${nexusCredentials_PSW}
+                    """
+                }
+            }
+        }
+
+
+
     }
 
     post {
         always {
             script {
-                sh 'docker rm -f mysql-test || true' // Cleanup MySQL container
+                // Cleanup - Stop and remove MySQL container
+                sh 'docker rm -f mysql-test || true'
             }
         }
         success {
-            junit 'Backend/target/surefire-reports/*.xml' // Archive and display test results
+            // Archive and display test results
+            junit 'Backend/target/surefire-reports/*.xml'
             echo 'Build and tests succeeded!'
         }
         failure {
