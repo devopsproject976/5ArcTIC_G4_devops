@@ -9,7 +9,7 @@ pipeline {
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
-        NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS" // Jenkins credentials ID for Nexus
+        NEXUS_CREDENTIAL_ID = "nexus-credentials" // Jenkins credentials ID for Nexus
         // SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
     }
     stages {
@@ -38,9 +38,9 @@ pipeline {
                     steps {
                         dir('Backend') {
                             script {
-                                def pom = readMavenPom file: "pom.xml"
-                                def filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
-                                def artifactPath = filesByGlob[0]?.path
+                                 pom = readMavenPom file: "pom.xml"
+                                 filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
+                                 artifactPath = filesByGlob[0]?.path
 
                                 if (artifactPath && fileExists(artifactPath)) {
                                     echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
