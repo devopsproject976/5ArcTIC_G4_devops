@@ -3,14 +3,11 @@ pipeline {
     parameters {
         string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
-        // string(name: 'MYSQL_VERSION', defaultValue: '5.7', description: 'MySQL Docker Image Version')
-        // string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
     }
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "nexus-credentials" // Jenkins credentials ID for Nexus
-        // SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
     }
     stages {
         stage('Start MySQL Container') {
@@ -32,7 +29,7 @@ pipeline {
             }
         }
 
-stage('Publish to Nexus') {
+        stage('Publish to Nexus') {
             steps {
                 dir('Backend') {
                     script {
@@ -68,12 +65,10 @@ stage('Publish to Nexus') {
             }
         }
 
-                stage('Build Spring Docker Image') {
-                    steps {
-                        echo 'Building Docker image for Spring Boot...'
-                        sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
-                    }
-                }
+        stage('Build Spring Docker Image') {
+            steps {
+                echo 'Building Docker image for Spring Boot...'
+                sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
             }
         }
 
@@ -112,5 +107,4 @@ stage('Publish to Nexus') {
             echo 'Build or Docker push failed.'
         }
     }
-    //test11111
 }
