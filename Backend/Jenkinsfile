@@ -18,7 +18,6 @@ pipeline {
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
         SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
         SONAR_TOKEN = credentials('sonarqube-token') // Ensure the ID matches your Jenkins credential
-        NEXUS_URL = 'http://localhost:8081/repository/maven-releases/'
         NEXUS_CREDENTIALS = credentials('nexus-credentials')
         MAVEN_REPO_ID = 'nexus'
         NEXUS_VERSION = "nexus3"
@@ -90,12 +89,12 @@ pipeline {
                 dir('Backend') {
                     script {
                         // Define artifact details based on the known pom.xml values
-                        def groupId = "tn.esprit"
-                        def artifactId = "DevOps_Project"
-                        def version = "1.0"
-                        def packaging = "jar"  // Based on your project packaging
-                        def artifactPath = "target/${artifactId}-${version}.${packaging}"
-                        def pomFile = "pom.xml"
+                                def groupId = "tn.esprit"
+                                def artifactId = "5ArcTIC3-G4-devops"
+                                def version = "1.0"
+                                def packaging = "jar"  // Based on your project packaging
+                                def artifactPath = "target/5ArcTIC3-G4-devops-1.0.jar"
+                                def pomFile = "pom.xml"
 
                         // Check if the artifact exists
                         if (fileExists(artifactPath)) {
