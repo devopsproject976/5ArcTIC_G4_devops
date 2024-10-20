@@ -21,7 +21,6 @@ pipeline {
             }
         }
 
-    stages {
         stage('Deploy to Nexus') {
             steps {
                 dir('Backend') {
@@ -34,8 +33,6 @@ pipeline {
                 }
             }
         }
-    }
-
 
         stage('Find JAR Version') {
             steps {
@@ -79,5 +76,5 @@ pipeline {
             echo 'Build or Docker push failed.'
         }
     }
-    //test
 }
+
