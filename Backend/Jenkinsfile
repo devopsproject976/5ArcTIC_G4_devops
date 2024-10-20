@@ -138,7 +138,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'devops-pipeline', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'devops-pipeline', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD'),
+                                     usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
                         sh """
                             echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin
                             docker push ${IMAGE_NAME}:${IMAGE_TAG}
@@ -147,6 +148,7 @@ pipeline {
                 }
             }
         }
+
 
 }
 
