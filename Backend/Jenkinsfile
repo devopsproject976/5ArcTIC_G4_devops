@@ -127,6 +127,7 @@ pipeline {
                     }
                 }
 
+                // Uncomment if Docker image building and pushing are needed
                 stage('Build Docker Image') {
                     steps {
                         script {
@@ -145,9 +146,9 @@ pipeline {
                         }
                     }
                 }
-            } // Closing bracket for parallel block
+            }
         }
-
+    }
 
     post {
         always {
@@ -163,4 +164,4 @@ pipeline {
             echo 'Build or test failed.'
         }
     }
-}
+} // Ensure this closing brace is present
