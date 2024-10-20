@@ -89,7 +89,7 @@ pipeline {
                         -DartifactId=my-artifact \
                         -Dversion=1.0.0 \
                         -Dpackaging=jar \
-                        -Dfile=target/my-artifact-1.0.0.jar \
+                        -Dfile=Backend/target/my-artifact-1.0.0.jar \
                         -DrepositoryId=mymaven-repo \
                         -Durl=${NEXUS_URL} \
                         -Dusername=${NEXUS_USER} \
@@ -98,6 +98,7 @@ pipeline {
                 }
             }
         }
+
 
 
         stage('Docker Build') {
