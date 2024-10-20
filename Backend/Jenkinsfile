@@ -133,19 +133,6 @@ pipeline {
             }
         }
 
-
-                stage('Docker Build') {
-                    steps {
-                        script {
-                            dir('Backend') {
-                                sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest ."
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Docker Push') {
             steps {
                 script {
