@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
-        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
-        string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
-    }
+            string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
+            string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
+            string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
+        }
 
     environment {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
@@ -89,49 +89,41 @@ pipeline {
             steps {
                 dir('Backend') {
                     script {
-                        // Define artifact details
+                        // Define artifact details based on the known pom.xml values
                         def groupId = "tn.esprit"
                         def artifactId = "DevOps_Project"
                         def version = "1.0"
-                        def packaging = "jar"
-                        def artifactPath = "target/DevOps_Project-1.0.jar"
+                        def packaging = "jar"  // Based on your project packaging
+                        def artifactPath = "target/${artifactId}-${version}.${packaging}"
                         def pomFile = "pom.xml"
 
                         // Check if the artifact exists
                         if (fileExists(artifactPath)) {
-                            echo "* Uploading artifact: ${artifactPath}, group: ${groupId}, artifact: ${artifactId}, version: ${version}"
+                            echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
 
-                            // Corrected Upload to Nexus
+                            // Upload artifact and POM to Nexus
                             nexusArtifactUploader(
                                 nexusVersion: NEXUS_VERSION,
                                 protocol: NEXUS_PROTOCOL,
                                 nexusUrl: params.NEXUS_URL,
+                                groupId: groupId,
+                                artifactId: artifactId,
+                                version: version,
                                 repository: params.NEXUS_REPOSITORY,
                                 credentialsId: 'nexus-credentials',
                                 artifacts: [
-                                    [
-                                        file: artifactPath,
-                                        type: packaging,
-                                        groupId: groupId,
-                                        artifactId: artifactId,
-                                        version: version
-                                    ],
-                                    [
-                                        file: pomFile,
-                                        type: 'pom',
-                                        groupId: groupId,
-                                        artifactId: artifactId,
-                                        version: version
-                                    ]
+                                    [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
+                                    [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
                                 ]
                             )
                         } else {
-                            error "* File could not be found or does not exist at ${artifactPath}."
+                            error "*** File could not be found or does not exist at ${artifactPath}."
                         }
                     }
                 }
             }
         }
+
 
 
         stage('Build Docker Image') {
