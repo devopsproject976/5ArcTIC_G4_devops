@@ -65,7 +65,7 @@ pipeline {
                     }
                 }
 
-                stage('SonarQube Analysis') {
+                 stage('SonarQube Analysis') {
                     steps {
                         script {
                             dir('Backend') {
@@ -82,7 +82,7 @@ pipeline {
                         }
                     }
                 }
-        stage('Publish to Nexus and Build Docker Image') {
+          stage('Publish to Nexus and Build Docker Image') {
                     parallel {
                         stage('Publish to Nexus') {
                             steps {
@@ -115,6 +115,7 @@ pipeline {
                             }
                         }
 
+                    }
 
 
         stage('Docker Build') {
