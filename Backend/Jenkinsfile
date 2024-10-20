@@ -17,8 +17,8 @@ pipeline {
         IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devops'
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
         SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
-        SONAR_TOKEN = credentials('sonarqube-token') // Make sure the ID matches your Jenkins credential
-        NEXUS_URL = 'http://localhost:8081/repository/maven-releases/' // Adjust URL
+        SONAR_TOKEN = credentials('sonarqube-token') // Ensure the ID matches your Jenkins credential
+        NEXUS_URL = 'http://localhost:8081/repository/maven-releases/'
         NEXUS_CREDENTIALS = credentials('nexus-credentials')
         MAVEN_REPO_ID = 'nexus'
         NEXUS_VERSION = "nexus3"
@@ -62,7 +62,6 @@ pipeline {
         stage('JaCoCo Report') {
             steps {
                 dir('Backend') {
-                    // Generate the JaCoCo report
                     sh 'mvn jacoco:report'
                 }
             }
@@ -72,14 +71,14 @@ pipeline {
             steps {
                 script {
                     dir('Backend') {
-                        withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' matches your configured server in Jenkins
+                        withSonarQubeEnv('SonarQube') {
                             sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
                                 "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
                                 "-Dsonar.sources=src " +
                                 "-Dsonar.java.binaries=target/classes " +
-                                "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
+                                "-Dsonar.host.url=${params.SONARQUBE_URL} " +
                                 "-Dsonar.login=${env.SONAR_TOKEN} " +
-                                "-Dsonar.jacoco.reportPaths=target/jacoco.exec" // Path to the JaCoCo execution data
+                                "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
                         }
                     }
                 }
@@ -90,19 +89,15 @@ pipeline {
             steps {
                 dir('Backend') {
                     script {
-                        // Define artifact details based on the known pom.xml values
                         def groupId = "tn.esprit"
                         def artifactId = "DevOps_Project"
                         def version = "1.0"
-                        def packaging = "jar"  // Based on your project packaging
+                        def packaging = "jar"
                         def artifactPath = "target/DevOps_Project-1.0.jar"
                         def pomFile = "pom.xml"
 
-                        // Check if the artifact exists
                         if (fileExists(artifactPath)) {
-                            echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
-
-                            // Upload artifact and POM to Nexus
+                            echo "* File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
                             nexusArtifactUploader(
                                 nexusVersion: NEXUS_VERSION,
                                 protocol: NEXUS_PROTOCOL,
@@ -118,32 +113,28 @@ pipeline {
                                 ]
                             )
                         } else {
-                            error "*** File could not be found or does not exist at ${artifactPath}."
+                            error "* File could not be found or does not exist at ${artifactPath}."
                         }
                     }
                 }
             }
         }
 
-
-                // Uncomment if Docker image building and pushing are needed
-                stage('Build Docker Image') {
-                    steps {
-                        script {
-                            dir('Backend') {
-                                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
-                            }
-                        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir('Backend') {
+                        sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                     }
                 }
+            }
+        }
 
-                stage('Push Docker Image') {
-                    steps {
-                        script {
-                            sh "echo '${DOCKER_PASSWORD}' | docker login -u '${DOCKER_USERNAME}' --password-stdin"
-                            sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
-                        }
-                    }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh "echo '${DOCKER_PASSWORD}' | docker login -u '${DOCKER_USERNAME}' --password-stdin"
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
@@ -163,4 +154,4 @@ pipeline {
             echo 'Build or test failed.'
         }
     }
-} // Ensure this closing brace is present
+}
