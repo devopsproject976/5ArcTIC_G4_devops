@@ -17,7 +17,7 @@ pipeline {
         SONAR_TOKEN = credentials('SonarQube_Token')
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
-        NEXUS_CREDENTIALS = credentials('nexus-credentials') // Use the same ID as created
+        NEXUS_CREDENTIALS = credentials('nexus-credentials')
     }
 
     stages {
@@ -54,75 +54,72 @@ pipeline {
             }
         }
 
-
-
         stage('JaCoCo Report') {
-                    steps {
-                        dir('Backend') {
-                            // Generate the JaCoCo report
-                            sh 'mvn jacoco:report'
-                        }
-                    }
+            steps {
+                dir('Backend') {
+                    sh 'mvn jacoco:report'
                 }
+            }
+        }
 
-                 stage('SonarQube Analysis') {
-                    steps {
-                        script {
-                            dir('Backend') {
-                                withSonarQubeEnv('SonarQube Scanner') { // Ensure 'SonarQube' matches your configured server in Jenkins
-                                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                                        "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
-                                        "-Dsonar.sources=src " +
-                                        "-Dsonar.java.binaries=target/classes " +
-                                        "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
-                                        "-Dsonar.login=${env.SONAR_TOKEN} " +
-                                        "-Dsonar.jacoco.reportPaths=target/jacoco.exec" // Path to the JaCoCo execution data
-                                }
-                            }
-                        }
-                    }
-                }
-          stage('Publish to Nexus and Build Docker Image') {
-                    parallel {
-                        stage('Publish to Nexus') {
-                            steps {
-                                dir('Backend') {
-                                    script {
-                                        pom = readMavenPom file: "pom.xml"
-                                        filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
-                                        artifactPath = filesByGlob[0]?.path
-
-                                        if (artifactPath && fileExists(artifactPath)) {
-                                            echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
-                                            nexusArtifactUploader(
-                                                nexusVersion: NEXUS_VERSION,
-                                                protocol: NEXUS_PROTOCOL,
-                                                nexusUrl: params.NEXUS_URL,
-                                                groupId: pom.groupId,
-                                                version: pom.version,
-                                                repository: params.NEXUS_REPOSITORY,
-                                                credentialsId: NEXUS_CREDENTIALS,
-                                                artifacts: [
-                                                    [artifactId: pom.artifactId, classifier: '', file: artifactPath, type: pom.packaging],
-                                                    [artifactId: pom.artifactId, classifier: '', file: "pom.xml", type: "pom"]
-                                                ]
-                                            )
-                                        } else {
-                                            error "*** File could not be found or does not exist."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-
-
-        stage('Docker Build') {
+        stage('SonarQube Analysis') {
             steps {
                 script {
                     dir('Backend') {
-                        sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest ."
+                        withSonarQubeEnv('SonarQube Scanner') {
+                            sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
+                                "-Dsonar.sources=src " +
+                                "-Dsonar.java.binaries=target/classes " +
+                                "-Dsonar.host.url=${params.SONARQUBE_URL} " +
+                                "-Dsonar.login=${env.SONAR_TOKEN} " +
+                                "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Publish to Nexus and Build Docker Image') {
+            parallel {
+                stage('Publish to Nexus') {
+                    steps {
+                        dir('Backend') {
+                            script {
+                                def pom = readMavenPom file: "pom.xml"
+                                def filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
+                                def artifactPath = filesByGlob[0]?.path
+
+                                if (artifactPath && fileExists(artifactPath)) {
+                                    echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
+                                    nexusArtifactUploader(
+                                        nexusVersion: NEXUS_VERSION,
+                                        protocol: NEXUS_PROTOCOL,
+                                        nexusUrl: params.NEXUS_URL,
+                                        groupId: pom.groupId,
+                                        version: pom.version,
+                                        repository: params.NEXUS_REPOSITORY,
+                                        credentialsId: 'nexus-credentials',
+                                        artifacts: [
+                                            [artifactId: pom.artifactId, classifier: '', file: artifactPath, type: pom.packaging],
+                                            [artifactId: pom.artifactId, classifier: '', file: "pom.xml", type: "pom"]
+                                        ]
+                                    )
+                                } else {
+                                    error "*** File could not be found or does not exist."
+                                }
+                            }
+                        }
+                    }
+                }
+
+                stage('Docker Build') {
+                    steps {
+                        script {
+                            dir('Backend') {
+                                sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest ."
+                            }
+                        }
                     }
                 }
             }
@@ -133,7 +130,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
-                        sh 'docker push aichanciri/devopsback'
+                        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
                     }
                 }
             }
