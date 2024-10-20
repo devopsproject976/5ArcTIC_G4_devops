@@ -3,14 +3,14 @@ pipeline {
     parameters {
         string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
-        //string(name: 'MYSQL_VERSION', defaultValue: '5.7', description: 'MySQL Docker Image Version')
-       // string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
+        // string(name: 'MYSQL_VERSION', defaultValue: '5.7', description: 'MySQL Docker Image Version')
+        // string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
     }
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS" // Jenkins credentials ID for Nexus
-       // SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
+        // SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
     }
     stages {
         stage('Start MySQL Container') {
@@ -21,7 +21,7 @@ pipeline {
                 }
             }
         }
-        
+
         // Backend stages
         stage('Build Spring Boot') {
             steps {
@@ -32,15 +32,15 @@ pipeline {
             }
         }
 
-         stage('Publish to Nexus and Build Docker Image') {
+        stage('Publish to Nexus and Build Docker Image') {
             parallel {
                 stage('Publish to Nexus') {
                     steps {
                         dir('Backend') {
                             script {
-                                pom = readMavenPom file: "pom.xml"
-                                filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
-                                artifactPath = filesByGlob[0]?.path
+                                def pom = readMavenPom file: "pom.xml"
+                                def filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
+                                def artifactPath = filesByGlob[0]?.path
 
                                 if (artifactPath && fileExists(artifactPath)) {
                                     echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
@@ -65,6 +65,14 @@ pipeline {
                     }
                 }
 
+                stage('Build Spring Docker Image') {
+                    steps {
+                        echo 'Building Docker image for Spring Boot...'
+                        sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
+                    }
+                }
+            }
+        }
 
         stage('Find JAR Version') {
             steps {
@@ -74,13 +82,6 @@ pipeline {
                     }
                     echo "Using JAR file: ${env.JAR_FILE}"
                 }
-            }
-        }
-
-        stage('Build Spring Docker Image') {
-            steps {
-                echo 'Building Docker image for Spring Boot...'
-                sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
             }
         }
 
@@ -108,5 +109,4 @@ pipeline {
             echo 'Build or Docker push failed.'
         }
     }
-             //test
 }
