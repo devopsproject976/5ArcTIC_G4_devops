@@ -85,29 +85,29 @@ pipeline {
             }
         }
 
-
         stage('Deploy to Nexus') {
-    steps {
-        script {
-            // Store the credentials in variables
-            def nexusUsername = nexusCredentials_USR
-            def nexusPassword = nexusCredentials_PSW
+            steps {
+                script {
+                    // Use the credentials object directly
+                    def nexusCredentials = NEXUS_CREDENTIALS
+                    def nexusUsername = nexusCredentials.getUserName()
+                    def nexusPassword = nexusCredentials.getPassword()
 
-            sh """
-            mvn deploy:deploy-file \
-                -DgroupId=tn.esprit \
-                -DartifactId=DevOps_Project \
-                -Dversion=1.0 \
-                -Dpackaging=jar \
-                -Dfile=Backend/target/DevOps_Project-1.0.jar \
-                -DrepositoryId=${MAVEN_REPO_ID} \
-                -Durl=${NEXUS_URL} \
-                -Dusername=${nexusUsername} \
-                -Dpassword=${nexusPassword}
-            """
+                    sh """
+                    mvn deploy:deploy-file \
+                        -DgroupId=tn.esprit \
+                        -DartifactId=DevOps_Project \
+                        -Dversion=1.0 \
+                        -Dpackaging=jar \
+                        -Dfile=Backend/target/DevOps_Project-1.0.jar \
+                        -DrepositoryId=${MAVEN_REPO_ID} \
+                        -Durl=${NEXUS_URL} \
+                        -Dusername=${nexusUsername} \
+                        -Dpassword=${nexusPassword}
+                    """
+                }
+            }
         }
-    }
-}
 
 
 
