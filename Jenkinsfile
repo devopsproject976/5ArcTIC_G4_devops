@@ -10,7 +10,7 @@ pipeline {
                 }
             }
         }
-
+        
         // Backend stages
         stage('Build Spring Boot') {
             steps {
