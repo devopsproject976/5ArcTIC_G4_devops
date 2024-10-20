@@ -95,11 +95,11 @@
     <distributionManagement>
         <repository>
             <id>nexus</id>
-            <url>http://localhost:8081/#admin/repository/repositories:maven-releases</url> <!-- Replace with your custom repo -->
+            <url>http://localhost:8081/repository/maven-releases/</url> <!-- Replace with your custom repo -->
         </repository>
         <snapshotRepository>
             <id>nexus</id>
-            <url>http://localhost:8081/#admin/repository/repositories:maven-snapshots</url> <!-- Adjust for snapshots if needed -->
+            <url>http://localhost:8081/repository/maven-snapshots/</url> <!-- Adjust for snapshots if needed -->
         </snapshotRepository>
     </distributionManagement>
 
