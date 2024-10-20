@@ -122,5 +122,13 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>mymaven-repo</id>
+            <url>http://localhost:8081/repository/mymaven-repo/</url>
+        </repository>
+
+    </distributionManagement>
+
 
 </project>
