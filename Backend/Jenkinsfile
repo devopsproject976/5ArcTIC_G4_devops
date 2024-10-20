@@ -13,7 +13,7 @@ pipeline {
         SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
         SONAR_TOKEN = credentials('sonarqube-token') // Make sure the ID matches your Jenkins credential
         NEXUS_URL = "http://localhost:8081/repository/mymaven-repo/"
-        NEXUS_CREDENTIALS = credentials('nexus-credentials') // Use the same ID as created
+        NEXUS_CREDENTIALS = credentials('nexus-credentials')
     }
 
     stages {
@@ -84,32 +84,29 @@ pipeline {
             }
         }
 
-
-
-      stage('Deploy to Nexus') {
-    steps {
-        script {
-            sh """
-            mvn deploy:deploy-file \
-                -DgroupId=com.example \
-                -DartifactId=my-artifact \
-                -Dversion=1.0.0 \
-                -Dpackaging=jar \
-                -Dfile=Backend/target/DevOps_Project-1.0.jar \
-                -DrepositoryId=mymaven-repo \
-                -Durl=${NEXUS_URL} \
-                -Dusername=${NEXUS_USER} \
-                -Dpassword=${NEXUS_PASS}
-            """
+        stage('Deploy to Nexus') {
+            steps {
+                script {
+                    sh """
+                    mvn deploy:deploy-file \
+                        -DgroupId=com.example \
+                        -DartifactId=my-artifact \
+                        -Dversion=1.0.0 \
+                        -Dpackaging=jar \
+                        -Dfile=Backend/target/DevOps_Project-1.0.jar \
+                        -DrepositoryId=mymaven-repo \
+                        -Durl=${NEXUS_URL} \
+                        -Dusername=${NEXUS_CREDENTIALS.username} \
+                        -Dpassword=${NEXUS_CREDENTIALS.password}
+                    """
+                }
+            }
         }
-    }
-}
 
 
 
-
-
-        
+      
+    
         stage('Build Docker Image') {
             steps {
                 script {
