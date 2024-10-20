@@ -85,29 +85,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus') {
-    steps {
-        script {
-            sh """
-            mvn deploy:deploy-file \
-                -DgroupId=com.example \
-                -DartifactId=my-artifact \
-                -Dversion=1.0.0 \
-                -Dpackaging=jar \
-                -Dfile=Backend/target/DevOps_Project-1.0.jar \
-                -DrepositoryId=mymaven-repo \
-                -Durl=${NEXUS_URL} \
-                -Dusername=${NEXUS_CREDENTIALS_USR} \
-                -Dpassword=${NEXUS_CREDENTIALS_PSW}
-            """
-        }
-    }
-}
 
-
-
-
-      
     
         stage('Build Docker Image') {
             steps {
