@@ -21,14 +21,20 @@ pipeline {
             }
         }
 
+    stages {
         stage('Deploy to Nexus') {
-    steps {
-        dir('Backend') {
-            echo 'Deploying to Nexus...'
-            sh 'mvn deploy -DskipTests -DaltDeploymentRepository=nexus-releases::default::http://192.168.157.135:8081/repository/maven-releases/'
+            steps {
+                dir('Backend') {
+                    echo 'Deploying to Nexus...'
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
+                            sh "mvn deploy -DskipTests -DaltDeploymentRepository=nexus-releases::default::http://${NEXUS_USER}:${NEXUS_PASSWORD}@192.168.157.135:8081/repository/maven-releases/"
+                        }
+                    }
+                }
+            }
         }
     }
-}
 
 
         stage('Find JAR Version') {
