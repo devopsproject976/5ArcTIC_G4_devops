@@ -48,6 +48,14 @@ pipeline {
                 }
             }
         }
+        stage('JaCoCo Report') {
+                            steps {
+                                dir('Backend') {
+                                    // Generate the JaCoCo report
+                                    sh 'mvn jacoco:report'
+                                }
+                            }
+                        }
 
         stage('SonarQube Analysis') {
             steps {
@@ -61,6 +69,7 @@ pipeline {
                                 -Dsonar.java.binaries=target/classes \
                                 -Dsonar.host.url=${SONARQUBE_URL} \
                                 -Dsonar.login=${SONAR_TOKEN}
+                                -Dsonar.jacoco.reportPaths=target/jacoco.exec
                             '''
                         }
                     }
@@ -68,19 +77,9 @@ pipeline {
             }
         }
 
-        stage('Publish JaCoCo Report') {
-            steps {
-                publishCoverage(
-                    adapters: [
-                        jacocoAdapter(path: '**/target/site/jacoco/jacoco.xml')
-                    ],
-                    sourceDirectories: [
-                        sourceCodeDirectory(path: 'Backend/src/main/java')
-                    ]
-                )
 
-            }
-        }
+
+
 
         stage('Docker Build') {
             steps {
