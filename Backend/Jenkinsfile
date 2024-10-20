@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    parameters {
+            string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
+            string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
+            string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
+        }
+
     environment {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
         DB_USER = 'root'
@@ -9,12 +15,14 @@ pipeline {
         DOCKER_PASSWORD = credentials('devops-pipeline')
         IMAGE_NAME = 'nourbkh/devops-backend'
         IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devops'
-        SONAR_SCANNER_HOME = tool 'SonarQube Scanner'
-        SONAR_PROJECT_KEY = 'devops-backend'
-        SONAR_TOKEN = credentials('sonarqube-token')
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
+        SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
+        SONAR_TOKEN = credentials('sonarqube-token') // Make sure the ID matches your Jenkins credential
         NEXUS_URL = 'http://localhost:8081/repository/maven-releases/' // Adjust URL
         NEXUS_CREDENTIALS = credentials('nexus-credentials')
         MAVEN_REPO_ID = 'nexus'
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
     }
 
     stages {
@@ -52,32 +60,77 @@ pipeline {
         }
 
         stage('JaCoCo Report') {
-            steps {
-                dir('Backend') {
-                    sh 'mvn jacoco:report'
-                }
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    dir('Backend') {
-                        withSonarQubeEnv('SonarQube') {
-                            sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                                "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
-                                "-Dsonar.sources=src " +
-                                "-Dsonar.java.binaries=target/classes " +
-                                "-Dsonar.host.url=http://localhost:9000 " +
-                                "-Dsonar.login=${env.SONAR_TOKEN} " +
-                                "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
+                    steps {
+                        dir('Backend') {
+                            // Generate the JaCoCo report
+                            sh 'mvn jacoco:report'
                         }
                     }
                 }
-            }
-        }
 
-        stage('Deploy to Nexus') {
+                stage('SonarQube Analysis') {
+                    steps {
+                        script {
+                            dir('Backend') {
+                                withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' matches your configured server in Jenkins
+                                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                        "-Dsonar.projectKey=${SONAR_PROJECT_KEY} " +
+                                        "-Dsonar.sources=src " +
+                                        "-Dsonar.java.binaries=target/classes " +
+                                        "-Dsonar.host.url=http://localhost:9000 " + // Adjust URL
+                                        "-Dsonar.login=${env.SONAR_TOKEN} " +
+                                        "-Dsonar.jacoco.reportPaths=target/jacoco.exec" // Path to the JaCoCo execution data
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+        stage('Publish to Nexus and Build Docker Image') {
+                    parallel {
+                        stage('Publish to Nexus') {
+                            steps {
+                                dir('Backend') {
+                                    script {
+                                        // Define artifact details based on the known pom.xml values
+                                        def groupId = "tn.esprit"
+                                        def artifactId = "DevOps_Project"
+                                        def version = "1.0"
+                                        def packaging = "jar"  // Based on your project packaging
+                                        def artifactPath = "target/DevOps_Project-1.0.jar"
+                                        def pomFile = "pom.xml"
+
+                                        // Check if the artifact exists
+                                        if (fileExists(artifactPath)) {
+                                            echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
+
+                                            // Upload artifact and POM to Nexus
+                                            nexusArtifactUploader(
+                                                nexusVersion: NEXUS_VERSION,
+                                                protocol: NEXUS_PROTOCOL,
+                                                nexusUrl: params.NEXUS_URL,
+                                                groupId: groupId,
+                                                artifactId: artifactId,
+                                                version: version,
+                                                repository: params.NEXUS_REPOSITORY,
+                                                credentialsId: 'nexus-credentials',
+                                                artifacts: [
+                                                    [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
+                                                    [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
+                                                ]
+                                            )
+                                        } else {
+                                            error "*** File could not be found or does not exist at ${artifactPath}."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+        /*stage('Deploy to Nexus') {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
@@ -97,7 +150,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         /* Uncomment if Docker image building and pushing are needed
         stage('Build Docker Image') {
