@@ -68,38 +68,40 @@ pipeline {
                             }
                         }
                     }
-                }
+                } // Closing the Publish to Nexus stage
 
-
-        stage('Build Spring Docker Image') {
-            steps {
-                echo 'Building Docker image for Spring Boot...'
-                sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
-            }
-        }
-
-        stage('Find JAR Version') {
-            steps {
-                dir('Backend') {
-                    script {
-                        env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                stage('Build Spring Docker Image') {
+                    steps {
+                        echo 'Building Docker image for Spring Boot...'
+                        sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
                     }
-                    echo "Using JAR file: ${env.JAR_FILE}"
                 }
-            }
+
+                stage('Find JAR Version') {
+                    steps {
+                        dir('Backend') {
+                            script {
+                                env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                            }
+                            echo "Using JAR file: ${env.JAR_FILE}"
+                        }
+                    }
+                }
+
+                stage('Push Spring Docker Image to Docker Hub') {
+                    steps {
+                        echo 'Pushing Spring Boot Docker image to Docker Hub...'
+                        script {
+                            withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                                sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin'
+                            }
+                            sh 'docker push medaminetrabelsi/devopsback'
+                        }
+                    }
+                }
+            } // Closing the parallel block
         }
 
-        stage('Push Spring Docker Image to Docker Hub') {
-            steps {
-                echo 'Pushing Spring Boot Docker image to Docker Hub...'
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin'
-                    }
-                    sh 'docker push medaminetrabelsi/devopsback'
-                }
-            }
-        }
     }
 
     post {
