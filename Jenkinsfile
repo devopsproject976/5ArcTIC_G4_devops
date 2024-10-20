@@ -88,6 +88,7 @@ pipeline {
                     }
                 }
 
+                /* 
                 stage('Push Spring Docker Image to Docker Hub') {
                     steps {
                         echo 'Pushing Spring Boot Docker image to Docker Hub...'
@@ -99,6 +100,7 @@ pipeline {
                         }
                     }
                 }
+                */
             } // Closing the parallel block
         }
 
