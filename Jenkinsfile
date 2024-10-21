@@ -44,7 +44,7 @@ pipeline {
                             echo 'Running SonarQube analysis...'
                             withSonarQubeEnv('sonar-jenkins') { // SonarQube env configuration
                                 // This command will run JaCoCo, package the project, and send the results to SonarQube
-                                sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=DevOps_Project -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_AUTH_TOKEN}'
+                                sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_AUTH_TOKEN}'
                             }
                         }
                     }
