@@ -10,14 +10,14 @@ pipeline {
     environment {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
         DB_USER = 'root'
-        DB_PASSWORD = '' // Update with your actual password
-        DOCKER_USERNAME = credentials('devops-pipeline')
-        DOCKER_PASSWORD = credentials('devops-pipeline')
+        DB_PASSWORD = ''
+        DOCKER_USERNAME = credentials('dockerhub-token')
+        DOCKER_PASSWORD = credentials('dockerhub-token')
         IMAGE_NAME = 'nourbkh/devops-backend'
         IMAGE_TAG = 'nourbenkhairia-5arctic3-g4-devops'
-        SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Sonar Scanner tool configured in Jenkins
-        SONAR_PROJECT_KEY = 'devops-backend' // Project key for SonarQube
-        SONAR_TOKEN = credentials('sonarqube-token') // Ensure the ID matches your Jenkins credential
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner'
+        SONAR_PROJECT_KEY = 'devops-backend'
+        SONAR_TOKEN = credentials('sonarqube-token')
         NEXUS_CREDENTIALS = credentials('nexus-credentials')
         MAVEN_REPO_ID = 'nexus'
         NEXUS_VERSION = "nexus3"
@@ -138,15 +138,18 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'devops-pipeline', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh '''
-                            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                            docker push ${IMAGE_NAME}:${IMAGE_TAG}
-                        '''
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-token',
+                                                      usernameVariable: 'DOCKER_USERNAME',
+                                                      passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh """
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        """
                     }
                 }
             }
         }
+
 
 
 
