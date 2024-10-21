@@ -12,7 +12,7 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS" // Jenkins credentials ID for Nexus
         SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
     }
-
+//aa
     stages {
         stage('Start MySQL Container') {
             steps {
