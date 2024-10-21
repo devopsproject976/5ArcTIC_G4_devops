@@ -43,7 +43,8 @@ pipeline {
                         dir('Backend') {
                             echo 'Running SonarQube analysis...'
                             withSonarQubeEnv('sonar-jenkins') { // SonarQube env configuration
-                                sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=admin -Dsonar.password=admin'
+                                // This command will run JaCoCo, package the project, and send the results to SonarQube
+                                sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=DevOps_Project -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_AUTH_TOKEN}'
                             }
                         }
                     }
