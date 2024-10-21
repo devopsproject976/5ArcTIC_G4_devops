@@ -4,70 +4,62 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b86a847c-483c-48cb-8ee5-3a3eff2d13f5" name="Changes" comment="">
+    <list default="true" id="1b2493ab-d8f6-416c-b5dc-f6850e21f5f8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="ROOT_SYNC" value="SYNC" />
   </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+  <component name="KubernetesApiProvider">{
+  &quot;contexts&quot;: [
+    {
+      &quot;name&quot;: &quot;CloudWave&quot;
+    }
+  ],
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="KubernetesSettings">
+    <option name="contextName" value="CloudWave" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 3
+  &quot;associatedIndex&quot;: 5
 }</component>
-  <component name="ProjectId" id="2mhCqoXFrssoI6vCAoo31XRWqKy" />
+  <component name="ProjectId" id="2nkR3luzkFoFTc0Nu47I9UQfw2M" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Maven.DevOps_Project [clean,package].executor": "Run",
-    "Maven.DevOps_Project [clean].executor": "Run",
+    "Maven.DevOps_Project [clean,test].executor": "Run",
     "Maven.DevOps_Project [install].executor": "Run",
-    "Maven.DevOps_Project [package].executor": "Run",
-    "Maven.DevOps_Project [test].executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "Spring Boot.DevOps_ProjectSpringBootApplication.executor": "Run",
-    "git-widget-placeholder": "hamouda",
+    "git-widget-placeholder": "HamoudaAttia__5ArcTIC__G4",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/devops/Downloads",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "terminal",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RunAnythingCache">
     <option name="myCommands">
-      <command value="mvn package" />
-      <command value="mvn clean" />
-      <command value="mvn clean package" />
       <command value="mvn install" />
-      <command value="mvn test" />
+      <command value="mvn clean test" />
     </option>
   </component>
   <component name="RunManager">
@@ -82,40 +74,31 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23339.11" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23339.11" />
+        <option value="jdk-17.0.10-corretto-17.0.10-f644763e9732-24fca987" />
+        <option value="jdk-18.0.2-corretto-18.0.2-f644763e9732-da6bd485" />
       </set>
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="b86a847c-483c-48cb-8ee5-3a3eff2d13f5" name="Changes" comment="" />
-      <created>1727519615696</created>
+      <changelist id="1b2493ab-d8f6-416c-b5dc-f6850e21f5f8" name="Changes" comment="" />
+      <created>1729514890774</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1727519615696</updated>
-      <workItem from="1727519616664" duration="1743000" />
-      <workItem from="1728293059878" duration="8349000" />
-      <workItem from="1728896199903" duration="335000" />
-      <workItem from="1728898646277" duration="58000" />
-      <workItem from="1728904455270" duration="14000" />
-      <workItem from="1728904502725" duration="60000" />
+      <updated>1729514890774</updated>
+      <workItem from="1729514891908" duration="891000" />
+      <workItem from="1729516018029" duration="286000" />
+      <workItem from="1729516327928" duration="351000" />
+      <workItem from="1729516720749" duration="3195000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
