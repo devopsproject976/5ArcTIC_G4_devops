@@ -17,7 +17,7 @@ import tn.esprit.devops_project.services.SupplierServiceImpl;
 
 import java.util.*;
 
-public class SupplierMockTest {
+ class SupplierMockTest {
 
     @InjectMocks
     private SupplierServiceImpl supplierService;
@@ -25,13 +25,17 @@ public class SupplierMockTest {
     @Mock
     private SupplierRepository supplierRepository;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+     @BeforeEach
+     void setUp() {
+         MockitoAnnotations.openMocks(this);
+     }
 
-    @Test
-    public void testGetSupplierStatistics() {
+
+
+
+
+     @Test
+     void testGetSupplierStatistics() {
         // Setup
         Long supplierId = 1L;
         Supplier supplier = new Supplier();
@@ -60,7 +64,7 @@ public class SupplierMockTest {
 
         // Vérification
         assertEquals(200f, statistics.get("totalInvoiceAmount"));
-        assertEquals(Long.valueOf(3), statistics.get("totalProductsSupplied")); // Changez Integer en Long
+        assertEquals(3L, statistics.get("totalProductsSupplied"));
         assertNotNull(statistics.get("lastInvoiceModificationDate"));
         assertEquals(modificationDate, statistics.get("lastInvoiceModificationDate")); // Vérifiez la date
     }
