@@ -10,7 +10,7 @@ import tn.esprit.devops_project.entities.SupplierCategory;
 
 import java.util.HashSet;
 
-public class SupplierTest {
+ class SupplierTest {
 
     private Supplier supplier;
 
@@ -26,7 +26,7 @@ public class SupplierTest {
     }
 
     @Test
-    public void testSupplierCreation() {
+     void testSupplierCreation() {
         // Vérification que le fournisseur est correctement créé
         assertNotNull(supplier);
         assertEquals(1L, supplier.getIdSupplier());
@@ -37,7 +37,7 @@ public class SupplierTest {
     }
 
     @Test
-    public void testAddInvoice() {
+     void testAddInvoice() {
         // Ajout d'une facture au fournisseur
         Invoice invoice = new Invoice();
         invoice.setIdInvoice(1L);
@@ -51,7 +51,7 @@ public class SupplierTest {
     }
 
     @Test
-    public void testSupplierCategory() {
+     void testSupplierCategory() {
         // Vérification des catégories de fournisseur
         supplier.setSupplierCategory(SupplierCategory.CONVENTIONNE);
         assertEquals(SupplierCategory.CONVENTIONNE, supplier.getSupplierCategory());
