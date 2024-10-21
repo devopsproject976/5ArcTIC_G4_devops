@@ -43,10 +43,12 @@ public class SupplierServiceImpl implements ISupplierService {
 		supplierRepository.deleteById(supplierId);
 	}
 
+	private static final String SUPPLIER_NOT_FOUND = "Supplier not found: ";
+
 	@Override
 	public Supplier retrieveSupplier(Long supplierId) {
 		return supplierRepository.findById(supplierId)
-				.orElseThrow(() -> new SupplierNotFoundException("Supplier not found: " + supplierId));
+				.orElseThrow(() -> new SupplierNotFoundException(SUPPLIER_NOT_FOUND + supplierId));
 	}
 
 
@@ -95,7 +97,7 @@ public class SupplierServiceImpl implements ISupplierService {
 		// Parcourir toutes les factures pour calculer les statistiques
 		for (Invoice invoice : supplier.getInvoices()) {
 			// Exclure les factures archivées
-			if (!invoice.getArchived()) {
+			if (Boolean.FALSE.equals(invoice.getArchived())){
 				totalInvoiceAmount += invoice.getAmountInvoice(); // Additionner le montant des factures
 
 				// Compter les produits fournis
