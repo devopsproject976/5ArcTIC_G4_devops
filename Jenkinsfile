@@ -42,7 +42,7 @@ pipeline {
                 dir('Backend') {
                     echo 'Running SonarQube analysis...'
                     withSonarQubeEnv('sonar-jenkins') {
-                        sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops -Dsonar.host.url=${SONARQUBE_URL} '
+                        sh 'mvn sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops -Dsonar.host.url=${SONARQUBE_URL} '
                     }
                 }
             }
@@ -112,7 +112,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t SofienDaadoucha-5ArcTIC3-G4-devops .'
+                sh 'docker build -t soufi2001/devopsback:5arctic3-g4-devops -f Backend/Dockerfile .'
             }
         }
 
@@ -123,7 +123,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
                     }
-                    sh 'docker push SofienDaadoucha-5ArcTIC3-G4-devops'
+                    sh 'docker push soufi2001/devopsback:5arctic3-g4-devops'
                 }
             }
         }
