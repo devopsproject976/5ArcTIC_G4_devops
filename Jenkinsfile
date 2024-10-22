@@ -9,13 +9,15 @@ pipeline {
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
-        NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS" // Jenkins credentials ID for Nexus
+        NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS"
         SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
+        RECIPIENTS = "daadsoufi0157@gmail.com"
     }
-//aa
+
     stages {
-        stage('Start MySQL Container') {
+        stage('Setup Environment') {
             steps {
+                echo 'Starting MySQL container...'
                 script {
                     try {
                         sh "docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:${params.MYSQL_VERSION}"
@@ -26,90 +28,102 @@ pipeline {
             }
         }
 
-        stage('Build and Analyze') {
-            parallel {
-                stage('Build Spring Boot') {
-                    steps {
-                        dir('Backend') {
-                            echo 'Building Spring Boot application...'
-                            sh 'mvn clean package -DskipTests=true'
-                        }
+        stage('Build') {
+            steps {
+                dir('Backend') {
+                    echo 'Building Spring Boot application...'
+                    sh 'mvn clean package -DskipTests=true'
+                }
+            }
+        }
+
+        stage('Code Analysis') {
+            steps {
+                dir('Backend') {
+                    echo 'Running SonarQube analysis...'
+                    withSonarQubeEnv('sonar-jenkins') {
+                        sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops -Dsonar.host.url=${SONARQUBE_URL} '
                     }
                 }
+            }
+        }
 
-                stage('SonarQube Analysis') {
-                    steps {
-                        dir('Backend') {
-                            echo 'Running SonarQube analysis...'
-                            withSonarQubeEnv('sonar-jenkins') { // SonarQube env configuration
-                                sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_AUTH_TOKEN}'
-                            }
+        stage('Export SonarQube Issues') {
+            steps {
+                echo 'Exporting SonarQube issues...'
+                script {
+                    def sonarProjectKey = '5ArcTIC3-G4-devops'
+                    def issuesFilePath = 'sonarqube_issues.json'
+                    def csvFilePath = 'sonarqube_issues.csv'
+
+                    // Export issues as JSON and convert to CSV
+                    sh """
+                        curl -u ${SONARQUBE_CREDENTIALS}: ${params.SONARQUBE_URL}/api/issues/search?componentKeys=${sonarProjectKey} > ${issuesFilePath}
+                        cat ${issuesFilePath} | jq -r '.issues[] | [.key, .severity, .message, .rule, .component] | @csv' > ${csvFilePath}
+                    """
+                }
+            }
+        }
+
+        stage('Find JAR Version') {
+            steps {
+                dir('Backend') {
+                    script {
+                        env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                        if (!env.JAR_FILE) {
+                            error "No JAR file found in target directory."
                         }
                     }
+                    echo "Using JAR file: ${env.JAR_FILE}"
                 }
+            }
+        }
 
-                stage('Find JAR Version') {
-                    steps {
-                        dir('Backend') {
-                            script {
-                                env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
-                                if (!env.JAR_FILE) {
-                                    error "No JAR file found in target directory."
-                                }
-                            }
-                            echo "Using JAR file: ${env.JAR_FILE}"
+        stage('Publish to Nexus') {
+            steps {
+                dir('Backend') {
+                    script {
+                        pom = readMavenPom file: "pom.xml"
+                        artifactPath = findFiles(glob: "target/*.${pom.packaging}")[0]?.path
+
+                        if (artifactPath && fileExists(artifactPath)) {
+                            echo "*** Publishing artifact: ${artifactPath}, version: ${pom.version}"
+                            nexusArtifactUploader(
+                                nexusVersion: NEXUS_VERSION,
+                                protocol: NEXUS_PROTOCOL,
+                                nexusUrl: params.NEXUS_URL,
+                                groupId: pom.groupId,
+                                version: pom.version,
+                                repository: params.NEXUS_REPOSITORY,
+                                credentialsId: NEXUS_CREDENTIAL_ID,
+                                artifacts: [
+                                    [artifactId: pom.artifactId, file: artifactPath, type: pom.packaging],
+                                    [artifactId: pom.artifactId, file: "pom.xml", type: "pom"]
+                                ]
+                            )
+                        } else {
+                            error "*** Artifact not found or does not exist."
                         }
                     }
                 }
             }
         }
 
-        stage('Publish to Nexus and Build Docker Image') {
-            parallel {
-                stage('Publish to Nexus') {
-                    steps {
-                        dir('Backend') {
-                            script {
-                                pom = readMavenPom file: "pom.xml"
-                                filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
-                                artifactPath = filesByGlob[0]?.path
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t SofienDaadoucha-5ArcTIC3-G4-devops .'
+            }
+        }
 
-                                if (artifactPath && fileExists(artifactPath)) {
-                                    echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}"
-                                    nexusArtifactUploader(
-                                        nexusVersion: NEXUS_VERSION,
-                                        protocol: NEXUS_PROTOCOL,
-                                        nexusUrl: params.NEXUS_URL,
-                                        groupId: pom.groupId,
-                                        version: pom.version,
-                                        repository: params.NEXUS_REPOSITORY,
-                                        credentialsId: NEXUS_CREDENTIAL_ID,
-                                        artifacts: [
-                                            [artifactId: pom.artifactId, classifier: '', file: artifactPath, type: pom.packaging],
-                                            [artifactId: pom.artifactId, classifier: '', file: "pom.xml", type: "pom"]
-                                        ]
-                                    )
-                                } else {
-                                    error "*** File could not be found or does not exist."
-                                }
-                            }
-                        }
+        stage('Push Docker Image') {
+            steps {
+                echo 'Pushing Docker image to DockerHub...'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
                     }
-                }
-
-                stage('Build and Push Docker Image') {
-                    steps {
-                        echo 'Building Docker image...'
-                        sh 'docker build -t SofienDaadoucha-5ArcTIC3-G4-devops .'
-
-                        echo 'Pushing Docker image to DockerHub...'
-                        script {
-                            withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                                sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
-                            }
-                            sh 'docker push SofienDaadoucha-5ArcTIC3-G4-devops'
-                        }
-                    }
+                    sh 'docker push SofienDaadoucha-5ArcTIC3-G4-devops'
                 }
             }
         }
@@ -117,19 +131,61 @@ pipeline {
 
     post {
         always {
+            archiveArtifacts artifacts: 'sonarqube_issues.json, sonarqube_issues.csv', allowEmptyArchive: true
+
+            // Stop MySQL container
             script {
                 try {
                     sh 'docker rm -f mysql-test || true'
                 } catch (Exception e) {
-                    echo "Failed to remove MySQL container: ${e.message}"
+                    echo "Failed to stop MySQL container: ${e.message}"
                 }
             }
         }
+
         success {
-            echo 'Build and Nexus publish succeeded!'
+            echo 'Build and deployment succeeded!'
+
+            script {
+                def subject = "Jenkins Build Success - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+                def body = """
+                    Hi team,
+
+                    The Jenkins build for ${env.JOB_NAME} (Build #${env.BUILD_NUMBER}) was successful.
+                    Please find attached the SonarQube issues report for review.
+
+                    Thanks,
+                    Jenkins Pipeline
+                """
+                emailext(
+                    to: "${RECIPIENTS}",
+                    subject: subject,
+                    body: body,
+                    attachmentsPattern: 'sonarqube_issues.json, sonarqube_issues.csv'
+                )
+            }
         }
+
         failure {
-            echo 'Build or Nexus publish failed.'
+            echo 'Build or deployment failed!'
+
+            script {
+                def subject = "Jenkins Build Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+                def body = """
+                    Hi team,
+
+                    The Jenkins build for ${env.JOB_NAME} (Build #${env.BUILD_NUMBER}) has failed.
+                    Please review the logs for more information.
+
+                    Thanks,
+                    Jenkins Pipeline
+                """
+                emailext(
+                    to: "${RECIPIENTS}",
+                    subject: subject,
+                    body: body
+                )
+            }
         }
     }
 }
