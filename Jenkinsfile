@@ -13,10 +13,10 @@ pipeline {
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS"
         SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
-        RECIPIENTS = "daadsoufi0157@gmail.com"
-        MYSQL_CONTAINER_NAME = 'mysql-container'
-        SPRINGBOOT_CONTAINER_NAME = 'springboot-container'
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        //RECIPIENTS = "daadsoufi0157@gmail.com"
+        //MYSQL_CONTAINER_NAME = 'mysql-container'
+       // SPRINGBOOT_CONTAINER_NAME = 'springboot-container'
+        //DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
 
     stages {
@@ -35,11 +35,31 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build springboot backend') {
             steps {
                 dir('Backend') {
                     echo 'Building Spring Boot application...'
                     sh 'mvn clean package -DskipTests=true'
+                }
+            }
+        }
+
+        stage('Test Angular Application') {
+            steps {
+                dir('Frontend') { // Assuming your Angular project is in a directory named Frontend
+                    echo 'Installing Angular dependencies...'
+                    sh 'npm install'
+                    echo 'Running Angular tests...'
+                    sh 'npm test -- --watch=false --bail' // Run tests without watch mode
+                }
+            }
+        }
+
+        stage('Build Angular App') {
+            steps {
+                dir('Frontend') {
+                    echo 'Building Angular application...'
+                    sh 'npm run build --prod' // Adjust according to your build script
                 }
             }
         }
@@ -55,7 +75,7 @@ pipeline {
             }
         }
 
-         stage('Export SonarQube Metrics') {
+         /*stage('Export SonarQube Metrics') {
     steps {
         echo 'Exporting SonarQube metrics...'
         script {
@@ -115,7 +135,7 @@ pipeline {
             }
         }
     }
-}
+}*/
 
         stage('Find JAR Version') {
             steps {
