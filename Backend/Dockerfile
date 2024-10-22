@@ -8,10 +8,12 @@ WORKDIR /app
 ARG JAR_FILE
 
 # Copy the dynamic Spring Boot jar file to the container
+
 COPY ${JAR_FILE} 5ArcTIC_G4_devops.jar
+
 
 # Expose the application port (you can update the port if needed)
 EXPOSE 8082
 
 # Run the jar file
-ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-SofienDaadoucha.jar"]
+ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-devops.jar"]
