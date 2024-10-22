@@ -5,6 +5,8 @@ pipeline {
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
         string(name: 'MYSQL_VERSION', defaultValue: '5.7', description: 'MySQL Docker Image Version')
         string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
+        string(name: 'FRONTEND_IMAGE_NAME', defaultValue: 'angular-frontend', description: 'Docker image name for Angular')
+
     }
     environment {
         NEXUS_VERSION = "nexus3"
@@ -12,9 +14,14 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS"
         SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
         RECIPIENTS = "daadsoufi0157@gmail.com"
+        MYSQL_CONTAINER_NAME = 'mysql-container'
+        SPRINGBOOT_CONTAINER_NAME = 'springboot-container'
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
 
     stages {
+
+        
         stage('Setup Environment') {
             steps {
                 echo 'Starting MySQL container...'
