@@ -48,24 +48,20 @@ pipeline {
             }
         }
 
-        stage('Export SonarQube Issues') {
+         stage('Export SonarQube Metrics') {
             steps {
-                echo 'Exporting SonarQube issues...'
+                echo 'Exporting SonarQube metrics...'
                 script {
-                    def issuesResponse = sh(script: "curl -u ${SONARQUBE_CREDENTIALS}:${SONARQUBE_PASSWORD} 'http://localhost:9000/api/issues/search?componentKeys=5ArcTIC3-G4-devops'", returnStdout: true).trim()
-                    writeFile(file: 'sonarqube_issues.json', text: issuesResponse)
+                    def sonarProjectKey = '5ArcTIC3-G4-devops'
+                    def metricsFilePath = 'codeReport.txt'
 
-                    if (fileExists('sonarqube_issues.json')) {
-                        def issuesCsv = sh(script: "jq -r '.issues[] | [.key, .severity, .message, .rule, .component] | @csv' sonarqube_issues.json", returnStdout: true).trim()
-                        writeFile(file: 'sonarqube_issues.csv', text: issuesCsv)
-                        echo 'SonarQube issues exported successfully.'
-                    } else {
-                        error 'Failed to fetch SonarQube issues: JSON file not found.'
-                    }
+                    // Fetch metrics and format JSON output
+                    sh """
+                        curl -s -u ${SONARQUBE_CREDENTIALS}: "${SONARQUBE_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children" | python3 -m json.tool > ${metricsFilePath}
+                    """
                 }
             }
         }
-
         stage('Send Email Notification') {
             steps {
                 script {
