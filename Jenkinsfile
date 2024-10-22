@@ -52,15 +52,30 @@ pipeline {
             steps {
                 echo 'Exporting SonarQube issues...'
                 script {
-                    def sonarProjectKey = '5ArcTIC3-G4-devops'
-                    def issuesFilePath = 'sonarqube_issues.json'
-                    def csvFilePath = 'sonarqube_issues.csv'
+                    def issuesResponse = sh(script: "curl -u ${SONARQUBE_CREDENTIALS}:${SONARQUBE_PASSWORD} 'http://localhost:9000/api/issues/search?componentKeys=5ArcTIC3-G4-devops'", returnStdout: true).trim()
+                    writeFile(file: 'sonarqube_issues.json', text: issuesResponse)
 
-                    // Export issues as JSON and convert to CSV
-                    sh """
-                        curl -u ${SONARQUBE_CREDENTIALS}: ${params.SONARQUBE_URL}/api/issues/search?componentKeys=${sonarProjectKey} > ${issuesFilePath}
-                        cat ${issuesFilePath} | jq -r '.issues[] | [.key, .severity, .message, .rule, .component] | @csv' > ${csvFilePath}
-                    """
+                    if (fileExists('sonarqube_issues.json')) {
+                        def issuesCsv = sh(script: "jq -r '.issues[] | [.key, .severity, .message, .rule, .component] | @csv' sonarqube_issues.json", returnStdout: true).trim()
+                        writeFile(file: 'sonarqube_issues.csv', text: issuesCsv)
+                        echo 'SonarQube issues exported successfully.'
+                    } else {
+                        error 'Failed to fetch SonarQube issues: JSON file not found.'
+                    }
+                }
+            }
+        }
+
+        stage('Send Email Notification') {
+            steps {
+                script {
+                    emailext(
+                        subject: "SonarQube Issues Report",
+                        body: "Please find attached the SonarQube issues report.",
+                        to: "daadsoufi0157@gmail.com",
+                        attachmentsPattern: "sonarqube_issues.csv",
+                        mimeType: 'text/csv'
+                    )
                 }
             }
         }
@@ -116,7 +131,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        /*stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to DockerHub...'
                 script {
@@ -125,67 +140,25 @@ pipeline {
                     }
                     sh 'docker push soufi2001/devopsback:5arctic3-g4-devops'
                 }
-            }
+            }*/
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: 'sonarqube_issues.json, sonarqube_issues.csv', allowEmptyArchive: true
-
-            // Stop MySQL container
             script {
                 try {
                     sh 'docker rm -f mysql-test || true'
                 } catch (Exception e) {
-                    echo "Failed to stop MySQL container: ${e.message}"
+                    echo "Failed to remove MySQL container: ${e.message}"
                 }
             }
         }
-
         success {
-            echo 'Build and deployment succeeded!'
-
-            script {
-                def subject = "Jenkins Build Success - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-                def body = """
-                    Hi team,
-
-                    The Jenkins build for ${env.JOB_NAME} (Build #${env.BUILD_NUMBER}) was successful.
-                    Please find attached the SonarQube issues report for review.
-
-                    Thanks,
-                    Jenkins Pipeline
-                """
-                emailext(
-                    to: "${RECIPIENTS}",
-                    subject: subject,
-                    body: body,
-                    attachmentsPattern: 'sonarqube_issues.json, sonarqube_issues.csv'
-                )
-            }
+            echo 'Build and Nexus publish succeeded!'
         }
-
         failure {
-            echo 'Build or deployment failed!'
-
-            script {
-                def subject = "Jenkins Build Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-                def body = """
-                    Hi team,
-
-                    The Jenkins build for ${env.JOB_NAME} (Build #${env.BUILD_NUMBER}) has failed.
-                    Please review the logs for more information.
-
-                    Thanks,
-                    Jenkins Pipeline
-                """
-                emailext(
-                    to: "${RECIPIENTS}",
-                    subject: subject,
-                    body: body
-                )
-            }
+            echo 'Build or Nexus publish failed.'
         }
     }
 }
