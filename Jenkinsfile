@@ -61,12 +61,17 @@ pipeline {
         script {
             def sonarProjectKey = '5ArcTIC3-G4-devops'
             def metricsFilePath = 'codeReport.json'
-
+            
             // Use SonarQube environment to access credentials and URL securely
             withSonarQubeEnv('sonar-jenkins') {
                 // Fetch SonarQube metrics using curl (ensure the token is correctly passed)
                 sh """
-                    curl -s -u ${SONAR_AUTH_TOKEN}: ${SONARQUBE_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children -o ${metricsFilePath}
+                    curl -s -u ${SONAR_AUTH_TOKEN}: ${SONARQUBE_URL}/api/measures/component_tree?ps=100 \
+                    --get --data-urlencode "component=${sonarProjectKey}" \
+                    --data-urlencode "s=qualifier,name" \
+                    --data-urlencode "strategy=children" \
+                    --data-urlencode "metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density" \
+                    -o ${metricsFilePath}
                 """
 
                 // Validate if the file was created and has content
@@ -79,6 +84,7 @@ pipeline {
         }
     }
 }
+
 
 
 
