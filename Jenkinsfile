@@ -60,18 +60,26 @@ pipeline {
         echo 'Exporting SonarQube metrics...'
         script {
             def sonarProjectKey = '5ArcTIC3-G4-devops'
-            def metricsFilePath = 'codeReport.txt'
+            def metricsFilePath = 'codeReport.json'
 
             // Use SonarQube environment to access credentials and URL
             withSonarQubeEnv('sonar-jenkins') {  // 'sonar-jenkins' is the SonarQube server configuration
-                // Fetch metrics and format JSON output securely
-                sh """
-                    curl -s -u ${SONAR_AUTH_TOKEN}: "${SONAR_HOST_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children" | python3 -m json.tool > ${metricsFilePath}
-                """
+
+                // Fetch SonarQube metrics using httpRequest plugin
+                def response = httpRequest(
+                    url: "${SONAR_HOST_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children",
+                    customHeaders: [[name: 'Authorization', value: "Bearer ${SONAR_AUTH_TOKEN}"]],
+                    quiet: true,  // To avoid logging sensitive information
+                    validResponseCodes: '200',
+                    outputFile: metricsFilePath // Save response to file
+                )
+
+                echo "SonarQube metrics successfully exported to ${metricsFilePath}"
             }
         }
     }
 }
+
 
 
         stage('Send Email Notification') {
