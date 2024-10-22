@@ -90,18 +90,32 @@ pipeline {
 
 
         stage('Send Email Notification') {
-            steps {
-                script {
-                    emailext(
-                        subject: "SonarQube Issues Report",
-                        body: "Please find attached the SonarQube issues report.",
-                        to: "daadsoufi0157@gmail.com",
-                        attachmentsPattern: "sonarqube_issues.csv",
-                        mimeType: 'text/csv'
-                    )
-                }
+    steps {
+        script {
+            def metricsFilePath = 'codeReport.json'  // The file from the metrics stage
+            
+            // Check if the file exists
+            if (fileExists(metricsFilePath)) {
+                emailext(
+                    subject: "SonarQube Metrics Report",
+                    body: """
+                        Hello,
+
+                        Please find attached the SonarQube metrics report for project 5ArcTIC3-G4-devops.
+
+                        Regards,
+                        Jenkins
+                    """,
+                    to: "daadsoufi0157@gmail.com",
+                    attachmentsPattern: metricsFilePath,  // Attach the metrics file
+                    mimeType: 'application/json'  // Since the file is a JSON
+                )
+            } else {
+                error "Metrics file (${metricsFilePath}) not found, cannot send email."
             }
         }
+    }
+}
 
         stage('Find JAR Version') {
             steps {
