@@ -1,5 +1,14 @@
 pipeline {
     agent any
+     parameters {
+            string(name: 'NEXUS_URL', defaultValue: 'localhost:8090', description: 'Nexus URL')
+            string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
+        }
+        environment {
+            NEXUS_VERSION = "nexus3"
+            NEXUS_PROTOCOL = "http"
+            NEXUS_CREDENTIAL_ID = "nexus"
+        }
 
     stages {
 
@@ -54,6 +63,35 @@ pipeline {
                 }
             }
         }
+        stage('Publish to Nexus') {
+                    steps {
+                        dir('Backend') {
+                            script {
+                                pom = readMavenPom file: "pom.xml"
+                                artifactPath = findFiles(glob: "target/*.${pom.packaging}")[0]?.path
+
+                                if (artifactPath && fileExists(artifactPath)) {
+                                    echo "*** Publishing artifact: ${artifactPath}, version: ${pom.version}"
+                                    nexusArtifactUploader(
+                                        nexusVersion: NEXUS_VERSION,
+                                        protocol: NEXUS_PROTOCOL,
+                                        nexusUrl: params.NEXUS_URL,
+                                        groupId: pom.groupId,
+                                        version: pom.version,
+                                        repository: params.NEXUS_REPOSITORY,
+                                        credentialsId: NEXUS_CREDENTIAL_ID,
+                                        artifacts: [
+                                            [artifactId: pom.artifactId, file: artifactPath, type: pom.packaging],
+                                            [artifactId: pom.artifactId, file: "pom.xml", type: "pom"]
+                                        ]
+                                    )
+                                } else {
+                                    error "*** Artifact not found or does not exist."
+                                }
+                            }
+                        }
+                    }
+                }
 
         stage('Build Spring Docker Image') {
             steps {
