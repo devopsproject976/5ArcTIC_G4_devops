@@ -35,7 +35,7 @@ pipeline {
                             steps {
                                 dir('Backend') {
                                     echo 'Running SonarQube analysis...'
-                                    withSonarQubeEnv('sonar-jenkins') { // SonarQube env configuration
+                                    withSonarQubeEnv('hamouda') { // SonarQube env configuration
                                         sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops -Dsonar.host.url=http://192.168.157.133:9000 -Dsonar.login=${SONAR_AUTH_TOKEN}'
                                     }
                                 }
