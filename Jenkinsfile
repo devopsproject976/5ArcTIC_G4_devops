@@ -56,31 +56,23 @@ pipeline {
         }
 
          stage('Export SonarQube Metrics') {
-            steps {
-                echo 'Exporting SonarQube metrics...'
-                script {
-                    def sonarProjectKey = '5ArcTIC3-G4-devops'
-                    def metricsFilePath = 'codeReport.txt'
+    steps {
+        echo 'Exporting SonarQube metrics...'
+        script {
+            def sonarProjectKey = '5ArcTIC3-G4-devops'
+            def metricsFilePath = 'codeReport.txt'
 
-                    withCredentials([string(credentialsId: 'SONARQUBE_CREDENTIALS_ID', variable: 'SONAR_AUTH_TOKEN')]) {
-                        sh """
-                            echo "Fetching SonarQube metrics for project: ${sonarProjectKey}"
-                            response=\$(curl -s -w "%{http_code}" -u ${SONAR_AUTH_TOKEN}: "${SONARQUBE_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children" -o response.json)
-
-                            # Check if the response code is 200 (OK)
-                            if [ "\$response" -eq 200 ]; then
-                                echo "SonarQube metrics fetched successfully. Formatting JSON..."
-                                python3 -m json.tool response.json > ${metricsFilePath}
-                            else
-                                echo "Error fetching SonarQube metrics. HTTP response code: \$response"
-                                cat response.json
-                                exit 1
-                            fi
-                        """
-                    }
-                }
+            // Use SonarQube environment to access credentials and URL
+            withSonarQubeEnv('sonar-jenkins') {  // 'sonar-jenkins' is the SonarQube server configuration
+                // Fetch metrics and format JSON output securely
+                sh """
+                    curl -s -u ${SONAR_AUTH_TOKEN}: "${SONAR_HOST_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children" | python3 -m json.tool > ${metricsFilePath}
+                """
             }
         }
+    }
+}
+
 
         stage('Send Email Notification') {
             steps {
