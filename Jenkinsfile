@@ -62,23 +62,24 @@ pipeline {
             def sonarProjectKey = '5ArcTIC3-G4-devops'
             def metricsFilePath = 'codeReport.json'
 
-            // Use SonarQube environment to access credentials and URL
-            withSonarQubeEnv('sonar-jenkins') {  // 'sonar-jenkins' is the SonarQube server configuration
+            // Use SonarQube environment to access credentials and URL securely
+            withSonarQubeEnv('sonar-jenkins') {
+                // Fetch SonarQube metrics using curl (ensure the token is correctly passed)
+                sh """
+                    curl -s -u ${SONAR_AUTH_TOKEN}: ${SONARQUBE_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children -o ${metricsFilePath}
+                """
 
-                // Fetch SonarQube metrics using httpRequest plugin
-                def response = httpRequest(
-                    url: "${SONAR_HOST_URL}/api/measures/component_tree?ps=100&s=qualifier,name&component=${sonarProjectKey}&metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density&strategy=children",
-                    customHeaders: [[name: 'Authorization', value: "Bearer ${SONAR_AUTH_TOKEN}"]],
-                    quiet: true,  // To avoid logging sensitive information
-                    validResponseCodes: '200',
-                    outputFile: metricsFilePath // Save response to file
-                )
-
-                echo "SonarQube metrics successfully exported to ${metricsFilePath}"
+                // Validate if the file was created and has content
+                if (fileExists(metricsFilePath) && readFile(metricsFilePath).trim()) {
+                    echo "SonarQube metrics successfully exported to ${metricsFilePath}"
+                } else {
+                    error "Failed to export SonarQube metrics."
+                }
             }
         }
     }
 }
+
 
 
 
