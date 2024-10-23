@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        nodejs 'NodeJS' // Use the name you configured in Jenkins
+    }
     parameters {
         string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
