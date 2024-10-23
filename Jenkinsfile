@@ -192,7 +192,7 @@ pipeline {
             }
         }
 
-        /*stage('Push Docker Image') {
+        stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to DockerHub...'
                 script {
@@ -200,8 +200,10 @@ pipeline {
                         sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
                     }
                     sh 'docker push soufi2001/devopsback:5arctic3-g4-devops'
+                    sh 'docker push soufi2001/devopsfront:5arctic3-g4-devops'
+                    
                 }
-            }*/
+            }
         }
     
 
