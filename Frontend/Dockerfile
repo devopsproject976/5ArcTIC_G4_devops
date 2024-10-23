@@ -3,11 +3,16 @@ FROM node:20 as build
 
 WORKDIR /app
 
-# Copy the Angular project files
+# Copy only the package.json and package-lock.json first
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the project files
 COPY . .
 
-# Install dependencies and build the project
-RUN npm install
+# Build the Angular project
 RUN npm run build --prod
 
 # Serve the application with NGINX
