@@ -53,7 +53,7 @@ pipeline {
                     echo 'Installing Angular dependencies...'
                     sh 'npm install'
                     echo 'Running Angular tests...'
-                    sh 'npm test -- --watch=false --bail' // Run tests without watch mode
+                    sh 'npm test -- --watch=false ' // Run tests without watch mode
                 }
             }
         }
