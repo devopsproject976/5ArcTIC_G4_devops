@@ -8,6 +8,7 @@ COPY . .
 
 # Install dependencies and build the project
 RUN npm install
+RUN npm cache clean
 RUN npm run build --prod
 
 # Serve the application with NGINX
