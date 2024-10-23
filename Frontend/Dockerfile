@@ -1,17 +1,13 @@
 # Use the official node image for building Angular project
-FROM node:20 as build
+FROM node:16 as build
 
 WORKDIR /app
 
-COPY frontend/package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the project files
+# Copy the Angular project files
 COPY . .
 
-# Build the Angular project
+# Install dependencies and build the project
+RUN npm install
 RUN npm run build --prod
 
 # Serve the application with NGINX
