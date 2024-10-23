@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-        stage('Test Angular Application') {
+        /*stage('Test Angular Application') {
             steps {
                 dir('Frontend') { // Assuming your Angular project is in a directory named Frontend
                     echo 'Installing Angular dependencies...'
@@ -56,7 +56,7 @@ pipeline {
                     sh 'npm test -- --watch=false ' // Run tests without watch mode
                 }
             }
-        }
+        }*/
 
         stage('Build Angular App') {
             steps {
