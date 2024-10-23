@@ -38,14 +38,14 @@ pipeline {
             }
         }
 
-        stage('Build springboot backend') {
+       /* stage('Build springboot backend') {
             steps {
                 dir('Backend') {
                     echo 'Building Spring Boot application...'
                     sh 'mvn clean package -DskipTests=true'
                 }
             }
-        }
+        }*/
 
         /*stage('Test Angular Application') {
             steps {
@@ -188,7 +188,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 sh 'docker build -t soufi2001/devopsback:5arctic3-g4-devops -f Backend/Dockerfile .'
-                sh 'docker build -t soufi2001/devopsfront:5arctic3-g4-devops -f Frontend/Dockerfile .'
+                sh 'docker build --no-cache -t soufi2001/devopsfront:5arctic3-g4-devops -f Frontend/Dockerfile .'
             }
         }
 
