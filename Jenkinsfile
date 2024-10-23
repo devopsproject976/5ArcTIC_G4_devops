@@ -58,14 +58,14 @@ pipeline {
             }
         }*/
 
-        stage('Build Angular App') {
+        /*stage('Build Angular App') {
             steps {
                 dir('Frontend') {
                     echo 'Building Angular application...'
                     sh 'npm run build --prod' // Adjust according to your build script
                 }
             }
-        }
+        }*/
 
         stage('Code Analysis') {
             steps {
