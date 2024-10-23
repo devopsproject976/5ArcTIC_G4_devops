@@ -3,8 +3,7 @@ FROM node:20 as build
 
 WORKDIR /app
 
-# Copy only the package.json and package-lock.json first
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Install dependencies
 RUN npm install
