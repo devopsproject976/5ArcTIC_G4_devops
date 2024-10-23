@@ -67,7 +67,7 @@ pipeline {
             }
         }*/
 
-        stage('Code Analysis') {
+       /* stage('Code Analysis') {
             steps {
                 dir('Backend') {
                     echo 'Running SonarQube analysis...'
@@ -76,7 +76,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
          /*stage('Export SonarQube Metrics') {
     steps {
@@ -154,7 +154,7 @@ pipeline {
             }
         }
 
-        stage('Publish to Nexus') {
+        /*stage('Publish to Nexus') {
             steps {
                 dir('Backend') {
                     script {
@@ -182,7 +182,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage('Build Docker Image') {
             steps {
