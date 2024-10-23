@@ -1,5 +1,5 @@
 # Use the official node image for building Angular project
-FROM node:16 as build
+FROM node:20 as build
 
 WORKDIR /app
 
