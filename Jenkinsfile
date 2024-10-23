@@ -8,7 +8,6 @@ pipeline {
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
         string(name: 'MYSQL_VERSION', defaultValue: '5.7', description: 'MySQL Docker Image Version')
         string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9000', description: 'SonarQube URL')
-        string(name: 'FRONTEND_IMAGE_NAME', defaultValue: 'angular-frontend', description: 'Docker image name for Angular')
 
     }
     environment {
