@@ -25,27 +25,28 @@ pipeline {
     stages {
 
         
-        stage('Setup Environment') {
+        stage('Setup Tools Environment with Docker Compose') {
             steps {
-                echo 'Starting MySQL container...'
-                script {
-                    try {
-                        sh "docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:${params.MYSQL_VERSION}"
-                    } catch (Exception e) {
-                        error "Failed to start MySQL container: ${e.message}"
-                    }
-                }
+                echo 'Starting tool environment (Nexus, SonarQube) using Docker Compose...'
+                sh 'docker-compose -f docker-compose-tools.yml up -d'
             }
         }
 
-       /* stage('Build springboot backend') {
+        stage('Setup Application Environment with Docker Compose') {
+            steps {
+                echo 'Starting application environment (MySQL, Spring Boot) using Docker Compose...'
+                sh 'docker-compose -f docker-compose.yml up -d'
+            }
+        }
+
+        stage('Build springboot backend') {
             steps {
                 dir('Backend') {
                     echo 'Building Spring Boot application...'
                     sh 'mvn clean package -DskipTests=true'
                 }
             }
-        }*/
+        }
 
         /*stage('Test Angular Application') {
             steps {
@@ -67,7 +68,7 @@ pipeline {
             }
         }*/
 
-       /* stage('Code Analysis') {
+        stage('Code Analysis') {
             steps {
                 dir('Backend') {
                     echo 'Running SonarQube analysis...'
@@ -76,7 +77,7 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
 
          /*stage('Export SonarQube Metrics') {
     steps {
@@ -154,7 +155,7 @@ pipeline {
             }
         }
 
-        /*stage('Publish to Nexus') {
+        stage('Publish to Nexus') {
             steps {
                 dir('Backend') {
                     script {
@@ -182,7 +183,7 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -212,14 +213,16 @@ pipeline {
         always {
             script {
                 try {
-                    sh 'docker rm -f mysql-test || true'
+                    echo 'Stopping and removing Docker Compose environments...'
+                    sh 'docker-compose -f docker-compose-tools.yml down'
+                    sh 'docker-compose -f docker-compose.yml down'
                 } catch (Exception e) {
-                    echo "Failed to remove MySQL container: ${e.message}"
+                    echo "Failed to stop Docker Compose containers: ${e.message}"
                 }
             }
         }
         success {
-            echo 'Build and Nexus publish succeeded!'
+            echo 'Build, SonarQube analysis, and Nexus publish succeeded!'
         }
         failure {
             echo 'Build or Nexus publish failed.'
