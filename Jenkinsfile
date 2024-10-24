@@ -27,16 +27,20 @@ pipeline {
         
         stage('Setup Tools Environment with Docker Compose') {
             steps {
-                echo 'Starting tool environment (Nexus, SonarQube) using Docker Compose...'
-                sh 'docker-compose -f docker-compose-tools.yml up -d'
+                dir('Backend') {
+                    echo 'Starting tool environment (Nexus, SonarQube) using Docker Compose...'
+                    sh 'docker-compose -f docker-compose-tools.yml up -d'
+                }        
             }
         }
 
         stage('Setup Application Environment with Docker Compose') {
             steps {
-                echo 'Starting application environment (MySQL, Spring Boot) using Docker Compose...'
-                sh 'docker-compose -f docker-compose.yml up -d'
-            }
+                dir('Backend') {
+                    echo 'Starting application environment (MySQL, Spring Boot) using Docker Compose...'
+                    sh 'docker-compose -f docker-compose.yml up -d'
+                }
+            }    
         }
 
         stage('Build springboot backend') {
