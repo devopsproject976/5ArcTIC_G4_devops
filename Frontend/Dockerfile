@@ -1,11 +1,16 @@
-FROM node:alpine
+# Use the official node image for building Angular project
+FROM node:16 as build
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY . /usr/src/app
+# Copy the Angular project files
+COPY . .
 
-RUN npm install -g @angular/cli
-
+# Install dependencies and build the project
 RUN npm install
+RUN npm run build --prod
 
-CMD ["ng", "serve", "--host", "0.0.0.0"]
+# Serve the application with NGINX
+FROM nginx:alpine
+COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
+EXPOSE 80
