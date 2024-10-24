@@ -1,16 +1,12 @@
-# Use the official node image for building Angular project
+# Étape 1 : Construction de l'application Angular
 FROM node:16 as build
-
 WORKDIR /app
-
-# Copy the Angular project files
-COPY . .
-
-# Install dependencies and build the project
+COPY package*.json ./
 RUN npm install
+COPY . .
 RUN npm run build --prod
 
-# Serve the application with NGINX
+# Étape 2 : Servir l'application via NGINX
 FROM nginx:alpine
-COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
+COPY --from=build /app/dist/mon-projet-angular /usr/share/nginx/html
 EXPOSE 80
