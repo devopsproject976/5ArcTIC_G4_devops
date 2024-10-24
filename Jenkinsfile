@@ -187,7 +187,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t soufi2001/devopsback:5arctic3-g4-devops -f Backend/Dockerfile .'
+                //sh 'docker build -t soufi2001/devopsback:5arctic3-g4-devops -f Backend/Dockerfile .'
                 sh 'docker build --no-cache -t soufi2001/devopsfront:5arctic3-g4-devops -f Frontend/Dockerfile .'
             }
         }
@@ -199,7 +199,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
                     }
-                    sh 'docker push soufi2001/devopsback:5arctic3-g4-devops'
+                    //sh 'docker push soufi2001/devopsback:5arctic3-g4-devops'
                     sh 'docker push soufi2001/devopsfront:5arctic3-g4-devops'
                     
                 }
