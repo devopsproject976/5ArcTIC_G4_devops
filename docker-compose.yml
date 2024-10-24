@@ -1,0 +1,47 @@
+version: '3'
+services:
+  # Conteneur MySQL
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: dev_db
+      MYSQL_USER: dev_user
+      MYSQL_PASSWORD: dev_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # Conteneur Spring Boot
+  spring:
+    image: springboot-app:latest
+    container_name: spring
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dev_db
+      SPRING_DATASOURCE_USERNAME: dev_user
+      SPRING_DATASOURCE_PASSWORD: dev_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  # Conteneur Angular
+  angular:
+    image: angular-app:latest
+    container_name: angular
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
