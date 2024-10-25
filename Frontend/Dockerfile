@@ -1,16 +1,15 @@
-# Use the official node image for building Angular project
-FROM node:16 as build
+# Step 1: Build the app in image 'builder'
+FROM node:12.8-alpine AS builder
 
 WORKDIR /usr/src/app
-
-# Copy the Angular project files
 COPY . .
+RUN yarn && yarn build
 
-# Install dependencies and build the project
-RUN npm install
-RUN npm run build --prod
+# Step 2: Use build output from 'builder'
+FROM nginx:stable-alpine
+LABEL version="1.0"
 
-# Serve the application with NGINX
-FROM nginx:alpine
-COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
-EXPOSE 80
+COPY nginx.conf /etc/nginx/nginx.conf
+
+WORKDIR /usr/share/nginx/html
+COPY --from=builder /usr/src/app/dist/summer-workshop-angular/ .
