@@ -4,8 +4,7 @@ FROM node:12.8-alpine AS builder
 # Set working directory to the Frontend directory
 WORKDIR /usr/src/app
 
-# Copy only the Frontend dependencies first to optimize build caching
-COPY Frontend/package.json Frontend/yarn.lock ./
+
 
 # Install dependencies
 RUN yarn install
