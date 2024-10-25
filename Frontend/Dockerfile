@@ -1,12 +1,13 @@
-# Étape 1 : Construction de l'application Angular
+# Step 1: Build Angular application
 FROM node:16 as build
 WORKDIR /app
 COPY package*.json ./
+RUN ls -al /app  # List files in /app to confirm package.json is present
 RUN npm install
 COPY . .
 RUN npm run build --prod
 
-# Étape 2 : Servir l'application via NGINX
+# Step 2: Serve application via NGINX
 FROM nginx:alpine
-COPY --from=build /app/dist/mon-projet-angular /usr/share/nginx/html
+COPY --from=build /app/dist/your-angular-project /usr/share/nginx/html
 EXPOSE 80
