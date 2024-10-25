@@ -1,15 +1,34 @@
-# Step 1: Build the app in image 'builder'
+# Step 1: Build the Angular frontend app in the 'builder' image
 FROM node:12.8-alpine AS builder
 
+# Set working directory to the Frontend directory
 WORKDIR /usr/src/app
-COPY . .
-RUN yarn && yarn build
 
-# Step 2: Use build output from 'builder'
+# Copy only the Frontend dependencies first to optimize build caching
+COPY Frontend/package.json Frontend/yarn.lock ./
+
+# Install dependencies
+RUN yarn install
+
+# Copy all other Frontend files and build the application
+COPY Frontend/ .
+RUN yarn build
+
+# Step 2: Use NGINX to serve the built files
 FROM nginx:stable-alpine
 LABEL version="1.0"
 
-COPY Frontend/nginx.conf /etc/nginx/nginx.conf
+# Copy custom NGINX configuration if necessary
+COPY nginx.conf /etc/nginx/nginx.conf
 
+# Set the working directory for NGINX
 WORKDIR /usr/share/nginx/html
+
+# Copy the Angular build output from the builder stage
 COPY --from=builder /usr/src/app/dist/summer-workshop-angular/ .
+
+# Expose the default NGINX port
+EXPOSE 80
+
+# Start NGINX server
+CMD ["nginx", "-g", "daemon off;"]
