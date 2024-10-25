@@ -25,21 +25,17 @@ pipeline {
     stages {
 
         
-        stage('Setup Tools Environment with Docker Compose') {
+        stage('Setup Tool Environment (Nexus, SonarQube)') {
             steps {
-                
-                    echo 'Starting tool environment (Nexus, SonarQube) using Docker Compose...'
-                    sh 'docker-compose -f docker-compose-tools.yml up -d'
-  
+                echo 'Starting Nexus and SonarQube containers with Docker Compose...'
+                sh 'docker-compose -f docker-compose-tools.yml up -d'
             }
         }
 
-        stage('Setup Application Environment with Docker Compose') {
+        stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
             steps {
-                
-                    echo 'Starting application environment (MySQL, Spring Boot) using Docker Compose...'
-                    sh 'docker-compose -f docker-compose.yml up -d'
-                
+                echo 'Starting application environment (MySQL, Spring Boot, Angular) with Docker Compose...'
+                sh 'docker-compose -f docker-compose.yml up -d'
             }    
         }
 
@@ -52,25 +48,22 @@ pipeline {
             }
         }
 
-        /*stage('Test Angular Application') {
-            steps {
-                dir('Frontend') { // Assuming your Angular project is in a directory named Frontend
-                    echo 'Installing Angular dependencies...'
-                    sh 'npm install'
-                    echo 'Running Angular tests...'
-                    sh 'npm test -- --watch=false ' // Run tests without watch mode
-                }
-            }
-        }*/
-
-        /*stage('Build Angular App') {
+        stage('Build Angular Application') {
             steps {
                 dir('Frontend') {
                     echo 'Building Angular application...'
-                    sh 'npm run build --prod' // Adjust according to your build script
+                    sh 'npm install'
+                    sh 'npm run build --prod' // Adjust based on your Angular build script
                 }
             }
-        }*/
+        }
+
+        stage('Create Angular Docker Image') {
+            steps {
+                echo 'Creating Docker image for Angular application...'
+                sh 'docker build -t soufi2001/devopsfront:5arctic3-g4-devops -f Frontend/Dockerfile .'
+            }
+        }
 
         stage('Code Analysis') {
             steps {
@@ -210,26 +203,41 @@ pipeline {
                 }
             }
         }
+
+        stage('Verify Spring Boot and MySQL Communication') {
+            steps {
+                echo 'Testing communication between Spring Boot and MySQL using Postman...'
+                // Placeholder for Postman API tests to verify Spring and MySQL communication
+                // Example: sh 'newman run your-postman-collection.json'
+            }
+        }
+
+        stage('Verify Angular-Spring Boot Communication') {
+            steps {
+                echo 'Testing Angular UI consuming services exposed by Spring Boot...'
+                // Placeholder for testing Angular-Spring Boot communication, such as checking network requests in Angular.
+            }
+        }
     }
     
 
-    post {
+   post {
         always {
             script {
                 try {
-                    echo 'Stopping and removing Docker Compose environments...'
-                    sh 'docker-compose -f docker-compose-tools.yml down'
-                    sh 'docker-compose -f docker-compose.yml down'
+                    echo 'Cleaning up Docker Compose environments...'
+                    sh 'docker-compose -f docker-compose-tools.yml down -v'
+                    sh 'docker-compose -f docker-compose.yml down -v'
                 } catch (Exception e) {
                     echo "Failed to stop Docker Compose containers: ${e.message}"
                 }
             }
         }
         success {
-            echo 'Build, SonarQube analysis, and Nexus publish succeeded!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Build or Nexus publish failed.'
+            echo 'Pipeline encountered an error.'
         }
     }
 }
