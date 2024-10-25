@@ -1,14 +1,16 @@
-# Step 1: Build the app in image 'builder'
-FROM node:16 AS builder
+# Use the official node image for building Angular project
+FROM node:16 as build
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-RUN npm install
+# Copy the Angular project files
 COPY . .
+
+# Install dependencies and build the project
+RUN npm install
 RUN npm run build --prod
 
-# Step 2: Serve application via NGINX
+# Serve the application with NGINX
 FROM nginx:alpine
-COPY --from=builder /usr/src/app/dist/summer-workshop-angular /usr/share/nginx/html
+COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
 EXPOSE 80
