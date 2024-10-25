@@ -1,14 +1,15 @@
-# Step 1: Build Angular application
-FROM node:16 as build
-WORKDIR /app
-RUN rm -f package.json package-lock.json  # Remove any existing package files
-COPY Frontend/package*.json ./  # Adjusted path to package.json
-RUN ls -al /app  # List files in /app to confirm package.json is present
-RUN npm install
-COPY Frontend/. .  # Copy all other necessary files from Frontend directory
-RUN npm run build --prod
+# Step 1: Build the app in image 'builder'
+FROM node:12.8-alpine AS builder
 
-# Step 2: Serve application via NGINX
-FROM nginx:alpine
-COPY --from=build /app/dist/your-angular-project /usr/share/nginx/html
-EXPOSE 80
+WORKDIR /usr/src/app
+COPY . .
+RUN yarn && yarn build
+
+# Step 2: Use build output from 'builder'
+FROM nginx:stable-alpine
+LABEL version="1.0"
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+WORKDIR /usr/share/nginx/html
+COPY --from=builder /usr/src/app/dist/summer-workshop-angular/ .
