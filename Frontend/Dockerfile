@@ -1,13 +1,16 @@
-# Step 1: Build Angular application
+# Use the official node image for building Angular project
 FROM node:16 as build
-WORKDIR /app
-COPY Frontend/package*.json ./  # Adjusted path to package.json
-RUN ls -al /app  # List files in /app to confirm package.json is present
+
+WORKDIR Frontend/app
+
+# Copy the Angular project files
+COPY . .
+
+# Install dependencies and build the project
 RUN npm install
-COPY Frontend/. .  # Copy all other necessary files from Frontend directory
 RUN npm run build --prod
 
-# Step 2: Serve application via NGINX
+# Serve the application with NGINX
 FROM nginx:alpine
-COPY --from=build /app/dist/your-angular-project /usr/share/nginx/html
+COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
 EXPOSE 80
