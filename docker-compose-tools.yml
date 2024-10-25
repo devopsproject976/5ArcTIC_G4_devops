@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   nexus:
-    image: sonatype/nexus3
     container_name: nexus
     ports:
       - "8081:8081"
@@ -12,9 +11,9 @@ services:
       - INSTALL4J_ADD_VM_PARAMS=-Xms512m -Xmx1024m
     networks:
       - tool-network
+    # No image specified; will use the already-running 'nexus' container
 
   sonarqube:
-    image: sonarqube:community
     container_name: sonarqube
     ports:
       - "9000:9000"
@@ -29,6 +28,7 @@ services:
       - SONAR_JDBC_PASSWORD=sonar
     networks:
       - tool-network
+    # No image specified; will use the already-running 'sonarqube' container
 
 volumes:
   nexus-data:
