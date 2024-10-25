@@ -9,7 +9,7 @@ RUN yarn && yarn build
 FROM nginx:stable-alpine
 LABEL version="1.0"
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY Frontend/nginx.conf /etc/nginx/nginx.conf
 
 WORKDIR /usr/share/nginx/html
 COPY --from=builder /usr/src/app/dist/summer-workshop-angular/ .
