@@ -61,7 +61,7 @@ pipeline {
         stage('Create Angular Docker Image') {
             steps {
                 echo 'Creating Docker image for Angular application...'
-                sh 'docker build -t soufi2001/devopsfront:5arctic3-g4-devops -f Frontend/Dockerfile .'
+                sh 'docker build --no-cache -t soufi2001/devopsfront:5arctic3-g4-devops -f Frontend/Dockerfile .'
             }
         }
 
