@@ -17,7 +17,7 @@ services:
     image: soufi2001/devopsback:5arctic3-g4-devops
     container_name: springboot
     ports:
-      - "8080:8080"
+      - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
       SPRING_DATASOURCE_USERNAME: root
