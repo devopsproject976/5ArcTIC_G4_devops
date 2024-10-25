@@ -1,5 +1,5 @@
 # Step 1: Build the Angular frontend app in the 'builder' image
-FROM node:12.8-alpine AS builder
+FROM node:16 AS builder
 
 # Set working directory to the Frontend directory
 WORKDIR /usr/src/app
