@@ -19,7 +19,7 @@ FROM nginx:stable-alpine
 LABEL version="1.0"
 
 # Copy custom NGINX configuration if necessary
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY Frontend/nginx.conf /etc/nginx/nginx.conf
 
 # Set the working directory for NGINX
 WORKDIR /usr/share/nginx/html
