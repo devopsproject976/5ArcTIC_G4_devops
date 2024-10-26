@@ -29,7 +29,7 @@ pipeline {
             steps {
                 echo 'Starting Nexus and SonarQube containers with Docker Compose...'
                 sh 'docker-compose -f docker-compose-tools.yml start -d'
-                sh 'sleep 60'
+                
             }
         }
 
