@@ -1,34 +1,45 @@
-version: '3.8'
+version: "3"
+
 services:
-
-  db:
-    platform: linux/x86_64
-    image: "mysql:5.7"
-    ports:
-      - 3306:3306
-    #volumes:
-      #- C:\Users\hp\Documents\projet-rachid\backend\src\main\resources\db=/var/lib/mysql
-    restart: always
+  mysql:
+    image: mysql:5.7
     environment:
-      - MYSQL_ROOT_PASSWORD=root_password
-      - MYSQL_DATABASE=devops
-      - MYSQL_USER=root    
-      - MYSQL_PASSWORD=""
-
-  backend:
-    depends_on:
-      - db
-    build: ./backend
-    restart: always
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
     ports:
-      - 8082:8082
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
-  frontend:
+  spring_app:
+    image: your_spring_image  # replace with your Spring Boot app image
     depends_on:
-      - db
-    build: ./frontend
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: root  
+      SPRING_DATASOURCE_PASSWORD: ""
+      # Add any other environment variables your Spring Boot application requires
     ports:
-      - 4200:80
-    
-#volumes:
-  #db_data=C:\Users\hp\Documents\projet-rachid\backend\src\main\resources\db
+      - "8082:8082"
+    networks:
+      - app_network
+
+  angular_app:
+    image: your_angular_image  # replace with your Angular app image
+    depends_on:
+      - spring_app
+    ports:
+      - "4200:80"  # default for Angular CLI server
+    environment:
+      API_URL: http://spring_app:8080  # Ensure the Angular app points to the Spring API
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+
+networks:
+  app_network:
