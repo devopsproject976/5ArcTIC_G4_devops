@@ -19,7 +19,7 @@ services:
       context: ./Backend
       dockerfile: Dockerfile  # Rename your backend Dockerfile as needed
       args:
-        JAR_FILE: target/5ArcTIC3-G4-NourBenkhairia.jar
+        JAR_FILE: target/5ArcTIC3-G4-devopss.jar
     container_name: springboot
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
