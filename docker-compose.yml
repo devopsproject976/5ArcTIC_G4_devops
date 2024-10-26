@@ -1,45 +1,34 @@
 version: "3"
-
 services:
-  mysql:
-    image: mysql:5.7
+  springboot-app:
+    image: soufi2001/devopsback:latest
+    restart: always
+    build:
+      context: ./Backend  # Adjust the path to your Spring Boot backend directory if needed
+    ports:
+      - "8082:8080"
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: devops
+      MYSQL_HOST: mysqldb
       MYSQL_USER: root
-    ports:
-      - "3306:3306"
+      MYSQL_PASSWORD: root
+      MYSQL_PORT: 3306
+
+  mysqldb: 
+    container_name: mysqldb
+    image: mysql
     volumes:
-      - mysql_data:/var/lib/mysql
-
-  spring_app:
-    image: soufi2001/devopsback:5arctic3-g4-devops
-    depends_on:
-      - mysql
+      - /home/user/Desktop/db:/var/lib/mysql
+    ports: 
+      - "3307:3306"   
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
-      SPRING_DATASOURCE_USERNAME: root  
-      SPRING_DATASOURCE_PASSWORD: ""
-    ports:
-      - "8082:8082"
-    networks:
-      - app_network
-    command: >
-      sh -c "echo 'Waiting for MySQL...'; sleep 60"
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: root
 
-  angular_app:
-    image: soufi2001/devopsfront:5arctic3-g4-devops
+  angular-app:
+    image: soufi2001/devopsfront:latest
+    build:
+      context: ./Frontend  # Adjust the path to your Angular frontend directory
+    ports:
+      - "4200:80"  # Expose port 80 of the Angular app to port 4200 on the host
     depends_on:
-      - spring_app
-    ports:
-      - "4200:80"
-    environment:
-      API_URL: http://spring_app:8082
-    networks:
-      - app_network
-
-volumes:
-  mysql_data:
-
-networks:
-  app_network:
+      - springboot-app  # Wait for the Spring Boot app to be ready before starting Angular
