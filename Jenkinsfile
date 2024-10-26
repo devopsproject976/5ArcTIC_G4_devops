@@ -36,14 +36,14 @@ pipeline {
             }
         }
 
-        /*stage('Start Services') {
+        stage('Start Services') {
             steps {
                 script {
                     // Start all services defined in the Docker Compose files
                     sh 'docker-compose -f docker-compose.yml -f docker-compose-tools.yml up -d'
                 }
             }
-        }*/
+        }
 
         stage('Build and Test') {
             steps {
