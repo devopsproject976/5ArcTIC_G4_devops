@@ -1,44 +1,34 @@
 version: '3.8'
-
 services:
-  mysql:
-    image: mysql:5.7
-    container_name: mysql
+
+  db:
+    platform: linux/x86_64
+    image: "mysql:5.7"
     ports:
-      - "3306:3306"
+      - 3306:3306
+    #volumes:
+      #- C:\Users\hp\Documents\projet-rachid\backend\src\main\resources\db=/var/lib/mysql
+    restart: always
     environment:
-      MYSQL_DATABASE: devops
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - app-network
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=project_db
+      - MYSQL_USER=root    
+      - MYSQL_PASSWORD=""
 
-  springboot:
-    image: soufi2001/devopsback:5arctic3-g4-devops
-    container_name: springboot
-    ports:
-      - "8082:8082"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ""
+  backend:
     depends_on:
-      - mysql
-    networks:
-      - app-network
-
-  angular:
-    image: soufi2001/devopsfront:5arctic3-g4-devops
-    container_name: angular
+      - db
+    build: ./backend
+    restart: always
     ports:
-      - "4200:80"
+      - 8082:8082
+
+  frontend:
     depends_on:
-      - springboot
-    networks:
-      - app-network
-
-volumes:
-  mysql-data:
-
-networks:
-  app-network:
+      - db
+    build: ./frontend
+    ports:
+      - 4200:80
+    
+#volumes:
+  #db_data=C:\Users\hp\Documents\projet-rachid\backend\src\main\resources\db
