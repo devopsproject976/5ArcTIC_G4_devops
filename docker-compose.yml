@@ -4,10 +4,9 @@ services:
   mysql:
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: devops
       MYSQL_USER: root
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "3306:3306"
     volumes:
@@ -20,11 +19,13 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
       SPRING_DATASOURCE_USERNAME: root  
-      SPRING_DATASOURCE_PASSWORD: ""  # Explicitly setting an empty password
+      SPRING_DATASOURCE_PASSWORD: ""
     ports:
       - "8082:8082"
     networks:
       - app_network
+    command: >
+      sh -c "echo 'Waiting for MySQL...'; sleep 60"
 
   angular_app:
     image: soufi2001/devopsfront:5arctic3-g4-devops
@@ -33,7 +34,7 @@ services:
     ports:
       - "4200:80"
     environment:
-      API_URL: http://spring_app:8082  # Correct port for Spring API
+      API_URL: http://spring_app:8082
     networks:
       - app_network
 
