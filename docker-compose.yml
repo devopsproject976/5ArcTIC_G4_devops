@@ -6,7 +6,7 @@ services:
     container_name: mysql
     environment:
       MYSQL_DATABASE: devops
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ""
     ports:
       - "3306:3306"
     volumes:
