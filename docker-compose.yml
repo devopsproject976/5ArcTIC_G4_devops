@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: devops
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  springboot:
+    build:
+      context: .
+      dockerfile: ./Backend  # Rename your backend Dockerfile as needed
+      args:
+        JAR_FILE: target/5ArcTIC3-G4-NourBenkhairia.jar
+    container_name: springboot
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  angular:
+    build:
+      context: .
+      dockerfile: ./Frontend  # Rename your frontend Dockerfile as needed
+    container_name: angular
+    ports:
+      - "80:80"
+    depends_on:
+      - springboot
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
