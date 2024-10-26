@@ -5,9 +5,9 @@ services:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: ""
-      MYSQL_DATABASE: mydatabase
+      MYSQL_DATABASE: devops
       MYSQL_USER: root
-      MYSQL_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "3306:3306"
     volumes:
@@ -20,7 +20,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
       SPRING_DATASOURCE_USERNAME: root  
-      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_ALLOW_EMPTY_PASSWORD: "yes"
       # Add any other environment variables your Spring Boot application requires
     ports:
       - "8082:8082"
