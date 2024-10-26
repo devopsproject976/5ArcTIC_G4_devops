@@ -18,10 +18,9 @@ services:
     depends_on:
       - mysql
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
       SPRING_DATASOURCE_USERNAME: root  
-      SPRING_ALLOW_EMPTY_PASSWORD: "yes"
-      # Add any other environment variables your Spring Boot application requires
+      SPRING_DATASOURCE_PASSWORD: ""  # Explicitly setting an empty password
     ports:
       - "8082:8082"
     networks:
@@ -32,9 +31,9 @@ services:
     depends_on:
       - spring_app
     ports:
-      - "4200:80"  # default for Angular CLI server
+      - "4200:80"
     environment:
-      API_URL: http://spring_app:8080  # Ensure the Angular app points to the Spring API
+      API_URL: http://spring_app:8082  # Correct port for Spring API
     networks:
       - app_network
 
