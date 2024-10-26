@@ -11,7 +11,7 @@ services:
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=root_password
-      - MYSQL_DATABASE=project_db
+      - MYSQL_DATABASE=devops
       - MYSQL_USER=root    
       - MYSQL_PASSWORD=""
 
