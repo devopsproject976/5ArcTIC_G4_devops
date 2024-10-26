@@ -40,14 +40,7 @@ pipeline {
             }    
         }
 
-        stage('Build springboot backend') {
-            steps {
-                dir('Backend') {
-                    echo 'Building Spring Boot application...'
-                    sh 'mvn clean package -DskipTests=true'
-                }
-            }
-        }
+        
 
         stage('Build Angular Application') {
             steps {
@@ -61,12 +54,12 @@ pipeline {
 
         
 
-        stage('Code Analysis') {
+        stage('Build Springboot and Code Analysis') {
             steps {
                 dir('Backend') {
-                    echo 'Running SonarQube analysis...'
+                    echo 'Building Spring Boot application and Running SonarQube analysis...'
                     withSonarQubeEnv('sonar-jenkins') {
-                        sh 'mvn jacoco:report sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops '
+                        sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops '
                     }
                 }
             }
