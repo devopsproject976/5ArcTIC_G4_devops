@@ -16,8 +16,8 @@ services:
 
   springboot:
     build:
-      context: ./Backend
-      dockerfile: Dockerfile  # Rename your backend Dockerfile as needed
+      context: ./Backend  # This should be correct
+      dockerfile: Dockerfile
     container_name: springboot
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
@@ -33,7 +33,7 @@ services:
   angular:
     build:
       context: ./Frontend
-      dockerfile: Dockerfile  # Rename your frontend Dockerfile as needed
+      dockerfile: Dockerfile
     container_name: angular
     ports:
       - "80:80"

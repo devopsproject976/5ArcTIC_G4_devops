@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # Copy the dynamic Spring Boot jar file to the container
-COPY ./target/5ArcTIC3-G4-devopss-1.0.jar /app/5ArcTIC3-G4-devopss.jar
+COPY target/5ArcTIC3-G4-devopss-1.0.jar /app/5ArcTIC3-G4-devopss.jar
 
 # Expose port 8080 for the Spring Boot application
 EXPOSE 8080
