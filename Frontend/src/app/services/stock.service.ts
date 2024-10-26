@@ -24,9 +24,7 @@ export class StockService {
   }
 
   public addStock(stock: any): Observable<any> {
-
-    return this.http.post(`${this.apiUrl}`, stock);
-  }
+    return this.http.post(`${this.apiUrl}/add`, stock); // Corrected endpoint
 
 
 }
