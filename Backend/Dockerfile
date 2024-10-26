@@ -4,9 +4,6 @@ FROM openjdk:17-jdk-alpine
 # Set the working directory
 WORKDIR /app
 
-# Define build argument
-ARG JAR_FILE
-
 # Copy the dynamic Spring Boot jar file to the container
 COPY ./target/*.jar /app/5ArcTIC3-G4-devopss.jar
 
@@ -15,10 +12,3 @@ EXPOSE 8080
 
 # Entry point for running the application
 ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-devopss.jar"]
-
-
-
-
-
-
-
