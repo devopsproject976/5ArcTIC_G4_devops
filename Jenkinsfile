@@ -71,7 +71,7 @@ pipeline {
                 dir('Backend') {
                     echo 'Running SonarQube analysis...'
                     withSonarQubeEnv('sonar-jenkins') {
-                        sh 'mvn jacoco:report sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops -Dsonar.host.url=${SONARQUBE_URL} '
+                        sh 'mvn jacoco:report sonar:sonar -Dsonar.projectKey=5ArcTIC3-G4-devops '
                     }
                 }
             }
