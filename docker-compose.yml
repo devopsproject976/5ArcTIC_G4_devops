@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:5.7
     container_name: mysql
     environment:
       MYSQL_DATABASE: devops
-      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ROOT_PASSWORD: ""  # Set a strong password for production
     ports:
       - "3306:3306"
     volumes:
@@ -16,13 +14,13 @@ services:
 
   springboot:
     build:
-      context: ./Backend
+      context: ./Backend  # Path to the directory containing the Dockerfile
       dockerfile: Dockerfile  # Ensure this is the correct name of your Dockerfile
     container_name: springboot
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_DATASOURCE_PASSWORD: ""  # Set a strong password for production
     ports:
       - "8080:8080"
     depends_on:
@@ -32,7 +30,7 @@ services:
 
   angular:
     build:
-      context: ./Frontend
+      context: ./Frontend  # Path to your Angular Dockerfile
       dockerfile: Dockerfile  # Ensure this is the correct name of your Dockerfile
     container_name: angular
     ports:

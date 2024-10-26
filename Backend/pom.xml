@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>tn.esprit</groupId>
-    <artifactId>5ArcTIC3-G4-devopss</artifactId>
+    <artifactId>5ArcTIC3-G4-devops</artifactId>
     <version>1.0</version>
-    <name>DevOps_Project</name>
+    <name>5ArcTIC3-G4-devops</name>
     <description>DevOps_Project</description>
     <properties>
         <java.version>11</java.version>
