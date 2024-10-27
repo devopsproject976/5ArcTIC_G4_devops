@@ -154,11 +154,21 @@ pipeline {
                 }
             }
         }
+        stage('Docker Compose Up') {
+            steps {
+                script {
+                    sh 'docker-compose down || true' // Arrête les services en cours si nécessaire
+                    sh 'docker-compose up -d' // Lancement en arrière-plan
+                }
+            }
+        }
     }
+
 
     post {
         always {
             sh 'docker rm -f mysql-test || true'
+             sh 'docker-compose down' // Nettoyage à la fin de la pipeline
         }
         success {
             junit 'Backend/target/surefire-reports/*.xml'
