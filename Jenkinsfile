@@ -169,6 +169,7 @@ pipeline {
         always {
             sh 'docker rm -f mysql-test || true'
              sh 'docker-compose down' // Nettoyage à la fin de la pipeline
+              archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true  // Archive artifacts
         }
         success {
             junit 'Backend/target/surefire-reports/*.xml'
