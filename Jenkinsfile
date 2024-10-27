@@ -101,7 +101,7 @@ pipeline {
                     }
                 }
                 */
-            } // Closing the parallel block **test***
+            } // Closing the parallel block **test****
         }
 
     }
