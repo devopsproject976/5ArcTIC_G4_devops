@@ -157,6 +157,7 @@ pipeline {
         stage('Docker Compose Up') {
             steps {
                 script {
+                    sh 'docker rm -f mysql-test || true' // Remove the MySQL container if it exists
                     sh 'docker-compose down || true' // Arrête les services en cours si nécessaire
                     sh 'docker-compose up -d' // Lancement en arrière-plan
                 }
