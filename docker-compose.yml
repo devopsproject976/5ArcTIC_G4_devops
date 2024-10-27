@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: devops
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  backend:
+    image: aichanciri/devopsback:5ArcTIC3-G4-AichaNciri
+    container_name: backend
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  frontend:
+    image: aichanciri/devopsfront:5ArcTIC3-G4-AichaNciri
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - springboot
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
