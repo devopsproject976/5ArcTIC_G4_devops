@@ -1,5 +1,5 @@
-# Use OpenJDK 11 on Alpine
-FROM openjdk:11-jdk-alpine
+# Use OpenJDK 11 on Slim Debian
+FROM openjdk:11-jdk-slim
 
 # Set the working directory
 WORKDIR /app
@@ -12,4 +12,3 @@ EXPOSE 8080
 
 # Entry point for running the application
 ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-devops.jar"]
-
