@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>tn.esprit</groupId>
-    <artifactId>5ArcTIC3-G4-devops</artifactId>
+    <artifactId>5ArcTIC3_G4_devops_SofienDaadoucha</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>5ArcTIC3-G4-devops</name>
-    <description>5ArcTIC3-G4-devops</description>
+    <name>5ArcTIC3_G4_devops_SofienDaadoucha</name>
+    <description>5ArcTIC3-G4-devops-SofienDaadoucha</description>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -61,7 +61,7 @@
     </dependencies>
 
     <build>
-        <finalName>5ArcTIC3-G4-SofienDaadoucha</finalName> <!-- Sets the JAR name -->
+
 
         <plugins>
             <plugin>

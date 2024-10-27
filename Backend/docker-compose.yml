@@ -6,7 +6,7 @@ services:
     build:
       context: ./Backend  # Adjust the path to your Spring Boot backend directory if needed
     ports:
-      - "8082:8080"
+      - "8082:8082"
     environment:
       MYSQL_HOST: mysqldb
       MYSQL_USER: root

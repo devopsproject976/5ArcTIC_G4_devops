@@ -4,15 +4,9 @@ node_modules/
 # Ignore log files
 *.log
 
-# Ignore Maven target directory
-target/
-
 # Ignore temporary files
 *.tmp
 *.swp
-
-# Ignore test-related files
-src/test/
 
 # Ignore IDE-specific files
 .idea/

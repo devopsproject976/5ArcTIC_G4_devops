@@ -21,7 +21,7 @@ import { ContactComponent } from './contact/contact.component'; // Import FormsM
     StockComponent,
     ProductComponent,
     ProductListComponent,
-    ContactComponent
+    ContactComponent,
   ],
   imports: [
     BrowserModule,
