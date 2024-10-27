@@ -171,13 +171,13 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        /*stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
                 sh 'docker build -t soufi2001/devopsback:5arctic3-g4-devops -f Backend/Dockerfile .'
                 sh 'docker build --no-cache -t soufi2001/devopsfront:5arctic3-g4-devops -f Frontend/Dockerfile .'
             }
-        }
+        }*/
 
         /*stage('Push Docker Image') {
             steps {
@@ -193,21 +193,9 @@ pipeline {
             }
         }*/
 
-        stage('Verify Spring Boot and MySQL Communication') {
-            steps {
-                echo 'Testing communication between Spring Boot and MySQL using Postman...'
-                // Placeholder for Postman API tests to verify Spring and MySQL communication
-                // Example: sh 'newman run your-postman-collection.json'
-            }
-        }
+        
 
-        stage('Verify Angular-Spring Boot Communication') {
-            steps {
-                echo 'Testing Angular UI consuming services exposed by Spring Boot...'
-                // Placeholder for testing Angular-Spring Boot communication, such as checking network requests in Angular.
-            }
-        }
-    }
+        
     
 
    post {
