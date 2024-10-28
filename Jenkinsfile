@@ -56,7 +56,7 @@ pipeline {
             steps {
                 script {
                     // Start only the database service defined in docker-compose.yml
-                    sh 'docker-compose up -d db' // replace `db` with your database service name
+                    sh 'docker-compose up -d mysql' // replace `db` with your database service name
                 }
             }
         }
