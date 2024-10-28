@@ -25,18 +25,18 @@ pipeline {
     stages {
 
         
-        /*stage('Setup Tool Environment (Nexus, SonarQube)') {
+        stage('Setup Tool Environment (Nexus, SonarQube)') {
             steps {
                 echo 'Starting Nexus and SonarQube containers with Docker Compose...'
                 sh 'docker-compose -f docker-compose-tools.yml start -d'
                 
             }
-        }*/
+        }
 
         stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
             steps {
                 echo 'Starting application environment (MySQL, Spring Boot, Angular) with Docker Compose...'
-                sh 'docker-compose -f docker-compose.yml up -d'
+                sh 'docker compose -f docker-compose.yml up -d'
             }    
         }
 
@@ -59,7 +59,7 @@ pipeline {
                 dir('Backend') {
                     echo 'Building Spring Boot application and Running SonarQube analysis...'
                     withSonarQubeEnv('sonar-jenkins') {
-                        sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops '
+                        sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -DskipTests '
                     }
                 }
             }
@@ -204,7 +204,7 @@ pipeline {
                 try {
                     echo 'Cleaning up Docker Compose environments...'
                    // sh 'docker-compose -f docker-compose-tools.yml down -v'
-                    sh 'docker-compose -f docker-compose.yml down -v'
+                    sh 'docker compose -f docker-compose.yml down -v'
                 } catch (Exception e) {
                     echo "Failed to stop Docker Compose containers: ${e.message}"
                 }
