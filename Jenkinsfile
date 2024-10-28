@@ -36,7 +36,7 @@ pipeline {
         stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
             steps {
                 echo 'Starting application environment (MySQL, Spring Boot, Angular) with Docker Compose...'
-                sh 'docker compose -f docker-compose.yml start -d'
+                sh 'docker compose -f docker-compose.yml start '
             }    
         }
 
