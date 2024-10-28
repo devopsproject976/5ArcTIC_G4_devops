@@ -8,12 +8,16 @@ pipeline {
     }
 
     environment {
-        DB_URL = 'jdbc:mysql://localhost:3306/devops'
+        // MySQL for Spring Boot
+        DB_URL = 'jdbc:mysql://localhost:3307/devops' // Port 3307 as per your docker-compose
         DB_USER = 'root'
-        DB_PASSWORD = ''
-        /*DB_URL = 'jdbc:postgresql://sonar_db:5432/sonar' // Updated to PostgreSQL
-        DB_USER = 'sonar'
-        DB_PASSWORD = 'sonar'*/
+        DB_PASSWORD = '' // Update to a strong password in production
+
+        // SonarQube PostgreSQL details
+        SONAR_DB_URL = 'jdbc:postgresql://sonar_db:5432/sonar' // Assuming the container is networked correctly
+        SONAR_DB_USER = 'sonar'
+        SONAR_DB_PASSWORD = 'sonar'
+
         DOCKER_USERNAME = credentials('dockerhub-token')
         DOCKER_PASSWORD = credentials('dockerhub-token')
         IMAGE_NAME_BACKEND = 'nourbkh/devops-backend'
@@ -49,53 +53,51 @@ pipeline {
         }
 
         stage('Build and Test') {
-            steps {
+                    steps {
+                        // Print environment variables
+                        script {
+                            echo "Current Java version: ${sh(script: 'java -version', returnStdout: true).trim()}"
+                            echo "Current Maven version: ${sh(script: 'mvn -v', returnStdout: true).trim()}"
+                        }
 
-            // Print environment variables
-                script {
-                    echo "Current Java version: ${sh(script: 'java -version', returnStdout: true).trim()}"
-                    echo "Current Maven version: ${sh(script: 'mvn -v', returnStdout: true).trim()}"
-                    }
+                        // Build and test backend
+                        dir('Backend') {
+                            sh 'mvn clean package'
+                            sh 'mvn test'
+                            sh 'mvn jacoco:report'
+                        }
 
+                        // SonarQube analysis for backend
+                        script {
+                            dir('Backend') {
+                                withSonarQubeEnv('SonarQube') {
+                                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                        "-Dsonar.projectKey=${SONAR_PROJECT_KEY_BACKEND} " +
+                                        "-Dsonar.sources=src " +
+                                        "-Dsonar.java.binaries=target/classes " +
+                                        "-Dsonar.host.url=${params.SONARQUBE_URL} " +
+                                        "-Dsonar.login=${env.SONAR_TOKEN} " +
+                                        "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
+                                }
+                            }
+                        }
 
-                // Build and test backend
-                dir('Backend') {
-                    sh 'mvn clean package'
-                    sh 'mvn test'
-                    sh 'mvn jacoco:report'
-                }
+                        // Build frontend
+                        dir('Frontend') {
+                            sh 'npm install' // Assuming you need to install dependencies
+                            sh 'npm run build' // Replace with your build command
 
-                // SonarQube analysis for backend
-                script {
-                    dir('Backend') {
-                        withSonarQubeEnv('SonarQube') {
-                            sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                                "-Dsonar.projectKey=${SONAR_PROJECT_KEY_BACKEND} " +
-                                "-Dsonar.sources=src " +
-                                "-Dsonar.java.binaries=target/classes " +
-                                "-Dsonar.host.url=${params.SONARQUBE_URL} " +
-                                "-Dsonar.login=${env.SONAR_TOKEN} " +
-                                "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
+                            // SonarQube analysis for frontend
+                            withSonarQubeEnv('SonarQube') {
+                                sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                    "-Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} " +
+                                    "-Dsonar.sources=src " +
+                                    "-Dsonar.host.url=${params.SONARQUBE_URL} " +
+                                    "-Dsonar.login=${env.SONAR_TOKEN}"
+                            }
                         }
                     }
                 }
-
-                // Build frontend
-                dir('Frontend') {
-                    sh 'npm install' // Assuming you need to install dependencies
-                    sh 'npm run build' // Replace with your build command
-
-                    // SonarQube analysis for frontend
-                    withSonarQubeEnv('SonarQube') {
-                        sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                            "-Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} " +
-                            "-Dsonar.sources=src " +
-                            "-Dsonar.host.url=${params.SONARQUBE_URL} " +
-                            "-Dsonar.login=${env.SONAR_TOKEN}"
-                    }
-                }
-            }
-        }
 
         stage('Build Docker Images') {
             steps {
