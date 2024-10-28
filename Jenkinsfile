@@ -47,6 +47,14 @@ pipeline {
 
         stage('Build and Test') {
             steps {
+
+            // Print environment variables
+                script {
+                    echo "Current Java version: ${sh(script: 'java -version', returnStdout: true).trim()}"
+                    echo "Current Maven version: ${sh(script: 'mvn -v', returnStdout: true).trim()}"
+                    }
+
+
                 // Build and test backend
                 dir('Backend') {
                     sh 'mvn clean package'
