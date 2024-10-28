@@ -12,6 +12,11 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_PORT: 3306
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   mysqldb: 
     container_name: mysqldb
@@ -31,4 +36,5 @@ services:
     ports:
       - "4200:80"  # Expose port 80 of the Angular app to port 4200 on the host
     depends_on:
-      - springboot-app  # Wait for the Spring Boot app to be ready before starting Angular
+      springboot-app:
+        condition: service_healthy
