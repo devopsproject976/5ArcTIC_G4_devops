@@ -1,38 +1,6 @@
 version: "3"
+
 services:
-  backend-app:
-    image: hamoudaatti/backdevops:latest
-    restart: always
-    build:
-      context: ./Backend
-    ports:
-      - "8082:8080"
-    environment:
-      MYSQL_HOST: mysqldb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_PORT: 3306
-
-  mysqldb:
-    container_name: mysqldb
-    image: mysql
-    volumes:
-      - /home/user/Desktop/db:/var/lib/mysql
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_DATABASE: root
-      MYSQL_ROOT_PASSWORD: root
-
-  frontend-app:
-    image: hamoudaatti/frontdevops:latest
-    build:
-      context: ./Frontend
-    ports:
-      - "4200:8080"
-    depends_on:
-      - backend-app
-
   sonarqube:
     image: sonarqube
     depends_on:

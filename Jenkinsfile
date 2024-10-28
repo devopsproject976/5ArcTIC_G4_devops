@@ -12,7 +12,7 @@ pipeline {
 
     stages {
 
-        stage('Start MySQL Container') {
+     /*   stage('Start MySQL Container') {
             steps {
                 script {
                     // Remove existing container if it exists
@@ -50,7 +50,24 @@ pipeline {
                     sh 'mvn clean package'
                 }
             }
-        }
+        }*/
+           stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
+                    steps {
+                        echo 'Starting application environment (MySQL, Spring Boot, Angular) with Docker Compose...'
+                        sh 'docker-compose -f docker-compose.yml up -d'
+                    }
+                }
+
+           stage('Build Springboot and Code Analysis') {
+                 steps {
+                     dir('Backend') {
+                         echo 'Building Spring Boot application and Running SonarQube analysis...'
+                         withSonarQubeEnv('sonar-jenkins') {
+                             sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops '
+                         }
+                     }
+                 }
+             }
 
         stage('Find JAR Version') {
             steps {
@@ -93,7 +110,7 @@ pipeline {
                     }
                 }
 
-        stage('Build Spring Docker Image') {
+       /* stage('Build Spring Docker Image') {
             steps {
                 echo 'Building Docker image for Spring Boot...'
                 sh 'docker build -t hamoudaatti/backdevops -f Backend/Dockerfile .'
@@ -112,17 +129,24 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            // Clean up the MySQL container after the build
-            sh 'docker rm -f mysql-test || true'
-        }
-        success {
-            echo 'Build and Docker push succeeded for backend!'
-        }
-        failure {
-            echo 'Build or Docker push failed.'
-        }
-    }
-}
+*/
+   post {
+         always {
+             script {
+                 try {
+                     echo 'Cleaning up Docker Compose environments...'
+                    // sh 'docker-compose -f docker-compose-tools.yml down -v'
+                     sh 'docker-compose -f docker-compose.yml down -v'
+                 } catch (Exception e) {
+                     echo "Failed to stop Docker Compose containers: ${e.message}"
+                 }
+             }
+         }
+         success {
+             echo 'Pipeline completed successfully!'
+         }
+         failure {
+             echo 'Pipeline encountered an error.'
+         }
+     }
+ }

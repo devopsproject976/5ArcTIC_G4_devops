@@ -8,6 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose-app.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose-app.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +98,7 @@
       <workItem from="1729516018029" duration="286000" />
       <workItem from="1729516327928" duration="351000" />
       <workItem from="1729516720749" duration="4035000" />
-      <workItem from="1730113218097" duration="2254000" />
+      <workItem from="1730113218097" duration="3056000" />
     </task>
     <servers />
   </component>
