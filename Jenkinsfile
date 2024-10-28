@@ -54,7 +54,7 @@ pipeline {
            stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
                     steps {
                         echo 'Starting application environment (MySQL, Spring Boot, Angular) with Docker Compose...'
-                        sh 'docker-compose -f docker-compose.yml up -d'
+                        sh 'docker-compose -f docker-compose-app.yml up -d'
                     }
                 }
 
@@ -136,7 +136,7 @@ pipeline {
                  try {
                      echo 'Cleaning up Docker Compose environments...'
                     // sh 'docker-compose -f docker-compose-tools.yml down -v'
-                     sh 'docker-compose -f docker-compose.yml down -v'
+                     sh 'docker-compose -f docker-compose-app.yml down -v'
                  } catch (Exception e) {
                      echo "Failed to stop Docker Compose containers: ${e.message}"
                  }
