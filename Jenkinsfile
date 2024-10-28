@@ -9,7 +9,7 @@ pipeline {
 
     environment {
         // MySQL for Spring Boot
-        DB_URL = 'jdbc:mysql://localhost:3307/devops' // Port 3307 as per your docker-compose
+        DB_URL = 'jdbc:mysql://localhost:3306/devops' // Port 3307 as per your docker-compose
         DB_USER = 'root'
         DB_PASSWORD = '' // Update to a strong password in production
 
@@ -52,48 +52,78 @@ pipeline {
             }
         }
 
-        stage('Build and Test') {
-                    steps {
-                        // Print environment variables
-                        script {
-                            echo "Current Java version: ${sh(script: 'java -version', returnStdout: true).trim()}"
-                            echo "Current Maven version: ${sh(script: 'mvn -v', returnStdout: true).trim()}"
-                        }
-
-                        // Build and test backend
-                        dir('Backend') {
-                            sh 'mvn clean package'
-                            sh 'mvn test'
-                            sh 'mvn jacoco:report'
-                        }
-
-                        // SonarQube analysis for backend
-                        script {
-                            dir('Backend') {
-                                withSonarQubeEnv('SonarQube') {
-                                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                                        "-Dsonar.projectKey=${SONAR_PROJECT_KEY_BACKEND} " +
-                                        "-Dsonar.sources=src " +
-                                        "-Dsonar.java.binaries=target/classes " +
-                                        "-Dsonar.host.url=${params.SONARQUBE_URL} " +
-                                        "-Dsonar.login=${env.SONAR_TOKEN} " +
-                                        "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
+        stage('Build Backend and Frontend') {
+                    parallel {
+                        stage('Build Backend') {
+                            steps {
+                                dir('Backend') {
+                                    sh 'mvn clean package'
                                 }
                             }
                         }
+                        stage('Build Frontend') {
+                            steps {
+                                dir('Frontend') {
+                                    sh 'npm install' // Install dependencies
+                                    sh 'npm run build' // Build frontend
+                                }
+                            }
+                        }
+                    }
+                }
 
-                        // Build frontend
-                        dir('Frontend') {
-                            sh 'npm install' // Assuming you need to install dependencies
-                            sh 'npm run build' // Replace with your build command
+                stage('Test Backend and Frontend') {
+                    parallel {
+                        stage('Test Backend') {
+                            steps {
+                                dir('Backend') {
+                                    sh 'mvn test'
+                                    sh 'mvn jacoco:report'
+                                }
+                            }
+                        }
+                        stage('Test Frontend') {
+                            steps {
+                                dir('Frontend') {
+                                    sh 'npm test'
+                                }
+                            }
+                        }
+                    }
+                }
 
-                            // SonarQube analysis for frontend
-                            withSonarQubeEnv('SonarQube') {
-                                sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
-                                    "-Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} " +
-                                    "-Dsonar.sources=src " +
-                                    "-Dsonar.host.url=${params.SONARQUBE_URL} " +
-                                    "-Dsonar.login=${env.SONAR_TOKEN}"
+                stage('SonarQube Analysis Backend and Frontend') {
+                    parallel {
+                        stage('SonarQube Analysis Backend') {
+                            steps {
+                                script {
+                                    dir('Backend') {
+                                        withSonarQubeEnv('SonarQube') {
+                                            sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                                "-Dsonar.projectKey=${SONAR_PROJECT_KEY_BACKEND} " +
+                                                "-Dsonar.sources=src " +
+                                                "-Dsonar.java.binaries=target/classes " +
+                                                "-Dsonar.host.url=${params.SONARQUBE_URL} " +
+                                                "-Dsonar.login=${env.SONAR_TOKEN} " +
+                                                "-Dsonar.jacoco.reportPaths=target/jacoco.exec"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('SonarQube Analysis Frontend') {
+                            steps {
+                                script {
+                                    dir('Frontend') {
+                                        withSonarQubeEnv('SonarQube') {
+                                            sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
+                                                "-Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} " +
+                                                "-Dsonar.sources=src " +
+                                                "-Dsonar.host.url=${params.SONARQUBE_URL} " +
+                                                "-Dsonar.login=${env.SONAR_TOKEN}"
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
