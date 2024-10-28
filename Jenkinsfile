@@ -52,6 +52,26 @@ pipeline {
             }
         }
 
+        stage('Start Database') {
+            steps {
+                script {
+                    // Start only the database service defined in docker-compose.yml
+                    sh 'docker-compose up -d db' // replace `db` with your database service name
+                }
+            }
+        }
+
+        stage('Check Database Connectivity') {
+            steps {
+                script {
+                    // Use a MySQL command to check connection to the database
+                    // Make sure 'mysql-client' is installed on your Jenkins agent
+                    sh 'until mysql -h localhost -P 3307 -u root -p${DB_PASSWORD} -e ";" ; do echo "Waiting for database..."; sleep 5; done'
+                }
+            }
+        }
+
+
         stage('Build Backend and Frontend') {
                     parallel {
                         stage('Build Backend') {

@@ -1,5 +1,8 @@
 FROM openjdk:17-jdk-alpine
 
+# Install MySQL client
+RUN apk update && apk add --no-cache mysql-clients
+
 WORKDIR /app
 
 ARG JAR_FILE
