@@ -11,9 +11,9 @@ pipeline {
         DB_URL = 'jdbc:mysql://localhost:3306/devops'
         DB_USER = 'root'
         DB_PASSWORD = ''
-        DB_URL = 'jdbc:postgresql://sonar_db:5432/sonar' // Updated to PostgreSQL
+        /*DB_URL = 'jdbc:postgresql://sonar_db:5432/sonar' // Updated to PostgreSQL
         DB_USER = 'sonar'
-        DB_PASSWORD = 'sonar'
+        DB_PASSWORD = 'sonar'*/
         DOCKER_USERNAME = credentials('dockerhub-token')
         DOCKER_PASSWORD = credentials('dockerhub-token')
         IMAGE_NAME_BACKEND = 'nourbkh/devops-backend'
