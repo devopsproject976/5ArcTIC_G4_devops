@@ -64,10 +64,12 @@ pipeline {
         stage('Check Database Connectivity') {
             steps {
                 script {
-                    sh 'until mysql -h mysql -P 3306 -u root -p${DB_PASSWORD} -e ";" ; do echo "Waiting for database..."; sleep 5; done || exit 1'
+                    // Use a MySQL command to check connection to the database
+                    sh 'until mysql -h mysql -P 3306 -u root -p -e ";" ; do echo "Waiting for database..."; sleep 5; done || exit 1'
                 }
             }
         }
+
 
 
 
