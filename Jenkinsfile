@@ -47,13 +47,11 @@ pipeline {
 
         stage('Build and Test') {
             steps {
-
-            // Print environment variables
+                // Print environment variables
                 script {
                     echo "Current Java version: ${sh(script: 'java -version', returnStdout: true).trim()}"
                     echo "Current Maven version: ${sh(script: 'mvn -v', returnStdout: true).trim()}"
-                    }
-
+                }
 
                 // Build and test backend
                 dir('Backend') {
@@ -111,7 +109,7 @@ pipeline {
         stage('Push Docker Images') {
             steps {
                 script {
-                    // Push Docker image for backend
+                    // Push Docker images to Docker Hub
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-token',
                                                       usernameVariable: 'DOCKER_USERNAME',
                                                       passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -145,13 +143,14 @@ pipeline {
 
                     // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
                     dir('Frontend') {
+                        // Ensure the correct path and filename for the frontend artifact
                         sh """
                         mvn deploy:deploy-file \
                             -DgroupId=com.example \
                             -DartifactId=devops-frontend \
                             -Dversion=${IMAGE_TAG_FRONTEND} \
                             -Dpackaging=jar \
-                            -Dfile=target/devops-frontend-${IMAGE_TAG_FRONTEND}.jar \
+                            -Dfile=target/devops-frontend-${IMAGE_TAG_FRONTEND}.jar \ // Make sure the file path and name are correct
                             -DrepositoryId=${MAVEN_REPO_ID} \
                             -Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
                             -DskipTests
