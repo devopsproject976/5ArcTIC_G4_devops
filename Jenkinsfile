@@ -64,12 +64,11 @@ pipeline {
         stage('Check Database Connectivity') {
             steps {
                 script {
-                    // Use a MySQL command to check connection to the database
-                    // Make sure 'mysql-client' is installed on your Jenkins agent
-                    sh 'until mysql -h localhost -P 3306 -u root -p${DB_PASSWORD} -e ";" ; do echo "Waiting for database..."; sleep 5; done'
+                    sh 'until mysql -h 127.0.0.1 -P 3306 -u root -p${DB_PASSWORD} -e ";" ; do echo "Waiting for database..."; sleep 5; done || exit 1'
                 }
             }
         }
+
 
 
         stage('Build Backend and Frontend') {
