@@ -28,17 +28,17 @@ pipeline {
         stage('Setup Tool Environment (Nexus, SonarQube)') {
             steps {
                 echo 'Starting Nexus and SonarQube containers with Docker Compose...'
-                sh 'docker compose -f docker-compose-tools.yml up '
+                sh 'docker-compose up '
                 
             }
         }
 
-        stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
+        /*stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
             steps {
                 echo 'Starting application environment (MySQL, Spring Boot, Angular) with Docker Compose...'
                 sh 'docker compose -f docker-compose.yml up '
             }    
-        }
+        */
 
         
 
