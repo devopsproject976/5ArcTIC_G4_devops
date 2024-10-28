@@ -130,6 +130,7 @@ pipeline {
         }
     }
 */
+}
    post {
          always {
              script {
