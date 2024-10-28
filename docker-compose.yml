@@ -23,7 +23,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ""  # Set a strong password for production
     ports:
-      - "8080:8080"
+      - "8085:8080"
     depends_on:
       - mysql
     networks:
