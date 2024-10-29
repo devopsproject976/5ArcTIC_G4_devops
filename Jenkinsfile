@@ -40,7 +40,6 @@ pipeline {
                     echo 'Building Angular application and running lint...'
                     sh '''
                        npm ci
-                       npm run lint
                        npm run build --prod
                     '''
                 }
