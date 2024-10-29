@@ -1,5 +1,4 @@
-version: "3.8"
-
+version: "3"
 services:
   springboot-app:
     image: soufi2001/devopsback:latest
@@ -13,7 +12,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_PORT: 3306
-
+    
   mysqldb: 
     container_name: mysqldb
     image: mysql
@@ -31,9 +30,13 @@ services:
       context: ./Frontend  # Adjust the path to your Angular frontend directory
     ports:
       - "4200:80"  # Expose port 80 of the Angular app to port 4200 on the host
+    depends_on:
+      - springboot-app
 
   sonarqube:
     image: sonarqube
+    depends_on:
+      - sonar_db
     environment:
       SONAR_JDBC_URL: jdbc:postgresql://sonar_db:5432/sonar
       SONAR_JDBC_USERNAME: sonar
