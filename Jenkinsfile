@@ -20,11 +20,7 @@ pipeline {
         
         // **CI Phase** //
         
-        stage('Setup Application Environment') {
-            steps {
-                echo 'Setting up application environment variables...'
-            }
-        }
+        
 
         stage('Build and Code Analysis - Backend') {
             steps {
@@ -73,31 +69,22 @@ pipeline {
         // **CD Phase** //
         
         stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker images for both backend and frontend...'
-                 
-                    backend: { buildDockerImage('Backend', 'soufi2001/devopsback:5arctic3-g4-devops') }
-                    frontend: { buildDockerImage('Frontend', 'soufi2001/devopsfront:5arctic3-g4-devops') }
-                
-            }
-        }
-
-        stage('Push Docker Images') {
-            steps {
-                echo 'Pushing Docker images to DockerHub...'
-                withDockerCredentials {
-                        backendPush: { sh 'docker push soufi2001/devopsback:5arctic3-g4-devops' }
-                        frontendPush: { sh 'docker push soufi2001/devopsfront:5arctic3-g4-devops' }
-                    
+            parallel {
+                stage('Backend Docker Build') {
+                    steps {
+                        buildDockerImage('Backend', 'soufi2001/devopsback:5arctic3-g4-devops')
+                    }
+                }
+                stage('Frontend Docker Build') {
+                    steps {
+                        buildDockerImage('Frontend', 'soufi2001/devopsfront:5arctic3-g4-devops')
+                    }
                 }
             }
         }
-    }
     
     post {
-        always {
-            cleanUpEnvironment()
-        }
+        
         success {
             echo 'CI/CD pipeline completed successfully!'
         }
