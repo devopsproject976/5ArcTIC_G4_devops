@@ -17,7 +17,7 @@ pipeline {
     }
 
     
-
+     stages {
         /*stage('Build and Code Analysis - Backend') {
             steps {
                 dir('Backend') {
