@@ -24,15 +24,7 @@ pipeline {
     }
 
     stages {
-        stage('Docker Compose Up') {
-                    steps {
-                        script {
 
-                            sh 'docker-compose down || true' // Arrête les services en cours si nécessaire
-                            sh 'docker-compose up -d' // Lancement en arrière-plan
-                        }
-                    }
-                }
         stage('Checkout') {
             steps {
                 git branch: 'AichaNciri_5Arctic3_G4',
@@ -40,6 +32,15 @@ pipeline {
                     credentialsId: 'dev'
             }
         }
+        stage('Docker Compose Up') {
+                            steps {
+                                script {
+
+                                    sh 'docker-compose down || true' // Arrête les services en cours si nécessaire
+                                    sh 'docker-compose up -d' // Lancement en arrière-plan
+                                }
+                            }
+                        }
 
         stage('Backend Pipeline') {
             parallel {
