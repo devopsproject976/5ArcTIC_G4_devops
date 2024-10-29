@@ -160,3 +160,4 @@ def sendFailureEmail(subject, message) {
         to: "daadsoufi0157@gmail.com"
     )
 }
+}
