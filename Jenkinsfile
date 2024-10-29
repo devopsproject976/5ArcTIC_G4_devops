@@ -42,7 +42,7 @@ pipeline {
 
         
 
-        stage('Build Angular Application') {
+        /*stage('Build Angular Application') {
             steps {
                 dir('Frontend') {
                     echo 'Building Angular application...'
@@ -50,16 +50,16 @@ pipeline {
                     sh 'npm run build --prod' // Adjust based on your Angular build script
                 }
             }
-        }
+        }*/
 
         
 
-        stage('Build Springboot and Code Analysis') {
+        stage(' Code Analysis') {
             steps {
                 dir('Backend') {
-                    echo 'Building Spring Boot application and Running SonarQube analysis...'
+                    echo ' Running SonarQube analysis...'
                     withSonarQubeEnv('sonar-jenkins') {
-                        sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -DskipTests '
+                        sh 'mvn  jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -DskipTests '
                     }
                 }
             }
