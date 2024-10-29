@@ -32,7 +32,7 @@ pipeline {
             sh 'docker-compose up -d'
 
             // Wait for services to be ready
-            sh 'sleep 60'
+            sh 'sleep 180'
             
         }
     }
