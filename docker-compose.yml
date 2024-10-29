@@ -22,7 +22,7 @@ services:
       DB_USER: "root"
       DB_PASSWORD: ""
     ports:
-      - "8080:8080"  # Expose le port du backend
+      - "8082:8082"  # Expose le port du backend
     depends_on:
       - mysql  # Démarre le conteneur MySQL en premier
     networks:
