@@ -75,10 +75,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker images for both backend and frontend...'
-                parallel (
+                 
                     backend: { buildDockerImage('Backend', 'soufi2001/devopsback:5arctic3-g4-devops') },
                     frontend: { buildDockerImage('Frontend', 'soufi2001/devopsfront:5arctic3-g4-devops') }
-                )
+                
             }
         }
 
@@ -86,10 +86,9 @@ pipeline {
             steps {
                 echo 'Pushing Docker images to DockerHub...'
                 withDockerCredentials {
-                    parallel (
                         backendPush: { sh 'docker push soufi2001/devopsback:5arctic3-g4-devops' },
                         frontendPush: { sh 'docker push soufi2001/devopsfront:5arctic3-g4-devops' }
-                    )
+                    
                 }
             }
         }
