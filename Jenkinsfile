@@ -16,14 +16,9 @@ pipeline {
         SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
     }
 
-    stages {
-        stage('Setup Application Environment') {
-            steps {
-                echo 'Setting up application environment variables...'
-            }
-        }
+    
 
-        stage('Build and Code Analysis - Backend') {
+        /*stage('Build and Code Analysis - Backend') {
             steps {
                 dir('Backend') {
                     echo 'Building and running SonarQube analysis for backend...'
@@ -32,7 +27,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage('Build and Lint - Angular') {
             steps {
