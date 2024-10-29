@@ -218,7 +218,7 @@ pipeline {
                 try {
                     echo 'Cleaning up Docker Compose environments...'
                    // sh 'docker-compose -f docker-compose-tools.yml down -v'
-                    //sh 'docker-compose down '
+                    sh 'docker-compose down '
                 } catch (Exception e) {
                     echo "Failed to stop Docker Compose containers: ${e.message}"
                 }
