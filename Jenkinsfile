@@ -26,26 +26,25 @@ pipeline {
 
         
         stage('Setup Tool Environment (Nexus, SonarQube)') {
-            steps {
-                script {
-                    // Start docker-compose in detached mode
-                    sh 'docker-compose up -d'
+    steps {
+        script {
+            // Start docker-compose in detached mode
+            sh 'docker-compose up -d'
 
-                    // Wait for services to be ready
-                    sh '''
-                    echo "Waiting for all services to start..."
-                    until [ "`docker inspect -f {{.State.Running}} mysqldb`" == "true" ] &&
-                          [ "`docker inspect -f {{.State.Running}} sonarqube`" == "true" ] &&
-                          [ "`docker inspect -f {{.State.Running}} sonar_db`" == "true" ]; do
-                      echo "Waiting for services to be up..."
-                      sleep 10
-                    done
-                    echo "All services are up and running."
-                    '''
-                }
-                
-            }
+            // Wait for services to be ready
+            sh '''
+            echo "Waiting for all services to start..."
+            until [ "$(docker inspect -f {{.State.Running}} mysqldb)" = "true" ] &&
+                  [ "$(docker inspect -f {{.State.Running}} sonarqube)" = "true" ] &&
+                  [ "$(docker inspect -f {{.State.Running}} sonar_db)" = "true" ]; do
+              echo "Waiting for services to be up..."
+              sleep 10
+            done
+            echo "All services are up and running."
+            '''
         }
+    }
+}
 
         /*stage('Setup Application Environment (MySQL, Spring Boot, Angular)') {
             steps {
