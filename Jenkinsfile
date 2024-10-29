@@ -25,13 +25,7 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'AichaNciri_5Arctic3_G4',
-                    url: 'https://github.com/devopsproject976/devops.git',
-                    credentialsId: 'dev'
-            }
-        }
+
         stage('Docker Compose Up') {
                             steps {
                                 script {
