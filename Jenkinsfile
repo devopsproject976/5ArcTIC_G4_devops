@@ -40,7 +40,6 @@ pipeline {
                     echo 'Building Angular application and running lint...'
                     sh '''
                        npm ci
-                       npm audit fix --force
                        npm run build --prod
                     '''
                 }
