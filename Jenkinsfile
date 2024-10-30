@@ -96,7 +96,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Images') {
+        /*stage('Push Docker Images') {
             steps {
                 echo 'Pushing Docker images to DockerHub...'
                 withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -105,7 +105,7 @@ pipeline {
                     sh 'docker push soufi2001/devopsfront:5arctic3-g4-devops'
                 }
             }
-        }
+        }*/
     }
 
     post {
