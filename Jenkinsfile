@@ -18,16 +18,16 @@ pipeline {
 
     
      stages {
-        /*stage('Build and Code Analysis - Backend') {
+        stage('Build and Code Analysis - Backend') {
             steps {
                 dir('Backend') {
                     echo 'Building and running SonarQube analysis for backend...'
                     withSonarQubeEnv('sonar-jenkins') {
-                        sh 'mvn clean install jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -DskipTests'
+                        sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -DskipTests'
                     }
                 }
             }
-        }*/
+        }
 
         stage('Build and Lint - Angular') {
             steps {
