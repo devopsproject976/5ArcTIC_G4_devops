@@ -109,16 +109,7 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'Cleaning up Docker Compose environments...'
-            script {
-                try {
-                    sh 'docker-compose down'
-                } catch (Exception e) {
-                    echo "Failed to clean up Docker Compose: ${e.message}"
-                }
-            }
-        }
+        
         success {
             echo 'CI/CD pipeline completed successfully!'
         }
