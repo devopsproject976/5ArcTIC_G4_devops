@@ -1,11 +1,11 @@
 version: "3"
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:8.0
     container_name: mysql
     environment:
       MYSQL_DATABASE: devops
-      MYSQL_ALLOW_EMPTY_PASSWORD: ""  # Allow empty password
+      MYSQL_ALLOW_EMPTY_PASSWORD: root  # Allow empty password
     ports:
       - "3306:3306"  # Host port: 3306, Container port: 3306
     volumes:

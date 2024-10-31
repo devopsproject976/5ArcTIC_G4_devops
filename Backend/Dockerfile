@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk-alpine
 
 # Install MySQL client
-RUN apk update && apk add --no-cache mysql-clients
+RUN apk update && apk add --no-cache mariadb-client
 
 WORKDIR /app
 
