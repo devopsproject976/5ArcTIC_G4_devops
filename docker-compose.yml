@@ -33,9 +33,9 @@ services:
     build:
       context: ./Frontend  # Path to the Angular Dockerfile
       dockerfile: Dockerfile
-    container_name: angular
+    container_name: angular_secondary
     ports:
-      - "80:80"  # Angular app on port 80 for easy access
+      - "81:80"  # Angular app on port 80 for easy access
     depends_on:
       - springboot
     networks:
