@@ -37,6 +37,26 @@ services:
     environment:
       - INSTALL4J_ADD_VM_PARAMS=-Xms1200m -Xmx1200m
 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"  # Map host port 9090 to Prometheus's port 9090
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Mount your Prometheus configuration file
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"  # Map host port 3000 to Grafana's port 3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Set Grafana admin password
+
 volumes:
   sonarqube_conf:
   sonarqube_data:
@@ -46,3 +66,10 @@ volumes:
   sonar_db:
   sonar_db_data:
   nexus-data:
+  prometheus_data:  # Volume for Prometheus data
+  grafana_data:     # Volume for Grafana data
+
+networks:
+  app-network:
+    external: true
+

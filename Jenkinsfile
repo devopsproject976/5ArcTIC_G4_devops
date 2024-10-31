@@ -5,6 +5,8 @@ pipeline {
         string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
         string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9001', description: 'SonarQube URL')
+        string(name: 'PROMETHEUS_URL', defaultValue: 'http://localhost:9090', description: 'Prometheus URL')
+        string(name: 'GRAFANA_URL', defaultValue: 'http://localhost:3000', description: 'Grafana URL')
     }
 
     environment {
@@ -43,23 +45,7 @@ pipeline {
             }
         }
 
-        stage('Start Services') {
-            steps {
-                script {
-                    // Start all services defined in the Docker Compose files
-                    sh 'docker-compose -f docker-compose.yml -f docker-compose-tools.yml up -d'
-                }
-            }
-        }
 
-        stage('Start Database') {
-            steps {
-                script {
-                    // Start only the database service defined in docker-compose.yml
-                    sh 'docker-compose up -d mysql' // replace `db` with your database service name
-                }
-            }
-        }
 
         stage('Check Database Connectivity') {
             steps {
@@ -217,6 +203,26 @@ pipeline {
                 }
             }
         }
+
+
+        stage('Check Prometheus Metrics') {
+                    steps {
+                        script {
+                            sleep(30) // Give some time for Prometheus to start scraping
+                            sh "curl -f ${params.PROMETHEUS_URL}/api/v1/query?query=up"
+                        }
+                    }
+                }
+
+                stage('Check Grafana Dashboards') {
+                    steps {
+                        script {
+                            sleep(30) // Adjust time as necessary
+                            sh "curl -f ${params.GRAFANA_URL}/api/search"
+                        }
+                    }
+                }
+
 
         stage('Stop Services') {
             steps {
