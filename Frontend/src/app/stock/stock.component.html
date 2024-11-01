@@ -1,27 +1,42 @@
 <div class="header">
-  <h2>Stock List </h2>
-  <button (click)="showForm()" button class="btn btn-info">+</button>
+  <h2>Stock List</h2>
+  <button (click)="showForm()" class="btn btn-info">+</button>
 </div>
+
+<!-- Form to add new stock -->
 <form (ngSubmit)="submitForm()" *ngIf="displayForm">
-  <label for="name">Stock Title:</label>
-  <input [(ngModel)]="stock.title" id="title" name="title" required type="text"><br><br>
-  <button (click)="addStock(stock)" button class="btn btn-info" type="submit" value="Submit">submit</button>
-  <button (click)="submitForm()" button class="btn btn-danger">cancel</button>
+  <label for="title">Stock Title:</label>
+  <input [(ngModel)]="stock.title" id="title" name="title" required type="text" class="form-control">
+
+  <label for="threshold">Threshold:</label>
+  <input [(ngModel)]="stock.threshold" id="threshold" name="threshold" required type="number" class="form-control" min="0">
+
+  <br>
+  <button class="btn btn-info" type="submit">Submit</button>
+  <button (click)="closeForm()" class="btn btn-danger" type="button">Cancel</button>
   <br><br>
 </form>
+
 <div class="row">
-  <div class="card" class="text-center">
+  <div class="card text-center">
     <table class="table">
       <thead style="background-color: rgb(192, 183, 183);">
-      <th>Stock title</th>
-      <th>Action</th>
+      <tr>
+        <th>ID</th>
+        <th>Stock Title</th>
+        <th>Threshold</th>
+        <th>Actions</th>
+      </tr>
       </thead>
       <tbody>
-      <!-- Add your table rows here -->
+      <!-- Displaying the list of stock items -->
       <tr *ngFor="let item of data">
+        <td>{{ item.idStock }}</td>
         <td>{{ item.title }}</td>
+        <td>{{ item.threshold }}</td>
         <td>
-          <button [routerLink]="['/product', item.idStock]" class="btn btn-primary">Details</button>
+          <button (click)="showForm(item)" class="btn btn-warning">Edit</button>
+          <button (click)="deleteStock(item.idStock)" class="btn btn-danger">Delete</button>
         </td>
       </tr>
       </tbody>

@@ -109,7 +109,7 @@ public class StockServiceTest {
     }
 
 
-    /*@Test
+    @Test
     void testAddStock() {
         Stock savedStock = stockService.addStock(stock);
         assertNotNull(savedStock.getIdStock(), "Saved stock ID should not be null");
@@ -168,7 +168,7 @@ public class StockServiceTest {
         stockService.deleteStock(savedStock.getIdStock());
         assertThrows(NullPointerException.class, () -> stockService.retrieveStock(savedStock.getIdStock()), "Should throw exception when retrieving deleted stock");
         System.out.println("Stock deleted with ID: " + savedStock.getIdStock());
-    }*/
+    }
 
 
 

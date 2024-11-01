@@ -45,7 +45,7 @@ public class StockServiceMockitoTest {
 
 
 
-    /*@Test
+    @Test
     void testAddStock() {
         // Create a stock object to add
         Stock stock = new Stock();
@@ -170,7 +170,7 @@ public class StockServiceMockitoTest {
         when(stockRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NullPointerException.class, () -> stockService.updateStock(1L, updatedStockDetails));
-    }*/
+    }
 
 
 
