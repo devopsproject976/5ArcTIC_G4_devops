@@ -1,29 +1,94 @@
 package tn.esprit.devops_project;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import tn.esprit.devops_project.entities.Product;
-import tn.esprit.devops_project.entities.Supplier;
-import tn.esprit.devops_project.entities.Stock;
-import tn.esprit.devops_project.entities.ProductCategory;
-import tn.esprit.devops_project.entities.SupplierCategory;
+import tn.esprit.devops_project.entities.*;
+import tn.esprit.devops_project.repositories.InvoiceRepository;
 import tn.esprit.devops_project.repositories.ProductRepository;
 import tn.esprit.devops_project.repositories.StockRepository;
 import tn.esprit.devops_project.repositories.SupplierRepository;
+import tn.esprit.devops_project.services.InvoiceServiceImpl;
 import tn.esprit.devops_project.services.ProductServiceImpl;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class AppTest {
 
-    @Autowired
+    @Mock
+    private InvoiceRepository invoiceRepository;
+
+
+
+    @InjectMocks
+    private InvoiceServiceImpl invoiceService;
+
+    private Long invoiceId;
+    private Invoice invoice;
+
+    @BeforeEach
+    public void setUp() {
+        // Set up mock data for testing
+        Supplier supplier = new Supplier();
+        supplier.setSupplierCategory(SupplierCategory.CONVENTIONNE);
+
+        Operator operator = new Operator();
+        operator.setFname("Test Operator");
+
+        Product product = new Product();
+        product.setTitle("Test Product");
+        product.setPrice(100.0f);
+        product.setCategory(ProductCategory.ELECTRONICS);
+
+        InvoiceDetail detail = new InvoiceDetail();
+        detail.setQuantity(2);
+        detail.setProduct(product);
+
+        invoice = new Invoice();
+        invoice.setSupplier(supplier);
+        invoice.setOperator(operator);
+        invoice.setInvoiceDetails(Collections.singleton(detail)); // Assuming setInvoiceDetails accepts a Set
+        invoice.setDateCreationInvoice(new Date());
+
+        invoiceId = 1L; // Mock ID for testing
+
+        // Mock repository behavior
+        when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
+    }
+
+    @Test
+    public void testGenerateDetailedInvoiceSummary() {
+        // Act
+        InvoiceSummary summary = invoiceService.generateDetailedInvoiceSummary(invoiceId);
+
+        // Assert
+        assertNotNull(summary);
+
+        float expectedTotalDiscount = 30; // Total discount should be correctly calculated as discussed earlier.
+        float expectedTotalTax = 25.5f; // This should now match our calculation.
+
+        float expectedTotalAmount = (2 * 100) * (1 - (0.05f + 0.10f)) + (170 * 0.15f); // Calculate expected amount with discounts and taxes
+
+        assertEquals(expectedTotalAmount, summary.getTotalAmount(), 0.01); // Use delta for total amount
+        assertEquals(expectedTotalDiscount, summary.getTotalDiscount(), 0.01); // Use delta for total discount
+        assertEquals(expectedTotalTax, summary.getTotalTax(), 0.01); // Use delta for total tax
+    }
+
+    /*@Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -92,5 +157,5 @@ public class AppTest {
         if (supplier != null) {
             supplierRepository.delete(supplier);
         }
-    }
+    }*/
 }

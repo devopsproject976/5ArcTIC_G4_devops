@@ -1,2 +1,4 @@
 tn\esprit\devops_project\AppTest.class
 tn\esprit\devops_project\MockitoTest.class
+tn\esprit\devops_project\InvoiceServiceTest.class
+tn\esprit\devops_project\InvoiceServiceTestMokito.class
