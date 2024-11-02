@@ -10,6 +10,7 @@ import tn.esprit.devops_project.repositories.CustomerRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,19 +48,6 @@ class CustomerServiceImplTest {
         verify(customerRepository, times(1)).save(customer);
     }
 
-    @Test
-    void testUpdateCustomer() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(customerRepository.save(customer)).thenReturn(customer);
-
-        customer.setName("Updated Customer");
-
-        Customer updatedCustomer = customerService.updateCustomer(customer.getIdCustomer(), customer);
-
-        assertNotNull(updatedCustomer);
-        assertEquals("Updated Customer", updatedCustomer.getName());
-        verify(customerRepository, times(1)).save(customer);
-    }
 
     @Test
     void testRetrieveCustomer() {
@@ -84,11 +72,19 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void testDeleteCustomer() {
-        customerService.deleteCustomer(customer.getIdCustomer());
+    void testDeleteNonExistingCustomer() {
+        Long nonExistingId = 999L; // Assuming this ID does not exist
 
-        verify(customerRepository, times(1)).deleteById(customer.getIdCustomer());
+        Exception exception = assertThrows(NoSuchElementException.class, () -> {
+            customerService.deleteCustomer(nonExistingId);
+        });
+
+        String expectedMessage = "Customer not found";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
+
 
     @Test
     void testFindCustomerByEmail() {

@@ -1,0 +1,34 @@
+version: "3"
+services:
+  springboot-app:
+    image: amensmida/devopsback:latest
+    restart: always
+    build:
+      context: ./Backend
+    ports:
+      - "8082:8082"
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_PORT: 3306
+
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    volumes:
+      - /home/user/Desktop/db:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: root
+
+  angular-app:
+    image: amensmida/devopsfront:latest
+    build:
+      context: ./Frontend  # Adjust the path to your Angular frontend directory
+    ports:
+      - "4200:80"  # Expose port 80 of the Angular app to port 4200 on the host
+    depends_on:
+      - springboot-app  # Wait for the Spring Boot app to be ready before starting Angular

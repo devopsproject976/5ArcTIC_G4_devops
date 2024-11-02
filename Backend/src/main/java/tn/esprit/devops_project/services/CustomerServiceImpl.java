@@ -9,6 +9,7 @@ import tn.esprit.devops_project.repositories.CustomerRepository;
 import tn.esprit.devops_project.services.Iservices.ICustomerService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -25,23 +26,22 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public Customer addCustomer(Customer customer) {
+        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already exists");
+        }
         return customerRepository.save(customer);
     }
 
+
     @Override
     public void deleteCustomer(Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new NoSuchElementException("Customer not found");
+        }
         customerRepository.deleteById(id);
     }
 
-    public Customer updateCustomer(Long idCustomer, Customer customer) {
 
-        Customer existingCustomer = customerRepository.findById(idCustomer)
-                .orElseThrow(() -> new NullPointerException("Customer not found"));
-        existingCustomer.setName(customer.getName());
-        existingCustomer.setEmail(customer.getEmail());
-        existingCustomer.setPhone(customer.getPhone());
-        return customerRepository.save(existingCustomer);
-    }
 
 
     @Override
