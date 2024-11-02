@@ -4,7 +4,7 @@ services:
     image: amensmida/devopsback:latest
     restart: always
     build:
-      context: ./Backend
+      context: .  # Changed to current directory, since docker-compose.yml is in Backend
     ports:
       - "8082:8082"
     environment:
@@ -12,12 +12,14 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_PORT: 3306
+    depends_on:
+      - mysqldb  # Ensure mysqldb is started before springboot-app
 
   mysqldb:
     container_name: mysqldb
     image: mysql
     volumes:
-      - /home/user/Desktop/db:/var/lib/mysql
+      - ./db:/var/lib/mysql  # Ensure this path is accessible by Jenkins
     ports:
       - "3307:3306"
     environment:
@@ -27,8 +29,8 @@ services:
   angular-app:
     image: amensmida/devopsfront:latest
     build:
-      context: ./Frontend  # Adjust the path to your Angular frontend directory
+      context: ../Frontend  # Adjust if necessary
     ports:
-      - "4200:80"  # Expose port 80 of the Angular app to port 4200 on the host
+      - "4200:80"
     depends_on:
       - springboot-app  # Wait for the Spring Boot app to be ready before starting Angular
