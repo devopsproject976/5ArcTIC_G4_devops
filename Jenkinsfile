@@ -11,7 +11,7 @@ pipeline {
             }
         }
         
-        // Backend stages
+        // Backend stages.
         stage('Build Spring Boot') {
             steps {
                 dir('Backend') {
