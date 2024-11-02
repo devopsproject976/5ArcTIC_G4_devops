@@ -41,32 +41,3 @@
   </div>
 </ng-template>
 
-<!-- Product List Display -->
-<div class="row">
-  <div class="card text-center">
-    <table class="table">
-      <thead style="background-color: rgb(192, 183, 183);">
-      <tr>
-        <th>Title</th>
-        <th>Category</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <!-- Displaying the list of products -->
-      <tr *ngFor="let item of data">
-        <td>{{ product.title }}</td>
-        <td>{{ product.category }}</td>
-        <td>{{ product.price }}</td>
-        <td>{{ product.quantity }}</td>
-        <td>
-          <button class="btn btn-warning" (click)="showForm(product)">Edit</button>
-         <!-- <button class="btn btn-danger" (click)="deleteItem(product.idProduct)">Delete</button>-->
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-</div>

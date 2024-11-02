@@ -18,6 +18,7 @@
             <p class="card-text">Category: {{ item.category }}</p>
             <p class="card-info">Quantity: {{ item.quantity }} | Price: {{ item.price }} $</p>
         </div>
-    </div>
+          <button (click)="adjustPrice(item.idProduct)">Adjust Price</button>
+        </div>
 </ng-container>
 </div>

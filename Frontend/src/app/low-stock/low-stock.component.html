@@ -1,0 +1,38 @@
+<div class="header">
+  <h2>Stocks with Low Products</h2>
+</div>
+
+<div class="cards">
+  <ng-container *ngFor="let stock of lowStockData">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">{{ stock.title }} (ID: {{ stock.idStock }})</h3>
+        <button (click)="getLowStockProducts(stock.idStock)">View Low Stock Products</button> <!-- Button to fetch low stock products -->
+      </div>
+      <div class="card-body">
+        <p class="card-text">Threshold: {{ stock.threshold }}</p>
+        <h4>Low Stock Products:</h4>
+        <ul>
+          <li *ngFor="let product of stock.lowStockProducts">
+            <p>{{ product.title }} - Quantity: {{ product.quantity }} | Price: {{ product.price }} $</p>
+            <button (click)="adjustPrice(product.idProduct)">Adjust Price</button> <!-- Button to adjust price -->
+          </li>
+        </ul>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="lowStockData.length === 0">
+    <p>No stocks with low products.</p>
+  </div>
+</div>
+
+<!-- Display retrieved low stock products -->
+<div *ngIf="lowStockProducts.length > 0">
+  <h3>Retrieved Low Stock Products:</h3>
+  <ul>
+    <li *ngFor="let product of lowStockProducts">
+      <p>{{ product.title }} - Quantity: {{ product.quantity }} | Price: {{ product.price }} $</p>
+    </li>
+  </ul>
+</div>

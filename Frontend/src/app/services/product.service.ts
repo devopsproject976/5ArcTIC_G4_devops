@@ -11,7 +11,8 @@ export class ProductService {
   constructor(private http: HttpClient) {}
 
   addProduct(product: any, stockId: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/1`, product);
+    //return this.http.post(`${this.apiUrl}/${stockId}`, product);
+    return this.http.post(`${this.apiUrl}/3`, product);
   }
 
   // Fetch all stocks

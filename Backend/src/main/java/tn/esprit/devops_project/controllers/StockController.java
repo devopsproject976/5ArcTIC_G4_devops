@@ -4,7 +4,10 @@ package tn.esprit.devops_project.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.devops_project.entities.Product;
 import tn.esprit.devops_project.entities.Stock;
+import tn.esprit.devops_project.entities.StockLowProductsDTO;
+import tn.esprit.devops_project.services.Iservices.IProductService;
 import tn.esprit.devops_project.services.Iservices.IStockService;
 import java.util.List;
 
@@ -14,10 +17,16 @@ import java.util.List;
 public class StockController {
 
     IStockService stockService;
+    IProductService productService;
 
     @PostMapping("/stock")
     Stock addStock(@RequestBody Stock stock){
         return stockService.addStock(stock);
+    }
+
+    @PostMapping("/stock/productAdd/{idStock}")
+    Product addProduct(@RequestBody Product product,@PathVariable Long idStock){
+        return productService.addProduct(product,idStock);
     }
 
     @GetMapping("/stock/{id}")
@@ -42,6 +51,25 @@ public class StockController {
         stockService.deleteStock(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/stock/{stockId}/low-stock-products")
+    public ResponseEntity<List<Product>> getLowStockProducts(@PathVariable Long stockId) {
+        List<Product> lowStockProducts = stockService.retrieveLowStockProducts(stockId);
+        return ResponseEntity.ok(lowStockProducts);
+    }
+
+    @GetMapping("/stock/low-stock")
+    public ResponseEntity<List<StockLowProductsDTO>> getStocksWithLowProducts() {
+        List<StockLowProductsDTO> stocksWithLowProducts = stockService.retrieveStocksWithLowProducts();
+        return ResponseEntity.ok(stocksWithLowProducts);
+    }
+
+    @PutMapping("/stock/products/{productId}/adjust-price")
+    public ResponseEntity<String> adjustProductPricing(@PathVariable Long productId) {
+        stockService.adjustPricingBasedOnStock(productId);
+        return ResponseEntity.ok("Price adjustment completed for product ID: " + productId);
+    }
+
 
 
 }

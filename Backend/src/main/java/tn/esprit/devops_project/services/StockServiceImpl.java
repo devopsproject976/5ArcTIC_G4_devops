@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.devops_project.entities.Product;
+import tn.esprit.devops_project.entities.StockLowProductsDTO;
 import tn.esprit.devops_project.repositories.ProductRepository;
 import tn.esprit.devops_project.services.Iservices.IStockService;
 import tn.esprit.devops_project.entities.Stock;
 import tn.esprit.devops_project.repositories.StockRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +34,12 @@ public class StockServiceImpl implements IStockService {
         return stockRepository.save(stock);
     }
 
+    @Override
+    public Product addProduct(Product product, Long idStock) {
+        Stock stock = stockRepository.findById(idStock).orElseThrow(() -> new NullPointerException("stock not found"));
+        product.setStock(stock);
+        return productRepository.save(product);
+    }
     @Override
     public Stock retrieveStock(Long id) {
         return stockRepository.findById(id).orElseThrow(() -> new NullPointerException("Stock not found"));
@@ -103,12 +111,38 @@ public class StockServiceImpl implements IStockService {
                 .filter(product -> {
                     if (product.getQuantity() < threshold) {
                         logger.warn("Product with ID {} is low on stock. Quantity: {}", product.getIdProduct(), product.getQuantity());
+                        System.out.println("Product with ID " + product.getIdProduct() + " is low on stock. Quantity: " + product.getQuantity());
                         return true;
                     }
                     return false;
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<StockLowProductsDTO> retrieveStocksWithLowProducts() {
+        List<Stock> allStocks = stockRepository.findAll();
+
+        return allStocks.stream()
+                .map(stock -> {
+                    int threshold = stock.getThreshold();
+
+                    // Filter the products for this stock to include only those below the threshold
+                    List<Product> lowStockProducts = productRepository.findByStockIdStock(stock.getIdStock()).stream()
+                            .filter(product -> product.getQuantity() < threshold)
+                            .collect(Collectors.toList());
+
+                    // Only create a DTO if there are low-stock products
+                    if (!lowStockProducts.isEmpty()) {
+                        System.out.println("Stock with ID " + stock.getIdStock() + " contains low stock products.");
+                        return new StockLowProductsDTO(stock.getIdStock(), stock.getTitle(), lowStockProducts);
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)  // Exclude stocks with no low-stock products
+                .collect(Collectors.toList());
+    }
+
+
 
 
     public void adjustPricingBasedOnStock(Long productId) {

@@ -42,7 +42,24 @@ export class StockService {
 
   // Fetch low stock items (if applicable)
   public fetchLowStock(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/lowstock`);
+    return this.http.get(`${this.apiUrl}/low-stock`);
   }
+// stock.service.ts
+  public adjustProductPrice(productId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/products/${productId}/adjust-price`, {});
+  }
+
+  public getLowStockProducts(stockId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/stock/${stockId}/low-stock-products`);
+  }
+
+  addProduct(product: any, stockId: number): Observable<any> {
+    // Construct the URL correctly to include the stock ID
+    return this.http.post(`${this.apiUrl}/stock/productAdd/${stockId}`, product);
+  }
+
+
+
+
 
 }
