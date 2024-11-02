@@ -36,6 +36,10 @@ pipeline {
         NEXUS_PROTOCOL = "http"
     }
 
+    tools {
+            nodejs 'Node 23' // Add the Node.js installation configured in Jenkins
+        }
+
     stages {
         stage('Checkout') {
             steps {
