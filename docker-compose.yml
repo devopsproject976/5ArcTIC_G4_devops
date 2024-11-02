@@ -29,10 +29,12 @@ services:
       - devops-network
 
   frontend:
-    image: aichanciri/devopsfront:latest  # Image Docker pour le frontend
+    image: aichanciri/devopsfront:latest
     container_name: devops-frontend
     ports:
-      - "3000:3000"  # Expose le port du frontend
+      - "3000:80"  # Expose on port 80
+    depends_on:
+      - backend
     networks:
       - devops-network
 

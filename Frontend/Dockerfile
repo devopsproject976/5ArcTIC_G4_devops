@@ -1,17 +1,29 @@
-# Use OpenJDK 17 on Alpine
-FROM openjdk:17-jdk-alpine
+# Stage 1: Build the Angular app
+FROM node:18 AS builder
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Define build argument
-ARG JAR_FILE
+# Copy package.json and package-lock.json (if present) to install dependencies
+COPY package*.json ./
 
-# Copy the dynamic Spring Boot jar file to the container
-COPY ${JAR_FILE} 5ArcTIC3-G4-AichaNciri.jar
+# Install dependencies
+RUN npm install
 
-# Expose port 8080 for the Spring Boot application
-EXPOSE 8080
+# Copy the rest of the code to the working directory
+COPY . .
 
-# Entry point for running the application
-ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-AichaNciri.jar"]
+# Build the Angular project in production mode
+RUN npm run build -- --configuration production
+
+# Stage 2: Serve the app with NGINX
+FROM nginx:alpine
+
+# Copy the built Angular files to NGINX's default HTML folder
+COPY --from=builder /app/dist/frontend /usr/share/nginx/html
+
+# Expose port 80 to the outside world
+EXPOSE 80
+
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]
