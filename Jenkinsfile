@@ -1,61 +1,80 @@
 pipeline {
     agent any
-
+    parameters {
+        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
+        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
+    }
+    environment {
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
+        NEXUS_CREDENTIAL_ID = "nexus-credentials" // Jenkins credentials ID for Nexus
+    }
+    
     stages {
-        stage('Start MySQL Container') {
+        stage('CI: Build and Test') {
             steps {
                 script {
-                    sh 'docker rm -f mysql-test || true'
-                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
-                }
-            }
-        }
-        
-        // Backend stages.
-        stage('Build Spring Boot') {
-            steps {
-                dir('Backend') {
-                    echo 'Building Spring Boot application...'
-                    sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=admin -Dsonar.password=hamma1234'
-                }
-            }
-        }
+   
+                    // Construire l'application Spring Boot
+                    dir('Backend') {
+                        echo 'Building Spring Boot application...'
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONARQUBE_TOKEN')]) {
+                            sh "mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=${SONARQUBE_TOKEN}"
+                        }
+                    }
 
-        stage('Deploy to Nexus') { // Nouvelle étape de déploiement
-            steps {
-                dir('Backend') {
-                    echo 'Deploying to Nexus...'
-                    sh 'mvn deploy -DskipTests'
-                }
-            }
-        }
-
-        stage('Find JAR Version') {
-            steps {
-                dir('Backend') {
-                    script {
+                    // Trouver la version du JAR
+                    dir('Backend') {
                         env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                        echo "Using JAR file: ${env.JAR_FILE}"
                     }
-                    echo "Using JAR file: ${env.JAR_FILE}"
                 }
             }
         }
 
-        stage('Build Spring Docker Image') {
-            steps {
-                echo 'Building Docker image for Spring Boot...'
-                sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
-            }
-        }
+        stage('CD: Publish and Deploy') {
+            parallel {
+                stage('Publish to Nexus') {
+                    steps {
+                        dir('Backend') {
+                            script {
+                                def groupId = "tn.esprit"
+                                def artifactId = "5ArcTIC3-G4-devops"
+                                def version = "1.0"
+                                def packaging = "jar"
+                                def artifactPath = "target/5ArcTIC3-G4-devops-1.0.jar"
+                                def pomFile = "pom.xml"
 
-        stage('Push Spring Docker Image to Docker Hub') {
-            steps {
-                echo 'Pushing Spring Boot Docker image to Docker Hub...'
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin'
+                                if (fileExists(artifactPath)) {
+                                    echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
+
+                                    nexusArtifactUploader(
+                                        nexusVersion: NEXUS_VERSION,
+                                        protocol: NEXUS_PROTOCOL,
+                                        nexusUrl: params.NEXUS_URL,
+                                        groupId: groupId,
+                                        artifactId: artifactId,
+                                        version: version,
+                                        repository: params.NEXUS_REPOSITORY,
+                                        credentialsId: NEXUS_CREDENTIAL_ID,
+                                        artifacts: [
+                                            [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
+                                            [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
+                                        ]
+                                    )
+                                } else {
+                                    error "*** File could not be found or does not exist at ${artifactPath}."
+                                }
+                            }
+                        }
                     }
-                    sh 'docker push medaminetrabelsi/devopsback'
+                }
+
+                stage('Build Spring Docker Image') {
+                    steps {
+                        echo 'Building Docker image for Spring Boot...'
+                        sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
+                    }
                 }
             }
         }
@@ -63,13 +82,15 @@ pipeline {
 
     post {
         always {
-            sh 'docker rm -f mysql-test || true'
+            echo 'Pipeline completed, whether successful or failed.'
+            // Aucune action pour arrêter ou supprimer les conteneurs MySQL
         }
         success {
-            echo 'Build and Docker push succeeded for backend!'
+            echo 'Build, Nexus publish, and Docker image creation succeeded!'
         }
         failure {
-            echo 'Build or Docker push failed.'
+            echo 'Build or publish failed.'
+            // Ajoutez des notifications à votre équipe ici
         }
     }
 }
