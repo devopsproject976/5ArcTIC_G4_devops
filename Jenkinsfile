@@ -9,45 +9,47 @@ pipeline {
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "nexus-credentials" // Jenkins credentials ID for Nexus
     }
+    
     stages {
-        stage('Start MySQL Container') {
+        stage('CI: Build and Test') {
             steps {
                 script {
-                    sh 'docker rm -f mysql-test || true'
-                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
+                    // Démarrer les conteneurs via Docker Compose
+                    sh 'docker-compose -f docker-compose-mysql.yml up -d'
+
+                    // Construire l'application Spring Boot
+                    dir('Backend') {
+                        echo 'Building Spring Boot application...'
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONARQUBE_TOKEN')]) {
+                            sh "mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=${SONARQUBE_TOKEN}"
+                        }
+                    }
+
+                    // Trouver la version du JAR
+                    dir('Backend') {
+                        env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                        echo "Using JAR file: ${env.JAR_FILE}"
+                    }
                 }
             }
         }
 
-        // Backend stages
-        stage('Build Spring Boot') {
-            steps {
-                dir('Backend') {
-                    echo 'Building Spring Boot application...'
-                    sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=admin -Dsonar.password=hamma1234'
-                }
-            }
-        }
-
-        stage('Publish to Nexus and Build Docker Image') {
+        stage('CD: Publish and Deploy') {
             parallel {
                 stage('Publish to Nexus') {
                     steps {
                         dir('Backend') {
                             script {
-                                // Define artifact details based on the known pom.xml values
                                 def groupId = "tn.esprit"
                                 def artifactId = "5ArcTIC3-G4-devops"
                                 def version = "1.0"
-                                def packaging = "jar"  // Based on your project packaging
+                                def packaging = "jar"
                                 def artifactPath = "target/5ArcTIC3-G4-devops-1.0.jar"
                                 def pomFile = "pom.xml"
 
-                                // Check if the artifact exists
                                 if (fileExists(artifactPath)) {
                                     echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
 
-                                    // Upload artifact and POM to Nexus
                                     nexusArtifactUploader(
                                         nexusVersion: NEXUS_VERSION,
                                         protocol: NEXUS_PROTOCOL,
@@ -56,7 +58,7 @@ pipeline {
                                         artifactId: artifactId,
                                         version: version,
                                         repository: params.NEXUS_REPOSITORY,
-                                        credentialsId: 'nexus-credentials',
+                                        credentialsId: NEXUS_CREDENTIAL_ID,
                                         artifacts: [
                                             [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
                                             [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
@@ -68,7 +70,7 @@ pipeline {
                             }
                         }
                     }
-                } // Closing the Publish to Nexus stage
+                }
 
                 stage('Build Spring Docker Image') {
                     steps {
@@ -76,45 +78,20 @@ pipeline {
                         sh 'docker build -t medaminetrabelsi/devopsback -f Backend/Dockerfile .'
                     }
                 }
-
-                stage('Find JAR Version') {
-                    steps {
-                        dir('Backend') {
-                            script {
-                                env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
-                            }
-                            echo "Using JAR file: ${env.JAR_FILE}"
-                        }
-                    }
-                }
-
-                /* 
-                stage('Push Spring Docker Image to Docker Hub') {
-                    steps {
-                        echo 'Pushing Spring Boot Docker image to Docker Hub...'
-                        script {
-                            withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                                sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin'
-                            }
-                            sh 'docker push medaminetrabelsi/devopsback'
-                        }
-                    }
-                }
-                */
-            } // Closing the parallel block **test***
+            }
         }
-
     }
 
     post {
         always {
-            sh 'docker rm -f mysql-test || true'
+            // Aucune action pour arrêter ou supprimer les conteneurs MySQL
         }
         success {
-            echo 'Build and Docker push succeeded for backend!'
+            echo 'Build, Nexus publish, and Docker image creation succeeded!'
         }
         failure {
-            echo 'Build or Docker push failed.'
+            echo 'Build or publish failed.'
+            // Ajoutez des notifications à votre équipe ici
         }
     }
 }
