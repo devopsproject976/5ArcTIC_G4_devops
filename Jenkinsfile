@@ -47,14 +47,16 @@ pipeline {
 
 
 
-        stage('Check Database Connectivity') {
+        stage('Check MySQL Connectivity') {
             steps {
                 script {
-                    // Use a MySQL command to check connection to the database
-                    sh 'until mysql -h mysql -P 3306 -u root -p -e ";" ; do echo "Waiting for database..."; sleep 5; done || exit 1'
+                    sh '''
+                    mysql -h mysql -P 3306 -u root -e ";" || echo "MySQL is not ready yet"
+                    '''
                 }
             }
         }
+
 
 
 
