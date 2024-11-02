@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm // Utilise la configuration SCM par défaut....
+                checkout scm // Utilise la configuration SCM par défaut.....
             }
         }
 
