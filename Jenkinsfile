@@ -84,6 +84,7 @@ pipeline {
 
     post {
         always {
+            echo 'Pipeline completed, whether successful or failed.'
             // Aucune action pour arrêter ou supprimer les conteneurs MySQL
         }
         success {
