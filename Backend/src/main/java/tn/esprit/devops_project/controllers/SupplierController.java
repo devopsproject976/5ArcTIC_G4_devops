@@ -38,4 +38,8 @@ public class SupplierController {
 		return supplierService.updateSupplier(supplier);
 	}
 
+	@GetMapping("/")
+	public String home() {
+		return "Hello, World!";
+	}
 }
