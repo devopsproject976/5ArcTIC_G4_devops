@@ -5,10 +5,12 @@ RUN apk update && apk add --no-cache mariadb-client
 
 WORKDIR /app
 
-ARG JAR_FILE
 
-COPY target/${JAR_FILE} /app/5ArcTIC3-G4-devops.jar
+COPY target/5ArcTIC3-G4-devops-1.0.jar /app/
 
-EXPOSE 8080
+# List the contents of /app to verify the JAR file is present
+RUN ls -l /app
 
-ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-devops.jar"]
+EXPOSE 8082
+
+ENTRYPOINT ["java", "-jar", "/app/5ArcTIC3-G4-devops-1.0.jar"]

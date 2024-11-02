@@ -2,12 +2,12 @@ version: "3"
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql_container
     environment:
       MYSQL_DATABASE: devops
       MYSQL_ALLOW_EMPTY_PASSWORD: root  # Allow empty password
     ports:
-      - "3306:3306"  # Host port: 3306, Container port: 3306
+      - "3307:3306"  # Host port: 3306, Container port: 3306
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -23,7 +23,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ""  # Empty password
     ports:
-      - "8085:8080"  # Host port: 8085, Container port: 8080
+      - "8085:8082"  # Host port: 8085, Container port: 8080
     depends_on:
       - mysql
     networks:

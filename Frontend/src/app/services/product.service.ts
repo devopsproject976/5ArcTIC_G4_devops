@@ -6,13 +6,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:8082/product';
+  private apiUrl = 'http://localhost:8085/product';
 
   constructor(private http: HttpClient) {}
 
   addProduct(product: any, stockId: any): Observable<any> {
     //return this.http.post(`${this.apiUrl}/${stockId}`, product);
-    return this.http.post(`${this.apiUrl}/3`, product);
+    return this.http.post(`${this.apiUrl}/1`, product);
   }
 
   // Fetch all stocks
