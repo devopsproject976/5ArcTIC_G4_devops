@@ -10,12 +10,9 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "nexus-credentials" // Jenkins credentials ID for Nexus
     }
     stages {
-        stage('Start MySQL Container') {
+        stage('Checkout') {
             steps {
-                script {
-                    sh 'docker rm -f mysql-test || true'
-                    sh 'docker run -d --name mysql-test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_DATABASE=test_db -p 3306:3306 mysql:5.7'
-                }
+                checkout scm // Utilise la configuration SCM par défaut
             }
         }
 
