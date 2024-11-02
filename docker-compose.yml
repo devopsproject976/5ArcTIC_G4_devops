@@ -1,43 +1,33 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  mysql:
+  mysqldb:
     image: mysql:5.7
-    container_name: mysql-test
+    restart: unless-stopped
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
-      MYSQL_DATABASE: 'test_db'
-      MYSQL_USER: 'root'
-      MYSQL_PASSWORD: ''
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=devops
     ports:
-      - "3306:3306"
-    networks:
-      - devops-network
+      - 3306:3306
+    volumes:
+      - db:/var/lib/mysql
 
-  backend:
-    image: aichanciri/devopsback:latest  # Image Docker pour le backend
-    container_name: devops-backend
+  app-backend:
+    depends_on:
+      - mysqldb
+    image: aichanciri/devopsback:latest
+    restart: on-failure
+    ports:
+      - 8082:8082
     environment:
-      DB_URL: "jdbc:mysql://mysql:3306/test_db"  # Connexion à MySQL
-      DB_USER: "root"
-      DB_PASSWORD: ""
-    ports:
-      - "8082:8082"  # Expose le port du backend
-    depends_on:
-      - mysql  # Démarre le conteneur MySQL en premier
-    networks:
-      - devops-network
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:mysql://mysqldb:3306/devops?createDatabaseIfNotExist=true",
+        "spring.datasource.username" : "root",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQLDialect",
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
+    stdin_open: true
+    tty: true
 
-  frontend:
-    image: aichanciri/devopsfront:latest
-    container_name: devops-frontend
-    ports:
-      - "3000:80"  # Expose on port 80
-    depends_on:
-      - backend
-    networks:
-      - devops-network
-
-networks:
-  devops-network:
-    driver: bridge
+volumes:
+  db:
