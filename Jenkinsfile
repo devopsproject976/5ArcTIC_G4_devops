@@ -14,8 +14,6 @@ pipeline {
         stage('CI: Build and Test') {
             steps {
                 script {
-                    // Démarrer les conteneurs via Docker Compose
-                    sh 'docker-compose -f docker-compose-mysql.yml up -d'
 
                     // Construire l'application Spring Boot
                     dir('Backend') {
