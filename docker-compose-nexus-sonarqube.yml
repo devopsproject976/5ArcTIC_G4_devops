@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  nexus:
+    image: sonatype/nexus3
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    networks:
+      - bureau_network
+
+  sonarqube:
+    image: sonarqube:8.9.7-community
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-logs:/opt/sonarqube/logs
+      - sonarqube-extensions:/opt/sonarqube/extensions
+    networks:
+      - bureau_network
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus.yml:/prometheus/prometheus.yml
+    networks:
+      - bureau_network
+    command:
+      - '--config.file=/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus/data'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - bureau_network
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  nexus-data:
+  sonarqube-data:
+  sonarqube-logs:
+  sonarqube-extensions:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  bureau_network:
+    driver: bridge
+

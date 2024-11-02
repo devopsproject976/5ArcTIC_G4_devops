@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s  # Intervalle de récupération des données
+
+scrape_configs:
+  - job_name: 'spring-boot-app'  # Nom du job pour identifier l'application
+    metrics_path: '/actuator/prometheus'  # Chemin pour accéder aux métriques de Spring Boot
+    static_configs:
+      - targets: ['192.168.157.135:8082']  # Remplacez par l'adresse de votre service Spring Boot
+
+  - job_name: 'jenkins'  # Ajoutez un job pour Jenkins
+    metrics_path: '/prometheus'  # Chemin des métriques Jenkins
+    static_configs:
+      - targets: ['192.168.157.135:8080']  # Remplacez par l'adresse de votre serveur Jenkins
+
+  - job_name: 'ubuntu-machine'  # Nom du job pour la machine Ubuntu
+    static_configs:
+      - targets: ['192.168.157.135:9100']  # Remplacez par l'adresse de votre machine Ubuntu
+
+  - job_name: 'mysql-exporter'  # Nom du job pour le MySQL Exporter
+    static_configs:
+      - targets: ['mysql_exporter:9104']  # Nom du service tel qu'il est défini dans docker-compose
+

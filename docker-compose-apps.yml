@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devops1
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mysql-exporter:  # Ajoutez ce service
+    image: prom/mysqld-exporter:latest
+    environment:
+      - DATA_SOURCE_NAME=root:root@(mysql:3306)/devops1
+    ports:
+      - "9104:9104"  # Expose le port 9104 pour les métriques
+    depends_on:
+      - mysql  # Assurez-vous que MySQL est démarré avant
+
+  spring:
+    image: medaminetrabelsi/devopsback:latest  # Image depuis Docker Hub
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+
+  angular:
+    image: medaminetrabelsi/devopsfront:latest
+    ports:
+      - "4200:4200"
+    depends_on:
+      - spring
+
+volumes:
+  mysql-data: {}
+
