@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
+        string(name: 'NEXUS_URL', defaultValue: 'http://localhost:8081', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
     }
     environment {
@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm // Utilise la configuration SCM par défaut .
+                checkout scm // Utilise la configuration SCM par défaut.
             }
         }
 
@@ -41,12 +41,12 @@ pipeline {
                                 def artifactId = "5ArcTIC3-G4-devops"
                                 def version = "1.0"
                                 def packaging = "jar"  // Based on your project packaging
-                                def artifactPath = "target/5ArcTIC3-G4-devops-1.0.jar"
+                                def artifactPath = "target/${artifactId}-${version}.jar"
                                 def pomFile = "pom.xml"
 
                                 // Check if the artifact exists
                                 if (fileExists(artifactPath)) {
-                                    echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
+                                    echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
 
                                     // Upload artifact and POM to Nexus
                                     nexusArtifactUploader(
@@ -104,7 +104,6 @@ pipeline {
                 */
             } // Closing the parallel block
         }
-
     }
 
     post {
