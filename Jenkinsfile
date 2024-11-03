@@ -78,8 +78,8 @@ pipeline {
                         stage('Build Frontend') {
                             steps {
                                 dir('Frontend') {
-                                    sh 'npm install' // Install dependencies
-                                    sh 'npm run build' // Build frontend
+                                    //sh 'npm install' // Install dependencies
+                                    //sh 'npm run build' // Build frontend
                                 }
                             }
                         }
