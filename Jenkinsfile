@@ -11,7 +11,7 @@ pipeline {
 
     environment {
         // MySQL for Spring Boot
-        DB_URL = 'jdbc:mysql://localhost:3306/devops' // Port 3307 as per your docker-compose
+        DB_URL = 'jdbc:mysql://localhost:3307/devops' // Port 3307 as per your docker-compose
         DB_USER = 'root'
         DB_PASSWORD = '' // Update to a strong password in production
 
