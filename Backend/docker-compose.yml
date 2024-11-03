@@ -2,18 +2,16 @@ version: "3"
 services:
   springboot-app:
     image: amensmida/devopsback:latest
-    restart: always
     build:
-      context: .  # Changed to current directory, since docker-compose.yml is in Backend
+      context: .  # Changed to current directory
     ports:
       - "8082:8082"
     environment:
-      MYSQL_HOST: mysqldb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_PORT: 3306
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/test?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
     depends_on:
-      - mysqldb  # Ensure mysqldb is started before springboot-app
+      - mysqldb
 
   mysqldb:
     container_name: mysqldb
@@ -33,4 +31,4 @@ services:
     ports:
       - "4200:80"
     depends_on:
-      - springboot-app  # Wait for the Spring Boot app to be ready before starting Angular
+      - springboot-app
