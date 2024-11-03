@@ -36,13 +36,17 @@ export class CustomerComponent {
     this.customerService.addCustomer(this.customer).subscribe(
       (response) => {
         this.data.push(response);
-        this.customer = { name: '', email: '', phone: '' }; // Reset the form
-        this.displayForm = false; // Hide form after submission
+        this.resetForm();
       },
       (error) => {
         console.error('Error adding customer', error);
       }
     );
+  }
+
+  resetForm() {
+    this.customer = { name: '', email: '', phone: '' };
+    this.displayForm = false; // Hide form after submission
   }
 
   removeCustomer(customerId: number) {

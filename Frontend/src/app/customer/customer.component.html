@@ -6,12 +6,15 @@
 <form (ngSubmit)="addCustomer()" *ngIf="displayForm">
   <label for="name">Customer Name:</label>
   <input [(ngModel)]="customer.name" id="name" name="name" required type="text"><br>
+  
   <label for="email">Customer Email:</label>
   <input [(ngModel)]="customer.email" id="email" name="email" required type="email"><br>
+  
   <label for="phone">Customer Phone:</label>
   <input [(ngModel)]="customer.phone" id="phone" name="phone" required type="text"><br>
+  
   <button type="submit" class="btn btn-info">Submit</button>
-  <button (click)="displayForm = false" type="button" class="btn btn-danger">Cancel</button>
+  <button (click)="resetForm()" type="button" class="btn btn-danger">Cancel</button>
 </form>
 
 <div class="row">
