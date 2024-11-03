@@ -93,8 +93,8 @@ pipeline {
                             if (!env.JAR_FILE) {
                                 error "La variable d'environnement JAR_FILE n'est pas définie."
                             }
-                            // Ligne commentée pour le push vers Docker Hub
-                            // sh "docker build --build-arg JAR_FILE=${env.JAR_FILE} -t medaminetrabelsi/devopsback -f Backend/Dockerfile ."
+                            // Construction de l'image Docker
+                            sh "docker build --build-arg JAR_FILE=${env.JAR_FILE} -t medaminetrabelsi/devopsback -f Backend/Dockerfile ."
                         }
                     }
                 }
