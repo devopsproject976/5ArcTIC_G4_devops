@@ -34,6 +34,7 @@ pipeline {
         MAVEN_REPO_ID = 'nexus'
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
+        CHROME_BIN = '/usr/bin/google-chrome'
     }
 
     tools {
@@ -63,6 +64,13 @@ pipeline {
 
 
 
+        stage('Install Chrome') {
+            steps {
+                sh 'wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'
+                sh 'sudo apt-get install -y ./google-chrome-stable_current_amd64.deb'
+            }
+        }
+
 
 
 
@@ -78,8 +86,8 @@ pipeline {
                         stage('Build Frontend') {
                             steps {
                                 dir('Frontend') {
-                                    //sh 'npm install' // Install dependencies
-                                    //sh 'npm run build' // Build frontend
+                                    sh 'npm install' // Install dependencies
+                                    sh 'npm run build' // Build frontend
                                 }
                             }
                         }
@@ -99,7 +107,7 @@ pipeline {
                         stage('Test Frontend') {
                             steps {
                                 dir('Frontend') {
-                                    //sh 'npm test'
+                                    sh 'npm test'
                                 }
                             }
                         }
