@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm // Utilise la configuration SCM par défaut....
+                checkout scm // Utilise la configuration SCM par défaut
             }
         }
 
@@ -53,7 +53,7 @@ pipeline {
                                 // Define artifact details based on the known pom.xml values
                                 def groupId = "tn.esprit"
                                 def artifactId = "5ArcTIC3-G4-devops"
-                                def version = "1.0" // Modifié ici pour inclure le suffixe -SNAPSHOT
+                                def version = "1.0-SNAPSHOT" // Modifié ici pour inclure le suffixe -SNAPSHOT
                                 def packaging = "jar"  // Based on your project packaging
                                 def artifactPath = "target/${artifactId}-${version}.jar"
                                 def pomFile = "pom.xml"
@@ -97,6 +97,20 @@ pipeline {
                         }
                     }
                 }
+
+                /*
+                stage('Push to Docker Hub') {
+                    steps {
+                        script {
+                            echo 'Pushing Docker image to Docker Hub...'
+                            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                                sh "docker push medaminetrabelsi/devopsback"
+                            }
+                        }
+                    }
+                }
+                */
             } // Closing the parallel block
         }
     }
