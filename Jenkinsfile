@@ -67,7 +67,7 @@ pipeline {
         /*stage('Install Chrome') {
             steps {
                 sh 'wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'
-                sh 'echo "223JFT1730" | sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb'
+                sh 'echo "nour2001" | sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb'
             }
         }*/
 
@@ -179,7 +179,7 @@ pipeline {
                   stage('Publish to Nexus') {
                     steps {
                         script {
-                            // Publish the backend artifact to Nexus
+                            echo "NEXUS_URL: ${NEXUS_URL}"
                              dir('Backend') {
                                             sh """
                                             mvn deploy:deploy-file \
@@ -268,6 +268,7 @@ pipeline {
                 }
             }
         }
+
     }
 
     post {
