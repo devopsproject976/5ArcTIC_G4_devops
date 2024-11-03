@@ -2,21 +2,20 @@ pipeline {
     agent any
     parameters {
         string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
-        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name') // Changement ici pour utiliser les snapshots
+        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
     }
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
-        NEXUS_CREDENTIAL_ID = "nexus-credentials" // Jenkins credentials ID for Nexus
+        NEXUS_CREDENTIAL_ID = "nexus-credentials"
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm // Utilise la configuration SCM par défaut....
+                checkout scm
             }
         }
 
-        // Backend stages
         stage('Build Spring Boot') {
             steps {
                 dir('Backend') {
@@ -34,6 +33,7 @@ pipeline {
             steps {
                 dir('Backend') {
                     script {
+                        sh "ls -la target/"
                         env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
                         if (!env.JAR_FILE) {
                             error "Le fichier JAR n'a pas été trouvé dans le répertoire target."
@@ -50,19 +50,16 @@ pipeline {
                     steps {
                         dir('Backend') {
                             script {
-                                // Define artifact details based on the known pom.xml values
                                 def groupId = "tn.esprit"
                                 def artifactId = "5ArcTIC3-G4-devops"
-                                def version = "1.0-SNAPSHOT" // Modifié ici pour inclure le suffixe -SNAPSHOT
-                                def packaging = "jar"  // Based on your project packaging
-                                def artifactPath = "target/${artifactId}-${version}.jar"
+                                def version = "1.0-SNAPSHOT"
+                                def packaging = "jar"
+                                def artifactPath = "${env.JAR_FILE}" // Utilisez la variable JAR_FILE
                                 def pomFile = "pom.xml"
 
-                                // Check if the artifact exists
                                 if (fileExists(artifactPath)) {
                                     echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
 
-                                    // Upload artifact and POM to Nexus
                                     nexusArtifactUploader(
                                         nexusVersion: NEXUS_VERSION,
                                         protocol: NEXUS_PROTOCOL,
@@ -83,20 +80,20 @@ pipeline {
                             }
                         }
                     }
-                } // Closing the Publish to Nexus stage
+                }
 
                 stage('Build Spring Docker Image') {
                     steps {
                         echo 'Building Docker image for Spring Boot...'
-                        dir('Backend') { // Changer le répertoire avant la construction de l'image Docker
+                        dir('Backend') {
                             script {
-                                // Construction de l'image Docker sans utiliser JAR_FILE
-                                sh "docker build -t medaminetrabelsi/devopsback -f Dockerfile ."
+                                // Construction de l'image Docker en utilisant JAR_FILE
+                                sh "docker build -t medaminetrabelsi/devopsback -f Dockerfile --build-arg JAR_FILE=${env.JAR_FILE} ."
                             }
                         }
                     }
                 }
-            } // Closing the parallel block
+            }
         }
     }
 
