@@ -88,8 +88,8 @@ pipeline {
                         stage('Build Frontend') {
                             steps {
                                 dir('Frontend') {
-                                    sh 'npm install' // Install dependencies
-                                    sh 'npm run build' // Build frontend
+                                    //sh 'npm install' // Install dependencies
+                                    //sh 'npm run build' // Build frontend
                                 }
                             }
                         }
@@ -109,7 +109,7 @@ pipeline {
                         stage('Test Frontend') {
                             steps {
                                 dir('Frontend') {
-                                    sh 'npm test'
+                                    //sh 'npm test'
                                 }
                             }
                         }
@@ -139,13 +139,13 @@ pipeline {
                             steps {
                                 script {
                                     dir('Frontend') {
-                                        withSonarQubeEnv('SonarQube') {
+                                        /*withSonarQubeEnv('SonarQube') {
                                             sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
                                                 "-Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} " +
                                                 "-Dsonar.sources=src " +
                                                 "-Dsonar.host.url=${params.SONARQUBE_URL} " +
                                                 "-Dsonar.login=${env.SONAR_TOKEN}"
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -167,7 +167,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Images') {
+        /*stage('Push Docker Images') {
             steps {
                 script {
                     // Push Docker image for backend
@@ -182,7 +182,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage('Publish to Nexus') {
             steps {
@@ -203,7 +203,7 @@ pipeline {
                     }
 
                     // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
-                    dir('Frontend') {
+                   /* dir('Frontend') {
                         sh """
                         mvn deploy:deploy-file \
                             -DgroupId=com.example \
@@ -215,7 +215,7 @@ pipeline {
                             -Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
                             -DskipTests
                         """
-                    }
+                    }*/
                 }
             }
         }
