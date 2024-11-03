@@ -11,7 +11,7 @@
     <groupId>tn.esprit</groupId>
     <artifactId>5ArcTIC_G4_Attia_Hamouda</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>DevOps_Project</name>
+    <name>5ArcTIC_G4_Attia_Hamoudat</name>
     <description>DevOps_Project</description>
     <properties>
         <java.version>11</java.version>
