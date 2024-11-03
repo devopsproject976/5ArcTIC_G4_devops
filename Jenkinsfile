@@ -184,7 +184,7 @@ pipeline {
             }
         }*/
 
-        stage('Publish to Nexus') {
+          stage('Publish to Nexus') {
             steps {
                 script {
                     // Publish the backend artifact to Nexus
@@ -203,32 +203,38 @@ pipeline {
                     }
 
                     // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
-                   /* dir('Frontend') {
-                        sh """
-                        mvn deploy:deploy-file \
-                            -DgroupId=com.example \
-                            -DartifactId=devops-frontend \
-                            -Dversion=${IMAGE_TAG_FRONTEND} \
-                            -Dpackaging=jar \
-                            -Dfile=target/devops-frontend-${IMAGE_TAG_FRONTEND}.jar \
-                            -DrepositoryId=${MAVEN_REPO_ID} \
-                            -Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
-                            -DskipTests
-                        """
-                    }*/
+                    dir('Frontend') {
+                        //sh """
+                        //mvn deploy:deploy-file \
+                            //-DgroupId=com.example \
+                            //-DartifactId=devops-frontend \
+                            //-Dversion=${IMAGE_TAG_FRONTEND} \
+                            //-Dpackaging=jar \
+                            //-Dfile=target/devops-frontend-${IMAGE_TAG_FRONTEND}.jar \
+                            //-DrepositoryId=${MAVEN_REPO_ID} \
+                            //-Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
+                            //-DskipTests
+                        //"""
+                    }
                 }
             }
         }
 
 
         stage('Check Prometheus Metrics') {
-                    steps {
-                        script {
-                            sleep(30) // Give some time for Prometheus to start scraping
-                            sh "curl -f ${params.PROMETHEUS_URL}/api/v1/query?query=up"
-                        }
+            steps {
+                script {
+
+                    sleep(30) // Adjust as needed
+                    def response = sh(script: "curl -s ${PROMETHEUS_URL}/api/v1/query?query=up{job='jenkins'}", returnStdout: true).trim()
+                    echo "Prometheus Response: ${response}"
+                    if (!response.contains('"status":"success"')) {
+                        error("Failed to verify Jenkins metrics in Prometheus")
                     }
                 }
+            }
+        }
+
 
                 stage('Check Grafana Dashboards') {
                     steps {
