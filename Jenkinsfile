@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm // Utilise la configuration SCM par défaut
+                checkout scm // Utilise la configuration SCM par défaut....
             }
         }
 
@@ -93,24 +93,11 @@ pipeline {
                             if (!env.JAR_FILE) {
                                 error "La variable d'environnement JAR_FILE n'est pas définie."
                             }
-                            sh "docker build --build-arg JAR_FILE=${env.JAR_FILE} -t medaminetrabelsi/devopsback -f Backend/Dockerfile ."
+                            // Ligne commentée pour le push vers Docker Hub
+                            // sh "docker build --build-arg JAR_FILE=${env.JAR_FILE} -t medaminetrabelsi/devopsback -f Backend/Dockerfile ."
                         }
                     }
                 }
-
-                /*
-                stage('Push to Docker Hub') {
-                    steps {
-                        script {
-                            echo 'Pushing Docker image to Docker Hub...'
-                            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
-                                sh "docker push medaminetrabelsi/devopsback"
-                            }
-                        }
-                    }
-                }
-                */
             } // Closing the parallel block
         }
     }
