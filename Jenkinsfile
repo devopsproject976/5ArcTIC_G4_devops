@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
+        string(name: 'NEXUS_URL', defaultValue: 'localhost:8090', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
         string(name: 'DOCKERHUB_REPO_BACKEND', defaultValue: 'hamoudaatti/backdevops', description: 'Docker Hub Repository for Backend')
         string(name: 'DOCKERHUB_REPO_FRONTEND', defaultValue: 'hamoudaatti/frontdevops', description: 'Docker Hub Repository for Frontend')
