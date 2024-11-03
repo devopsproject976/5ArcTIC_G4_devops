@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CustomerService {
-  private apiUrl = 'http://localhost:8082';
+  private apiUrl = 'http://backend_springboot-app_1:8082';
+
 
   constructor(private http: HttpClient) { }
 
