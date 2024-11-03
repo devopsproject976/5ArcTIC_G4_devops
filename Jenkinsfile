@@ -88,11 +88,13 @@ pipeline {
                 stage('Build Spring Docker Image') {
                     steps {
                         echo 'Building Docker image for Spring Boot...'
-                        // Vérification que JAR_FILE est défini avant la construction de l'image Docker
-                        if (!env.JAR_FILE) {
-                            error "La variable d'environnement JAR_FILE n'est pas définie."
+                        script {
+                            // Vérification que JAR_FILE est défini avant la construction de l'image Docker
+                            if (!env.JAR_FILE) {
+                                error "La variable d'environnement JAR_FILE n'est pas définie."
+                            }
+                            sh "docker build --build-arg JAR_FILE=${env.JAR_FILE} -t medaminetrabelsi/devopsback -f Backend/Dockerfile ."
                         }
-                        sh "docker build --build-arg JAR_FILE=${env.JAR_FILE} -t medaminetrabelsi/devopsback -f Backend/Dockerfile ."
                     }
                 }
             } // Closing the parallel block
@@ -108,4 +110,3 @@ pipeline {
         }
     }
 }
-
