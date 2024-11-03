@@ -108,7 +108,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker rm -f mysql-test || true'
+            sh 'docker rm -f 5arctic_g4_devops-mysql-1 || true'
         }
         success {
             echo 'Build and Docker push succeeded for backend!'
