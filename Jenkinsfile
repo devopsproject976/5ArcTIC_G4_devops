@@ -3,11 +3,14 @@ pipeline {
     parameters {
         string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
+        string(name: 'DOCKERHUB_REPO_BACKEND', defaultValue: 'medaminetrabelsi/devopsback', description: 'Docker Hub Repository for Backend')
+        string(name: 'DOCKERHUB_REPO_FRONTEND', defaultValue: 'medaminetrabelsi/devopsfront', description: 'Docker Hub Repository for Frontend')
     }
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "nexus-credentials"
+        DOCKERHUB_CREDENTIAL_ID = "dockerhub-credentials" // ID des identifiants Jenkins pour Docker Hub
     }
     stages {
         stage('Checkout') {
@@ -44,7 +47,7 @@ pipeline {
             }
         }
 
-        stage('Publish to Nexus and Build Docker Image') {
+        stage('Publish to Nexus and Build Docker Images') {
             parallel {
                 stage('Publish to Nexus') {
                     steps {
@@ -54,7 +57,7 @@ pipeline {
                                 def artifactId = "5ArcTIC3-G4-devops"
                                 def version = "1.0-SNAPSHOT"
                                 def packaging = "jar"
-                                def artifactPath = "${env.JAR_FILE}" // Utilisez la variable JAR_FILE
+                                def artifactPath = "${env.JAR_FILE}"
                                 def pomFile = "pom.xml"
 
                                 if (fileExists(artifactPath)) {
@@ -87,10 +90,33 @@ pipeline {
                         echo 'Building Docker image for Spring Boot...'
                         dir('Backend') {
                             script {
-                                // Construction de l'image Docker en utilisant JAR_FILE
-                                sh "docker build -t medaminetrabelsi/devopsback -f Dockerfile --build-arg JAR_FILE=${env.JAR_FILE} ."
+                                sh "docker build -t ${params.DOCKERHUB_REPO_BACKEND} -f Dockerfile --build-arg JAR_FILE=${env.JAR_FILE} ."
                             }
                         }
+                    }
+                }
+
+                stage('Build Angular Docker Image') {
+                    steps {
+                        echo 'Building Docker image for Angular...'
+                        dir('Frontend') { // Changer le répertoire vers Frontend
+                            script {
+                                sh "docker build -t ${params.DOCKERHUB_REPO_FRONTEND} ."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                echo 'Pushing Docker images to Docker Hub...'
+                script {
+                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIAL_ID, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        sh "echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
+                        sh "docker push ${params.DOCKERHUB_REPO_BACKEND}"
+                        sh "docker push ${params.DOCKERHUB_REPO_FRONTEND}"
                     }
                 }
             }
@@ -99,7 +125,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build and Docker push succeeded for backend!'
+            echo 'Build and Docker push succeeded for backend and frontend!'
         }
         failure {
             echo 'Build or Docker push failed.'
