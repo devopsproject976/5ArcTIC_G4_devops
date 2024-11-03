@@ -1,7 +1,9 @@
 package tn.esprit.devops_project.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.devops_project.DTO.OperatorRatingStatistics;
 import tn.esprit.devops_project.entities.Operator;
 import tn.esprit.devops_project.services.Iservices.IOperatorService;
 
@@ -37,6 +39,10 @@ public class OperatorController {
 	public Operator modifyOperateur(@RequestBody Operator operator) {
 		return operatorService.updateOperator(operator);
 	}
-
+	@GetMapping("/rating-statistics")
+	public ResponseEntity<OperatorRatingStatistics> getRatingStatistics() {
+		OperatorRatingStatistics statistics = operatorService.getOperatorRatingStatistics();
+		return ResponseEntity.ok(statistics);
+	}
 	
 }

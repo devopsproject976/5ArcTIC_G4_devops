@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Operator implements Serializable{
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -29,8 +30,15 @@ public class Operator implements Serializable{
 	String fname;
 	String lname;
 	String password;
+
+	Integer experienceYears;
+	Double rating;
+	String specialization;
+
 	@OneToMany
 	@JsonIgnore
 	Set<Invoice> invoices;
-	
+	public Long getIdOperator() {
+		return idOperateur; // Standard getter for the ID
+	}
 }

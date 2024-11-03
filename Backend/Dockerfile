@@ -8,10 +8,10 @@ WORKDIR /app
 ARG JAR_FILE
 
 # Copy the dynamic Spring Boot jar file to the container
-COPY target/DevOps_Project-1.0.jar /app/DevOps_Project-1.0.jar
+COPY target/5ArcTIC_G4_Attia_Hamouda-1.0-SNAPSHOT.jar /app/5ArcTIC_G4_Attia_Hamouda-1.0-SNAPSHOT.jar
 
 # Expose the application port (you can update the port if needed)
 EXPOSE 8082
 
 # Run the jar file
-ENTRYPOINT ["java", "-jar", "/app/DevOps_Project-1.0.jar"]
+ENTRYPOINT ["java", "-jar", "/app/5ArcTIC_G4_Attia_Hamouda-1.0-SNAPSHOT.jar"]

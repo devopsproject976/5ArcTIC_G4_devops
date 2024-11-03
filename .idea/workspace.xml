@@ -5,12 +5,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1b2493ab-d8f6-416c-b5dc-f6850e21f5f8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/controllers/OperatorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/controllers/OperatorController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/entities/Operator.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/entities/Operator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/repositories/OperatorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/repositories/OperatorRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/services/Iservices/IOperatorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/services/Iservices/IOperatorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/services/OperatorServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/tn/esprit/devops_project/services/OperatorServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/test/java/tn/esprit/devops_project/services/SupplierServiceImplTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/test/java/tn/esprit/devops_project/services/SupplierServiceImplTestJU.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose-app.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose-app.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose-tools.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose-tools.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,6 +59,18 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Maven.5ArcTIC_G4_Attia_Hamouda [--builder].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [build].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,install].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,package].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,test].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,verify3].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,verify].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [clean].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [compile].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [install].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [package].executor": "Run",
+    "Maven.5ArcTIC_G4_Attia_Hamouda [test].executor": "Run",
     "Maven.DevOps_Project [clean,test].executor": "Run",
     "Maven.DevOps_Project [install].executor": "Run",
     "RequestMappingsPanelOrder0": "0",
@@ -47,6 +79,7 @@
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.DevOps_ProjectSpringBootApplication.executor": "Run",
     "git-widget-placeholder": "HamoudaAttia__5ArcTIC__G4",
     "kotlin-language-version-configured": "true",
@@ -64,8 +97,21 @@
 }]]></component>
   <component name="RunAnythingCache">
     <option name="myCommands">
-      <command value="mvn clean test" />
+      <command value="mvn compile" />
+      <command value="mvn clean" />
+      <command value=" mvn clean install " />
       <command value="mvn install" />
+      <command value="mvn clean install" />
+      <command value="mvn clean verify3" />
+      <command value="mvn clean verify" />
+      <command value="mvn test" />
+      <command value="mvn clean test" />
+      <command value="mvn clean package" />
+      <command value="mvn --builder" />
+      <command value="mvn build" />
+      <command value="mvn test " />
+      <command value="mvn package " />
+      <command value="mvn compile " />
     </option>
   </component>
   <component name="RunManager">
@@ -97,12 +143,25 @@
       <workItem from="1729516018029" duration="286000" />
       <workItem from="1729516327928" duration="351000" />
       <workItem from="1729516720749" duration="4035000" />
-      <workItem from="1730113218097" duration="15968000" />
+      <workItem from="1730113218097" duration="16647000" />
+      <workItem from="1730192614889" duration="2703000" />
+      <workItem from="1730555854531" duration="17221000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
