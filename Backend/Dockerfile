@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # Define build argument
-ARG JAR_FILE
+ARG JAR_FILE=DevOps_Project-1.0.jar
 
 # Copy the dynamic Spring Boot jar file to the container
 COPY ${JAR_FILE} app.jar
