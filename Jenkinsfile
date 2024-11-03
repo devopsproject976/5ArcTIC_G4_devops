@@ -11,6 +11,7 @@ pipeline {
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "nexus"
         DOCKERHUB_CREDENTIAL_ID = "DOCKERHUB_CREDENTIALS"
+        SONAR_TOKEN = credentials('sonar')
     }
     stages {
         stage('Checkout') {
