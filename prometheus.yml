@@ -6,3 +6,15 @@ scrape_configs:
     metrics_path: '/prometheus'
     static_configs:
       - targets: ['localhost:8080']
+
+  - job_name: 'sonarqube'
+    static_configs:
+      - targets: ['sonarqube:9000']  # This should remain as is
+
+  - job_name: 'nexus'
+    static_configs:
+      - targets: ['nexus:8081']  # This should remain as is
+
+  - job_name: 'spring-boot-app'
+    static_configs:
+      - targets: ['springboot:8080']  # Change this to 8080 to match the internal container port

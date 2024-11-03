@@ -167,7 +167,7 @@ pipeline {
             }
         }
 
-        /*stage('Push Docker Images') {
+        stage('Push Docker Images') {
             steps {
                 script {
                     // Push Docker image for backend
@@ -182,7 +182,7 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
 
           stage('Publish to Nexus') {
             steps {
