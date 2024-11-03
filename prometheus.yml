@@ -16,7 +16,4 @@ scrape_configs:
     static_configs:
       - targets: ['192.168.157.135:9100']  # Remplacez par l'adresse de votre machine Ubuntu
 
-  - job_name: 'mysql-exporter'  # Nom du job pour le MySQL Exporter
-    static_configs:
-      - targets: ['mysql_exporter:9104']  # Nom du service tel qu'il est défini dans docker-compose
 

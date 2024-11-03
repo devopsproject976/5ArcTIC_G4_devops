@@ -11,15 +11,6 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
-  mysql-exporter:  # Ajoutez ce service
-    image: prom/mysqld-exporter:latest
-    environment:
-      - DATA_SOURCE_NAME=root:root@(mysql:3306)/devops1
-    ports:
-      - "9104:9104"  # Expose le port 9104 pour les métriques
-    depends_on:
-      - mysql  # Assurez-vous que MySQL est démarré avant
-
   spring:
     image: medaminetrabelsi/devopsback:latest  # Image depuis Docker Hub
     ports:
