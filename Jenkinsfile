@@ -2,7 +2,7 @@ pipeline {
     agent any
     parameters {
         string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
-        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
+        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name') // Changement ici pour utiliser les snapshots
     }
     environment {
         NEXUS_VERSION = "nexus3"
@@ -51,7 +51,7 @@ pipeline {
                                 // Define artifact details based on the known pom.xml values
                                 def groupId = "tn.esprit"
                                 def artifactId = "5ArcTIC3-G4-devops"
-                                def version = "1.0"
+                                def version = "1.0-SNAPSHOT" // Modifié ici pour inclure le suffixe -SNAPSHOT
                                 def packaging = "jar"  // Based on your project packaging
                                 def artifactPath = "target/${artifactId}-${version}.jar"
                                 def pomFile = "pom.xml"
