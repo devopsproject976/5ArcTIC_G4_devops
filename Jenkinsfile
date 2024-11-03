@@ -10,7 +10,7 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "nexus-credentials"
-        DOCKERHUB_CREDENTIAL_ID = "dockerhub-credentials" // ID des identifiants Jenkins pour Docker Hub
+        DOCKERHUB_CREDENTIAL_ID = "DOCKERHUB_CREDENTIALS" // ID des identifiants Jenkins pour Docker Hub
     }
     stages {
         stage('Checkout') {
