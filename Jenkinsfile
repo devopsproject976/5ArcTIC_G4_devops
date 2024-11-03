@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    mysql -h mysql -P 3306 -u root -e ";" || echo "MySQL is not ready yet"
+                    mysql -h mysql -P 3307 -u root -e ";" || echo "MySQL is not ready yet"
                     '''
                 }
             }
