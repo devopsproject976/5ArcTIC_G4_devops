@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { CustomerService } from '../services/customer.service';
 
 @Component({
@@ -8,20 +8,20 @@ import { CustomerService } from '../services/customer.service';
   styleUrls: ['./customer.component.css']
 })
 export class CustomerComponent {
-
   data: any;
   customer: {
     name: any;
     email: any;
     phone: any;
   } = {
-      name: null,
-      email: null,
-      phone: null,
-    };
+    name: null,
+    email: null,
+    phone: null,
+  };
 
-  constructor(private customerservice: CustomerService, private dialog: MatDialog) {
-  }
+  displayForm: boolean = false; // Declare and initialize displayForm
+
+  constructor(private customerservice: CustomerService, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.fetchData();
@@ -30,24 +30,39 @@ export class CustomerComponent {
   fetchData() {
     this.customerservice.fetchAllData().subscribe((response) => {
       this.data = response;
+      console.log(this.data); // Log the data to inspect its structure
     });
   }
+  
 
-  // showForm() {
-  //   this.displayForm = true;
-  // }
+  addCustomer() {
+    this.customerservice.addCustomer(this.customer).subscribe(
+      response => {
+        this.data.push(response);
+        this.customer = { name: null, email: null, phone: null }; // Reset form
+        this.displayForm = false; // Hide form after submission
+      },
+      error => {
+        console.error('Error adding customer', error);
+      }
+    );
+  }
 
-  // submitForm() {
-  //  // Hide the form after submission
-  //   this.displayForm = false;
-  // }
+  showForm() {
+    this.displayForm = true;
+  }
 
-  // addStock(customer: any) {
-  //   return this.customerservice.addCustomer(customer).subscribe((response) => {
-  //     this.data = response;
-  //     this.displayForm = false;
-  //     this.fetchData();
-  //   });
-  // }
-
+  removeCustomer(customerId: number) {
+    if (customerId) {
+      this.customerservice.deleteCustomer(customerId).subscribe(() => {
+        this.data = this.data.filter((item: any) => item.idCustomer !== customerId); // Use idCustomer for filtering
+      }, error => {
+        console.error('Error deleting customer', error);
+      });
+    } else {
+      console.error('Invalid customer ID: ', customerId); // Log the invalid ID
+    }
+  }
+  
+  
 }

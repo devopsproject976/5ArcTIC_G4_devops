@@ -19,11 +19,6 @@ public class CustomerController {
         return customerService.retrieveAllCustomers();
     }
 
-    @GetMapping("/{customerId}")
-    public Customer retrieveCustomer(@PathVariable Long customerId) {
-        return customerService.retrieveCustomer(customerId);
-    }
-
     @PostMapping
     public Customer addCustomer(@RequestBody Customer customer) {
         return customerService.addCustomer(customer);

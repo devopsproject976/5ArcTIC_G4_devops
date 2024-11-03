@@ -1,31 +1,38 @@
 <div class="header">
-    <h2>Customer List </h2>
-    <!-- <button (click)="showForm()" button class="btn btn-info">+</button> -->
-  </div>
-  <!-- <form (ngSubmit)="submitForm()" *ngIf="displayForm">
-    <label for="name">Customer Title:</label>
-    <input [(ngModel)]="stock.title" id="title" name="title" required type="text"><br><br>
-    <button (click)="addStock(stock)" button class="btn btn-info" type="submit" value="Submit">submit</button>
-    <button (click)="submitForm()" button class="btn btn-danger">cancel</button>
-    <br><br>
-  </form> -->
-  <div class="row">
-    <div class="card" class="text-center">
-      <table class="table">
-        <thead style="background-color: rgb(192, 183, 183);">
+  <h2>Customer List</h2>
+  <button (click)="showForm()" class="btn btn-info">Add Customer</button>
+</div>
+
+<form (ngSubmit)="addCustomer()" *ngIf="displayForm">
+  <label for="name">Customer Name:</label>
+  <input [(ngModel)]="customer.name" id="name" name="name" required type="text"><br>
+  <label for="email">Customer Email:</label>
+  <input [(ngModel)]="customer.email" id="email" name="email" required type="email"><br>
+  <label for="phone">Customer Phone:</label>
+  <input [(ngModel)]="customer.phone" id="phone" name="phone" required type="text"><br>
+  <button type="submit" class="btn btn-info">Submit</button>
+  <button (click)="displayForm = false" type="button" class="btn btn-danger">Cancel</button>
+</form>
+
+<div class="row">
+  <div class="card text-center">
+    <table class="table">
+      <thead style="background-color: rgb(192, 183, 183);">
         <th>Name</th>
         <th>Email</th>
         <th>Phone</th>
-        </thead>
-        <tbody>
-        <!-- Add your table rows here -->
+        <th>Actions</th> <!-- Added Actions column -->
+      </thead>
+      <tbody>
         <tr *ngFor="let item of data">
           <td>{{ item.name }}</td>
           <td>{{ item.email }}</td>
           <td>{{ item.phone }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+          <td>
+            <button (click)="removeCustomer(item.idCustomer)" class="btn btn-danger">Delete</button>
+          </td>
+        </tr>        
+      </tbody>
+    </table>
   </div>
-  
+</div>

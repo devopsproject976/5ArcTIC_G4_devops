@@ -6,21 +6,24 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CustomerService {
-  private apiUrl = 'http://localhost:8082'; 
+  private apiUrl = 'http://localhost:8082';
 
   constructor(private http: HttpClient) { }
 
-  public fetchAllData(): Observable<any> {
 
-       return this.http.get(`${this.apiUrl}/customer`);
+  public fetchAllData(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/customer`);
   }
-  
 
   public addCustomer(customer: any): Observable<any> {
-
-    return this.http.post(`${this.apiUrl}`, customer);
+    return this.http.post(`${this.apiUrl}/customer`, customer);
   }
 
 
+  public deleteCustomer(customerId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/customer/${customerId}`); 
+  }
+  
+  
 
 }
