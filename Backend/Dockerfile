@@ -10,7 +10,7 @@ ARG JAR_FILE
 # Copy the dynamic Spring Boot jar file to the container
 COPY ${JAR_FILE} app.jar
 
-# Expose the application port (you can update the port if needed)
+# Expose the application port
 EXPOSE 8082
 
 # Run the jar file
