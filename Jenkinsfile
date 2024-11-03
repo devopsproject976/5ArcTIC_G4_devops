@@ -181,18 +181,39 @@ pipeline {
                         script {
                             echo "NEXUS_URL: ${NEXUS_URL}"
                              dir('Backend') {
-                                            sh """
-                                            mvn deploy:deploy-file \
-                                                -DgroupId=com.example \
-                                                -DartifactId=5ArcTIC3-G4-devops \
-                                                -Dversion=1.0 \
-                                                -Dpackaging=jar \
-                                                -Dfile=target/5ArcTIC3-G4-devops-1.0.jar \
-                                                -DrepositoryId=${MAVEN_REPO_ID} \
-                                                -Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
-                                                -DskipTests
-                                            """
-                                        }
+                                                 script {
+                                                     // Define artifact details based on the known pom.xml values
+                                                             def groupId = "tn.esprit"
+                                                             def artifactId = "5ArcTIC3-G4-devopss"
+                                                             def version = "1.0"
+                                                             def packaging = "jar"  // Based on your project packaging
+                                                             def artifactPath = "target/5ArcTIC3-G4-devopss-1.0.jar"
+                                                             def pomFile = "pom.xml"
+
+                                                     // Check if the artifact exists
+                                                     if (fileExists(artifactPath)) {
+                                                         echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version ${version}"
+
+                                                         // Upload artifact and POM to Nexus
+                                                         nexusArtifactUploader(
+                                                             nexusVersion: NEXUS_VERSION,
+                                                             protocol: NEXUS_PROTOCOL,
+                                                             nexusUrl: params.NEXUS_URL,
+                                                             groupId: groupId,
+                                                             artifactId: artifactId,
+                                                             version: version,
+                                                             repository: params.NEXUS_REPOSITORY,
+                                                             credentialsId: 'nexus-credentials',
+                                                             artifacts: [
+                                                                 [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
+                                                                 [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
+                                                             ]
+                                                         )
+                                                     } else {
+                                                         error "*** File could not be found or does not exist at ${artifactPath}."
+                                                     }
+                                                 }
+                                             }
 
                             // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
                             dir('Frontend') {
