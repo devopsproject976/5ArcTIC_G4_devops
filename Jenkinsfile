@@ -64,12 +64,12 @@ pipeline {
 
 
 
-        stage('Install Chrome') {
+        /*stage('Install Chrome') {
             steps {
                 sh 'wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'
                 sh 'echo "223JFT1730" | sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb'
             }
-        }
+        }*/
 
 
 
