@@ -1,8 +1,6 @@
-
 FROM node:16 AS build
 
 WORKDIR /app
-
 
 # Copy the Angular project files
 COPY . .
