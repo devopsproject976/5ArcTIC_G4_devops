@@ -259,9 +259,8 @@ pipeline {
         stage('Check Prometheus Metrics') {
             steps {
                 script {
-
                     sleep(30) // Adjust as needed
-                    def response = sh(script: "curl -s ${PROMETHEUS_URL}/api/v1/query?query=up{job='jenkins'}", returnStdout: true).trim()
+                    def response = sh(script: "curl -s ${PROMETHEUS_URL}/api/v1/query?query=up{job=\"jenkins\"}", returnStdout: true).trim()
                     echo "Prometheus Response: ${response}"
                     if (!response.contains('"status":"success"')) {
                         error("Failed to verify Jenkins metrics in Prometheus")
@@ -269,6 +268,7 @@ pipeline {
                 }
             }
         }
+
 
 
                 stage('Check Grafana Dashboards') {
