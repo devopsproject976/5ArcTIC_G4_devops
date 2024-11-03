@@ -184,10 +184,10 @@ pipeline {
                                                  script {
                                                      // Define artifact details based on the known pom.xml values
                                                              def groupId = "tn.esprit"
-                                                             def artifactId = "5ArcTIC3-G4-devopss"
+                                                             def artifactId = "5ArcTIC3-G4-devops"
                                                              def version = "1.0"
                                                              def packaging = "jar"  // Based on your project packaging
-                                                             def artifactPath = "target/5ArcTIC3-G4-devopss-1.0.jar"
+                                                             def artifactPath = "target/5ArcTIC3-G4-devops-1.0.jar"
                                                              def pomFile = "pom.xml"
 
                                                      // Check if the artifact exists
