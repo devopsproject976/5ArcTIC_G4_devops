@@ -176,7 +176,7 @@ pipeline {
                     }
                 }
 
-                  stage('Publish to Nexus') {
+                 /* stage('Publish to Nexus') {
                     steps {
                         script {
                             echo "NEXUS_URL: ${NEXUS_URL}"
@@ -231,7 +231,7 @@ pipeline {
                             }
                         }
                     }
-                }
+                }*/
 
 
 
