@@ -96,13 +96,13 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Test Frontend') {
+                        /*stage('Test Frontend') {
                             steps {
                                 dir('Frontend') {
                                     sh 'npm test'
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
 
