@@ -34,8 +34,10 @@ pipeline {
             steps {
                 dir('Backend') {
                     script {
-                        // Trouver le fichier JAR construit
                         env.JAR_FILE = sh(script: "ls target/*.jar | grep -v 'original' | head -n 1", returnStdout: true).trim()
+                        if (!env.JAR_FILE) {
+                            error "Le fichier JAR n'a pas été trouvé dans le répertoire target."
+                        }
                     }
                     echo "Using JAR file: ${env.JAR_FILE}"
                 }
@@ -86,6 +88,10 @@ pipeline {
                 stage('Build Spring Docker Image') {
                     steps {
                         echo 'Building Docker image for Spring Boot...'
+                        // Vérification que JAR_FILE est défini avant la construction de l'image Docker
+                        if (!env.JAR_FILE) {
+                            error "La variable d'environnement JAR_FILE n'est pas définie."
+                        }
                         sh "docker build --build-arg JAR_FILE=${env.JAR_FILE} -t medaminetrabelsi/devopsback -f Backend/Dockerfile ."
                     }
                 }
@@ -102,3 +108,4 @@ pipeline {
         }
     }
 }
+
