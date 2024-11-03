@@ -6,7 +6,8 @@ import {Observable} from 'rxjs';
   providedIn: 'root'
 })
 export class StockService {
-  private apiUrl = 'http://backend_springboot-app_1:8082';
+  private apiUrl = 'http://springboot-app:8082'; // Use the Docker service name
+
 
   constructor(private http: HttpClient) {
   }
