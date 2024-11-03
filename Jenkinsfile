@@ -167,7 +167,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Images') {
+        /*stage('Push Docker Images') {
             steps {
                 script {
                     // Push Docker image for backend
@@ -180,6 +180,14 @@ pipeline {
                         docker push ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND}
                         """
                     }
+                }
+            }
+        }*/
+
+        stage('Verify JAR Creation') {
+            steps {
+                dir('Backend') {
+                    sh 'ls -l target/'
                 }
             }
         }
