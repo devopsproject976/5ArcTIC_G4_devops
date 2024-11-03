@@ -167,6 +167,54 @@ pipeline {
             }
         }
 
+
+        stage('Verify JAR Creation') {
+                    steps {
+                        dir('Backend') {
+                            sh 'ls -l target/'
+                        }
+                    }
+                }
+
+                  stage('Publish to Nexus') {
+                    steps {
+                        script {
+                            // Publish the backend artifact to Nexus
+                             dir('Backend') {
+                                            sh """
+                                            mvn deploy:deploy-file \
+                                                -DgroupId=com.example \
+                                                -DartifactId=5ArcTIC3-G4-devops \
+                                                -Dversion=1.0 \
+                                                -Dpackaging=jar \
+                                                -Dfile=target/5ArcTIC3-G4-devops-1.0.jar \
+                                                -DrepositoryId=${MAVEN_REPO_ID} \
+                                                -Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
+                                                -DskipTests
+                                            """
+                                        }
+
+                            // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
+                            dir('Frontend') {
+                                //sh """
+                                //mvn deploy:deploy-file \
+                                    //-DgroupId=com.example \
+                                    //-DartifactId=devops-frontend \
+                                    //-Dversion=${IMAGE_TAG_FRONTEND} \
+                                    //-Dpackaging=jar \
+                                    //-Dfile=target/devops-frontend-${IMAGE_TAG_FRONTEND}.jar \
+                                    //-DrepositoryId=${MAVEN_REPO_ID} \
+                                    //-Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
+                                    //-DskipTests
+                                //"""
+                            }
+                        }
+                    }
+                }
+
+
+
+
         /*stage('Push Docker Images') {
             steps {
                 script {
@@ -184,49 +232,7 @@ pipeline {
             }
         }*/
 
-        stage('Verify JAR Creation') {
-            steps {
-                dir('Backend') {
-                    sh 'ls -l target/'
-                }
-            }
-        }
 
-          stage('Publish to Nexus') {
-            steps {
-                script {
-                    // Publish the backend artifact to Nexus
-                    dir('Backend') {
-                        sh """
-                        mvn deploy:deploy-file \
-                            -DgroupId=com.example \
-                            -DartifactId=devops-backend \
-                            -Dversion=${IMAGE_TAG_BACKEND} \
-                            -Dpackaging=jar \
-                            -Dfile=target/devops-backend-${IMAGE_TAG_BACKEND}.jar \
-                            -DrepositoryId=${MAVEN_REPO_ID} \
-                            -Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
-                            -DskipTests
-                        """
-                    }
-
-                    // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
-                    dir('Frontend') {
-                        //sh """
-                        //mvn deploy:deploy-file \
-                            //-DgroupId=com.example \
-                            //-DartifactId=devops-frontend \
-                            //-Dversion=${IMAGE_TAG_FRONTEND} \
-                            //-Dpackaging=jar \
-                            //-Dfile=target/devops-frontend-${IMAGE_TAG_FRONTEND}.jar \
-                            //-DrepositoryId=${MAVEN_REPO_ID} \
-                            //-Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
-                            //-DskipTests
-                        //"""
-                    }
-                }
-            }
-        }
 
 
         stage('Check Prometheus Metrics') {
