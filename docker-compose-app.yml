@@ -4,7 +4,7 @@ services:
     image: hamoudaatti/backdevops:latest
     restart: always
     ports:
-      - "8082:8082"
+      - "8082:8080"
     environment:
       MYSQL_HOST: mysqldb
       MYSQL_USER: root
@@ -12,8 +12,6 @@ services:
       MYSQL_PORT: 3306
     depends_on:
       - mysqldb
-    networks:
-      - my_bridge_network
 
   mysqldb:
     container_name: mysqldb
@@ -24,10 +22,8 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: hamoudadevops
+      MYSQL_DATABASE: test
       MYSQL_ROOT_PASSWORD: root
-    networks:
-      - my_bridge_network
 
   frontend-app:
     image: hamoudaatti/frontdevops:latest
@@ -36,9 +32,3 @@ services:
       - "4200:4200"
     depends_on:
       - backend-app
-    networks:
-      - my_bridge_network
-
-networks:
-  my_bridge_network:
-    driver: bridge

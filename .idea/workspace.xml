@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="1b2493ab-d8f6-416c-b5dc-f6850e21f5f8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose-app.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose-app.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,46 +46,46 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.5ArcTIC_G4_Attia_Hamouda [--builder].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [build].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,install].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,package].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,test].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,verify3].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [clean,verify].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [clean].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [compile].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [install].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [package...].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [package].executor": "Run",
-    "Maven.5ArcTIC_G4_Attia_Hamouda [test].executor": "Run",
-    "Maven.DevOps_Project [clean,test].executor": "Run",
-    "Maven.DevOps_Project [install].executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.DevOps_ProjectSpringBootApplication.executor": "Run",
-    "git-widget-placeholder": "HamoudaAttia__5ArcTIC__G4",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/attia/Desktop/Nouveau dossier/5ArcTIC_G4_devops",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "terminal",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [--builder].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [build].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [clean,install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [clean,package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [clean,test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [clean,verify3].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [clean,verify].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [package...].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.DevOps_Project [clean,test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.DevOps_Project [install].executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.DevOps_ProjectSpringBootApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;HamoudaAttia__5ArcTIC__G4&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/attia/Desktop/Nouveau dossier/5ArcTIC_G4_devops&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\attia\Desktop\Nouveau dossier\5ArcTIC_G4_devops" />
@@ -143,7 +145,9 @@
       <workItem from="1730192614889" duration="2703000" />
       <workItem from="1730555854531" duration="18125000" />
       <workItem from="1730627523831" duration="6841000" />
-      <workItem from="1730660380161" duration="6542000" />
+      <workItem from="1730660380161" duration="6961000" />
+      <workItem from="1730718121395" duration="489000" />
+      <workItem from="1730726894046" duration="534000" />
     </task>
     <servers />
   </component>
