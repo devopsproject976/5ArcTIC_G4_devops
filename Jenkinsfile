@@ -219,40 +219,43 @@ pipeline {
                             // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
                             dir('Frontend') {
                                 script {
-                                            // Define artifact details for frontend
-                                            def frontendGroupId = "tn.esprit"
-                                            def frontendArtifactId = "devops-frontend"
-                                            def frontendVersion = IMAGE_TAG_FRONTEND
-                                            def frontendPackaging = "zip"  // Change to "zip" or "tar"
-                                            def frontendArtifactPath = "devops-frontend-${frontendVersion}.zip"
+                                        // Define artifact details for frontend
+                                        def frontendGroupId = "tn.esprit"
+                                        def frontendArtifactId = "devops-frontend"
+                                        def frontendVersion = IMAGE_TAG_FRONTEND
+                                        def frontendPackaging = "zip"
+                                        def frontendArtifactPath = "devops-frontend-${frontendVersion}.zip"
 
-                                            // Create an archive of the frontend build output
-                                            dir('Frontend/dist/your-angular-app') { // Adjust 'your-angular-app' to the correct folder name
-                                                sh "zip -r ../../${frontendArtifactPath} ."
-                                            }
-
-                                            // Check if the frontend artifact exists
-                                            if (fileExists(frontendArtifactPath)) {
-                                                echo "*** File: ${frontendArtifactPath}, group: ${frontendGroupId}, packaging: ${frontendPackaging}, version ${frontendVersion}"
-
-                                                // Upload frontend artifact to Nexus
-                                                nexusArtifactUploader(
-                                                    nexusVersion: NEXUS_VERSION,
-                                                    protocol: NEXUS_PROTOCOL,
-                                                    nexusUrl: params.NEXUS_URL,
-                                                    groupId: frontendGroupId,
-                                                    artifactId: frontendArtifactId,
-                                                    version: frontendVersion,
-                                                    repository: params.NEXUS_REPOSITORY,
-                                                    credentialsId: 'nexus-credentials',
-                                                    artifacts: [
-                                                        [artifactId: frontendArtifactId, classifier: '', file: frontendArtifactPath, type: frontendPackaging]
-                                                    ]
-                                                )
-                                            } else {
-                                                error "*** Frontend file could not be found or does not exist at ${frontendArtifactPath}."
-                                            }
+                                        // Adjust the output directory name based on your Angular project
+                                        dir('dist/devops-frontend') {
+                                            // List files for debugging
+                                            sh "ls -l"
+                                            // Create a zip archive of the frontend build output
+                                            sh "zip -r ../../${frontendArtifactPath} ."
                                         }
+
+                                        // Check if the frontend artifact exists
+                                        if (fileExists(frontendArtifactPath)) {
+                                            echo "*** File: ${frontendArtifactPath}, group: ${frontendGroupId}, packaging: ${frontendPackaging}, version ${frontendVersion}"
+
+                                            // Upload frontend artifact to Nexus
+                                            nexusArtifactUploader(
+                                                nexusVersion: NEXUS_VERSION,
+                                                protocol: NEXUS_PROTOCOL,
+                                                nexusUrl: params.NEXUS_URL,
+                                                groupId: frontendGroupId,
+                                                artifactId: frontendArtifactId,
+                                                version: frontendVersion,
+                                                repository: params.NEXUS_REPOSITORY,
+                                                credentialsId: 'nexus-credentials',
+                                                artifacts: [
+                                                    [artifactId: frontendArtifactId, classifier: '', file: frontendArtifactPath, type: frontendPackaging]
+                                                ]
+                                            )
+                                        } else {
+                                            error "*** Frontend file could not be found or does not exist at ${frontendArtifactPath}."
+                                        }
+                                    }
 
 
 
