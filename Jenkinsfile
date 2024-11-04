@@ -77,7 +77,7 @@ pipeline {
 
 
 
-        stage('Build Backend and Frontend') {
+        /*stage('Build Backend and Frontend') {
                     parallel {
                         stage('Build Backend') {
                             steps {
@@ -95,7 +95,7 @@ pipeline {
                             }
                         }
                     }
-                }
+                }*/
 
                 /*stage('Test Backend and Frontend') {
                     parallel {
