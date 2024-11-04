@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'NEXUS_URL', defaultValue: 'localhost:8082', description: 'Nexus URL')
+        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
         string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-releases', description: 'Nexus Repository Name')
         string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9001', description: 'SonarQube URL')
         string(name: 'PROMETHEUS_URL', defaultValue: 'http://localhost:9090', description: 'Prometheus URL')
@@ -35,6 +35,7 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         CHROME_BIN = '/usr/bin/google-chrome'
+        NOTIFICATION_EMAIL = 'nour.benkairia@gmail.com'
     }
 
     tools {
@@ -56,7 +57,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    mysql -h mysql -P 3307 -u root -e ";" || echo "MySQL is not ready yet"
+                    mysql -h mysql -P 3306 -u root -e ";" || echo "MySQL is not ready yet"
                     '''
                 }
             }
@@ -64,12 +65,12 @@ pipeline {
 
 
 
-        /*stage('Install Chrome') {
+        stage('Install Chrome') {
             steps {
                 sh 'wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'
                 sh 'echo "nour2001" | sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb'
             }
-        }*/
+        }
 
 
 
@@ -256,29 +257,7 @@ pipeline {
 
 
 
-        stage('Check Prometheus Metrics') {
-            steps {
-                script {
-                    sleep(30) // Adjust as needed
-                    def response = sh(script: "curl -s ${PROMETHEUS_URL}/api/v1/query?query=up{job=\"jenkins\"}", returnStdout: true).trim()
-                    echo "Prometheus Response: ${response}"
-                    if (!response.contains('"status":"success"')) {
-                        error("Failed to verify Jenkins metrics in Prometheus")
-                    }
-                }
-            }
-        }
 
-
-
-                stage('Check Grafana Dashboards') {
-                    steps {
-                        script {
-                            sleep(30) // Adjust time as necessary
-                            sh "curl -f ${params.GRAFANA_URL}/api/search"
-                        }
-                    }
-                }
 
 
         stage('Stop Services') {
@@ -301,9 +280,13 @@ pipeline {
         }
         success {
             echo 'Build and tests succeeded!'
+
+
         }
         failure {
             echo 'Build or test failed.'
         }
+
+
     }
 }

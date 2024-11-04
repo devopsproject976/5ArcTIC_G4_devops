@@ -31,7 +31,7 @@ services:
   nexus:
     image: sonatype/nexus3
     ports:
-      - "8082:8081"  # Map host port 8081 to Nexus's port 8081
+      - "8081:8081"  # Map host port 8081 to Nexus's port 8081
     volumes:
       - nexus-data:/nexus-data
     environment:

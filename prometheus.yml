@@ -3,9 +3,9 @@ global:
 
 scrape_configs:
   - job_name: 'jenkins'
-    metrics_path: '/prometheus'
+    metrics_path: '/prometheus'  # This is the path Jenkins exposes metrics on
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ['localhost:8080']  # This is the address to access Jenkins
 
   - job_name: 'sonarqube'
     static_configs:
@@ -16,5 +16,6 @@ scrape_configs:
       - targets: ['nexus:8081']  # This should remain as is
 
   - job_name: 'spring-boot-app'
+    metrics_path: '/metrics'  # Ensure this matches the Spring Boot metrics path
     static_configs:
-      - targets: ['springboot:8080']  # Change this to 8080 to match the internal container port
+      - targets: [ 'springboot:8082' ]
