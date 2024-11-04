@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Invoice.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DevOps_Project</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.devops_project.entities</a> &gt; <span class="el_source">Invoice.java</span></div><h1>Invoice.java</h1><pre class="source lang-java linenums">package tn.esprit.devops_project.entities;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Entity
+@Getter
+<span class="nc" id="L20">@Setter</span>
+<span class="nc" id="L21">@AllArgsConstructor</span>
+<span class="fc" id="L22">@NoArgsConstructor</span>
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Invoice implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L29">	Long idInvoice;</span>
+<span class="nc" id="L30">	float amountDiscount;</span>
+<span class="nc" id="L31">	float amountInvoice;</span>
+	@Temporal(TemporalType.DATE)
+<span class="nc" id="L33">	Date dateCreationInvoice;</span>
+	@Temporal(TemporalType.DATE)
+<span class="nc" id="L35">	Date dateLastModificationInvoice;</span>
+<span class="nc" id="L36">	Boolean archived;</span>
+	@OneToMany(mappedBy = &quot;invoice&quot;)
+<span class="nc" id="L38">	Set&lt;InvoiceDetail&gt; invoiceDetails;</span>
+    @ManyToOne
+    @JsonIgnore
+<span class="nc" id="L41">    Supplier supplier;</span>
+
+//////////////////////////////////////
+	@ManyToOne
+	@JsonIgnore
+<span class="nc" id="L46">	Customer customer;</span>
+
+//aicha and nour are bagrallah fi zar3allah
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

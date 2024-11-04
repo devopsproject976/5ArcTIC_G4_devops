@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DevOps_Project</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.devops_project.services</a> &gt; <span class="el_source">ProductServiceImpl.java</span></div><h1>ProductServiceImpl.java</h1><pre class="source lang-java linenums">package tn.esprit.devops_project.services;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import tn.esprit.devops_project.entities.Product;
+import tn.esprit.devops_project.entities.ProductCategory;
+import tn.esprit.devops_project.entities.Stock;
+import tn.esprit.devops_project.repositories.ProductRepository;
+import tn.esprit.devops_project.repositories.StockRepository;
+import tn.esprit.devops_project.services.Iservices.IProductService;
+
+import javax.transaction.Transactional;
+import java.util.List;
+
+@Service
+<span class="fc" id="L16">@AllArgsConstructor</span>
+public class ProductServiceImpl implements IProductService {
+
+    private final ProductRepository productRepository;
+    private final StockRepository stockRepository;
+
+    // 1. Ajouter un produit avec gestion du stock
+    @Override
+    public Product addProduct(Product product, Long stockId) {
+<span class="nc" id="L25">        Stock stock = stockRepository.findById(stockId).orElseThrow(() -&gt; new NullPointerException(&quot;Stock not found&quot;));</span>
+<span class="nc" id="L26">        product.setStock(stock);</span>
+<span class="nc" id="L27">        return productRepository.save(product);</span>
+    }
+
+    // 2. Mettre à jour un produit existant
+    @Override
+    public Product updateProduct(Long productId, Product updatedProduct) {
+<span class="nc" id="L33">        Product existingProduct = productRepository.findById(productId)</span>
+<span class="nc" id="L34">                .orElseThrow(() -&gt; new NullPointerException(&quot;Product not found&quot;));</span>
+<span class="nc" id="L35">        existingProduct.setTitle(updatedProduct.getTitle());</span>
+<span class="nc" id="L36">        existingProduct.setPrice(updatedProduct.getPrice());</span>
+<span class="nc" id="L37">        existingProduct.setQuantity(updatedProduct.getQuantity());</span>
+<span class="nc" id="L38">        existingProduct.setCategory(updatedProduct.getCategory());</span>
+<span class="nc" id="L39">        return productRepository.save(existingProduct);</span>
+    }
+
+    // 3. Gérer la vente d'un produit et mettre à jour le stock
+    @Transactional
+    public void sellProduct(Long productId, int quantitySold) {
+<span class="nc" id="L45">        Product product = productRepository.findById(productId)</span>
+<span class="nc" id="L46">                .orElseThrow(() -&gt; new NullPointerException(&quot;Product not found&quot;));</span>
+
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (product.getQuantity() &lt; quantitySold) {</span>
+<span class="nc" id="L49">            throw new IllegalArgumentException(&quot;Not enough stock for product: &quot; + product.getTitle());</span>
+        }
+<span class="nc" id="L51">        product.setQuantity(product.getQuantity() - quantitySold);</span>
+<span class="nc" id="L52">        productRepository.save(product);</span>
+<span class="nc" id="L53">    }</span>
+
+    // 4. Calculer les produits en rupture de stock
+    @Override
+    public List&lt;Product&gt; findLowStockProducts(int threshold) {
+<span class="nc" id="L58">        return productRepository.findByQuantityLessThan(threshold);</span>
+    }
+
+    // 5. Rechercher des produits par titre
+    @Override
+    public List&lt;Product&gt; searchProductsByTitle(String title) {
+<span class="nc" id="L64">        return productRepository.findByTitleContainingIgnoreCase(title);</span>
+    }
+
+    // 6. Rechercher des produits dans une plage de prix
+    @Override
+    public List&lt;Product&gt; searchProductsByPriceRange(float minPrice, float maxPrice) {
+<span class="nc" id="L70">        return productRepository.findByPriceBetween(minPrice, maxPrice);</span>
+    }
+
+    // Récupérer un produit par ID
+    @Override
+    public Product retrieveProduct(Long id) {
+<span class="nc" id="L76">        return productRepository.findById(id).orElseThrow(() -&gt; new NullPointerException(&quot;Product not found&quot;));</span>
+    }
+
+    // Récupérer tous les produits
+    @Override
+    public List&lt;Product&gt; retreiveAllProduct() {
+<span class="nc" id="L82">        return productRepository.findAll();</span>
+    }
+
+    // Récupérer des produits par catégorie
+    @Override
+    public List&lt;Product&gt; retrieveProductByCategory(ProductCategory category) {
+<span class="nc" id="L88">        return productRepository.findByCategory(category);</span>
+    }
+
+    // Supprimer un produit
+    @Override
+    public void deleteProduct(Long id) {
+<span class="nc" id="L94">        productRepository.deleteById(id);</span>
+<span class="nc" id="L95">    }</span>
+
+    // Récupérer des produits associés à un stock
+    @Override
+    public List&lt;Product&gt; retreiveProductStock(Long stockId) {
+<span class="nc" id="L100">        return productRepository.findByStockIdStock(stockId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

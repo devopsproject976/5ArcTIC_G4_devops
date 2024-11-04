@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InvoiceServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DevOps_Project</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.devops_project.services</a> &gt; <span class="el_source">InvoiceServiceImpl.java</span></div><h1>InvoiceServiceImpl.java</h1><pre class="source lang-java linenums">package tn.esprit.devops_project.services;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import tn.esprit.devops_project.entities.Invoice;
+import tn.esprit.devops_project.entities.Operator;
+import tn.esprit.devops_project.entities.Supplier;
+import tn.esprit.devops_project.repositories.InvoiceDetailRepository;
+import tn.esprit.devops_project.repositories.InvoiceRepository;
+import tn.esprit.devops_project.repositories.OperatorRepository;
+import tn.esprit.devops_project.repositories.SupplierRepository;
+import tn.esprit.devops_project.services.Iservices.IInvoiceService;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+<span class="fc" id="L19">@Slf4j</span>
+<span class="fc" id="L20">@AllArgsConstructor</span>
+public class InvoiceServiceImpl implements IInvoiceService {
+
+	final InvoiceRepository invoiceRepository;
+	final OperatorRepository operatorRepository;
+	final InvoiceDetailRepository invoiceDetailRepository;
+	final SupplierRepository supplierRepository;
+	
+	@Override
+	public List&lt;Invoice&gt; retrieveAllInvoices() {
+<span class="nc" id="L30">		return invoiceRepository.findAll();</span>
+	}
+	@Override
+	public void cancelInvoice(Long invoiceId) {
+		// method 01
+<span class="nc" id="L35">		Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -&gt; new NullPointerException(&quot;Invoice not found&quot;));</span>
+<span class="nc" id="L36">		invoice.setArchived(true);</span>
+<span class="nc" id="L37">		invoiceRepository.save(invoice);</span>
+		//method 02 (Avec JPQL)
+<span class="nc" id="L39">		invoiceRepository.updateInvoice(invoiceId);</span>
+<span class="nc" id="L40">	}</span>
+
+	@Override
+	public Invoice retrieveInvoice(Long invoiceId) {
+
+<span class="nc" id="L45">		return invoiceRepository.findById(invoiceId).orElseThrow(() -&gt; new NullPointerException(&quot;Invoice not found&quot;));</span>
+	}
+
+	@Override
+	public List&lt;Invoice&gt; getInvoicesBySupplier(Long idSupplier) {
+<span class="nc" id="L50">		Supplier supplier = supplierRepository.findById(idSupplier).orElseThrow(() -&gt; new NullPointerException(&quot;Supplier not found&quot;));</span>
+<span class="nc" id="L51">		return (List&lt;Invoice&gt;) supplier.getInvoices();</span>
+	}
+
+	@Override
+	public void assignOperatorToInvoice(Long idOperator, Long idInvoice) {
+<span class="nc" id="L56">		Invoice invoice = invoiceRepository.findById(idInvoice).orElseThrow(() -&gt; new NullPointerException(&quot;Invoice not found&quot;));</span>
+<span class="nc" id="L57">		Operator operator = operatorRepository.findById(idOperator).orElseThrow(() -&gt; new NullPointerException(&quot;Operator not found&quot;));</span>
+<span class="nc" id="L58">		operator.getInvoices().add(invoice);</span>
+<span class="nc" id="L59">		operatorRepository.save(operator);</span>
+<span class="nc" id="L60">	}</span>
+
+	@Override
+	public float getTotalAmountInvoiceBetweenDates(Date startDate, Date endDate) {
+<span class="nc" id="L64">		return invoiceRepository.getTotalAmountInvoiceBetweenDates(startDate, endDate);</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

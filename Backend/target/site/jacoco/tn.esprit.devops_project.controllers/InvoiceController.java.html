@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InvoiceController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DevOps_Project</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.devops_project.controllers</a> &gt; <span class="el_source">InvoiceController.java</span></div><h1>InvoiceController.java</h1><pre class="source lang-java linenums">package tn.esprit.devops_project.controllers;
+
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.devops_project.entities.Invoice;
+import tn.esprit.devops_project.services.Iservices.IInvoiceService;
+
+import java.util.Date;
+import java.util.List;
+
+
+@RestController
+<span class="fc" id="L13">@AllArgsConstructor</span>
+public class InvoiceController {
+
+    IInvoiceService invoiceService;
+
+    @GetMapping(&quot;/invoice&quot;)
+    public List&lt;Invoice&gt; getInvoices() {
+<span class="nc" id="L20">       return invoiceService.retrieveAllInvoices();</span>
+    }
+
+    @GetMapping(&quot;/invoice/{invoiceId}&quot;)
+    public Invoice retrieveInvoice(@PathVariable Long invoiceId) {
+<span class="nc" id="L25">        return invoiceService.retrieveInvoice(invoiceId);</span>
+    }
+
+    @PutMapping(&quot;/invoice/{invoiceId}&quot;)
+    public void cancelInvoice(@PathVariable Long invoiceId) {
+<span class="nc" id="L30">        invoiceService.cancelInvoice(invoiceId);</span>
+<span class="nc" id="L31">    }</span>
+
+    @GetMapping(&quot;/invoice/supplier/{supplierId}&quot;)
+    public List&lt;Invoice&gt; getInvoicesBySupplier(@PathVariable Long supplierId) {
+<span class="nc" id="L35">        return invoiceService.getInvoicesBySupplier(supplierId);</span>
+    }
+
+    @PutMapping(value = &quot;/invoice/operator/{idOperator}/{idInvoice}&quot;)
+    public void assignOperatorToInvoice(@PathVariable Long idOperator,@PathVariable Long idInvoice) {
+<span class="nc" id="L40">        invoiceService.assignOperatorToInvoice(idOperator, idInvoice);</span>
+<span class="nc" id="L41">    }</span>
+
+    @GetMapping(&quot;/invoice/price/{startDate}/{endDate}&quot;)
+    public float getTotalAmountInvoiceBetweenDates(@PathVariable Date startDate,@PathVariable Date endDate){
+<span class="nc" id="L45">        return invoiceService.getTotalAmountInvoiceBetweenDates(startDate, endDate);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DevOps_Project</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.devops_project.services</a> &gt; <span class="el_source">CustomerServiceImpl.java</span></div><h1>CustomerServiceImpl.java</h1><pre class="source lang-java linenums">package tn.esprit.devops_project.services;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+import tn.esprit.devops_project.entities.Customer;
+import tn.esprit.devops_project.repositories.CustomerRepository;
+import tn.esprit.devops_project.services.Iservices.ICustomerService;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L16">@AllArgsConstructor</span>
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class CustomerServiceImpl implements ICustomerService {
+
+    CustomerRepository customerRepository;
+
+    @Override
+    public List&lt;Customer&gt; retrieveAllCustomers() {
+<span class="fc" id="L24">        return (List&lt;Customer&gt;) customerRepository.findAll();</span>
+    }
+
+    @Override
+    public Customer addCustomer(Customer customer) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {</span>
+<span class="fc" id="L30">            throw new IllegalArgumentException(&quot;Email already exists&quot;);</span>
+        }
+<span class="fc" id="L32">        return customerRepository.save(customer);</span>
+    }
+
+
+    @Override
+    public void deleteCustomer(Long id) {
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if (!customerRepository.existsById(id)) {</span>
+<span class="fc" id="L39">            throw new NoSuchElementException(&quot;Customer not found&quot;);</span>
+        }
+<span class="nc" id="L41">        customerRepository.deleteById(id);</span>
+<span class="nc" id="L42">    }</span>
+
+
+
+
+    @Override
+    public Customer retrieveCustomer(Long id) {
+<span class="pc" id="L49">        return customerRepository.findById(id).orElseThrow(() -&gt; new NullPointerException(&quot;Customer not found&quot;));</span>
+    }
+
+    // New methods added for searching
+    public Optional&lt;Customer&gt; findCustomerByEmail(String email) {
+<span class="fc" id="L54">        return customerRepository.findByEmail(email);</span>
+    }
+
+    public List&lt;Customer&gt; findCustomersByPhone(String phone) {
+<span class="fc" id="L58">        return customerRepository.findByPhone(phone);</span>
+    }
+
+    public List&lt;Customer&gt; findCustomersByName(String name) {
+<span class="fc" id="L62">        return customerRepository.findByNameContainingIgnoreCase(name);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
