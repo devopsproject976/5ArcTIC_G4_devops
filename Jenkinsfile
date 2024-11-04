@@ -181,7 +181,7 @@ pipeline {
                     steps {
                         script {
                             echo "NEXUS_URL: ${NEXUS_URL}"
-                             dir('Backend') {
+                             /*dir('Backend') {
                                                  script {
                                                      // Define artifact details based on the known pom.xml values
                                                              def groupId = "tn.esprit"
@@ -214,21 +214,50 @@ pipeline {
                                                          error "*** File could not be found or does not exist at ${artifactPath}."
                                                      }
                                                  }
-                                             }
+                                             }*/
 
                             // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
                             dir('Frontend') {
-                                //sh """
-                                //mvn deploy:deploy-file \
-                                    //-DgroupId=com.example \
-                                    //-DartifactId=devops-frontend \
-                                    //-Dversion=${IMAGE_TAG_FRONTEND} \
-                                    //-Dpackaging=jar \
-                                    //-Dfile=target/devops-frontend-${IMAGE_TAG_FRONTEND}.jar \
-                                    //-DrepositoryId=${MAVEN_REPO_ID} \
-                                    //-Durl=${NEXUS_PROTOCOL}://${NEXUS_URL}/repository/${NEXUS_REPOSITORY} \
-                                    //-DskipTests
-                                //"""
+                                script {
+                                            // Define artifact details for frontend
+                                            def frontendGroupId = "tn.esprit"
+                                            def frontendArtifactId = "devops-frontend"
+                                            def frontendVersion = IMAGE_TAG_FRONTEND
+                                            def frontendPackaging = "zip"  // Change to "zip" or "tar"
+                                            def frontendArtifactPath = "devops-frontend-${frontendVersion}.zip"
+
+                                            // Create an archive of the frontend build output
+                                            dir('Frontend/dist/your-angular-app') { // Adjust 'your-angular-app' to the correct folder name
+                                                sh "zip -r ../../${frontendArtifactPath} ."
+                                            }
+
+                                            // Check if the frontend artifact exists
+                                            if (fileExists(frontendArtifactPath)) {
+                                                echo "*** File: ${frontendArtifactPath}, group: ${frontendGroupId}, packaging: ${frontendPackaging}, version ${frontendVersion}"
+
+                                                // Upload frontend artifact to Nexus
+                                                nexusArtifactUploader(
+                                                    nexusVersion: NEXUS_VERSION,
+                                                    protocol: NEXUS_PROTOCOL,
+                                                    nexusUrl: params.NEXUS_URL,
+                                                    groupId: frontendGroupId,
+                                                    artifactId: frontendArtifactId,
+                                                    version: frontendVersion,
+                                                    repository: params.NEXUS_REPOSITORY,
+                                                    credentialsId: 'nexus-credentials',
+                                                    artifacts: [
+                                                        [artifactId: frontendArtifactId, classifier: '', file: frontendArtifactPath, type: frontendPackaging]
+                                                    ]
+                                                )
+                                            } else {
+                                                error "*** Frontend file could not be found or does not exist at ${frontendArtifactPath}."
+                                            }
+                                        }
+
+
+
+
+
                             }
                         }
                     }
