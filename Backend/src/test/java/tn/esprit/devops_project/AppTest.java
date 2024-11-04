@@ -41,35 +41,36 @@ public class AppTest {
     private Invoice invoice;
 
     @BeforeEach
-    public void setUp() {
-        // Set up mock data for testing
-        Supplier supplier = new Supplier();
-        supplier.setSupplierCategory(SupplierCategory.CONVENTIONNE);
+public void setUp() {
+    // Create and save supplier using builder
+    supplier = supplierRepository.save(
+        Supplier.builder()
+                .code("SUP001")
+                .label("Test Supplier")
+                .supplierCategory(SupplierCategory.CONVENTIONNE) // Set to CONVENTIONNE
+                .build()
+    );
 
-        Operator operator = new Operator();
-        operator.setFname("Test Operator");
+    // Create and save stock using builder
+    stock = stockRepository.save(
+        Stock.builder()
+                .title("Main Stock")
+                .supplier(supplier) // Associate supplier with stock
+                .build()
+    );
 
-        Product product = new Product();
-        product.setTitle("Test Product");
-        product.setPrice(100.0f);
-        product.setCategory(ProductCategory.ELECTRONICS);
-
-        InvoiceDetail detail = new InvoiceDetail();
-        detail.setQuantity(2);
-        detail.setProduct(product);
-
-        invoice = new Invoice();
-        invoice.setSupplier(supplier);
-        invoice.setOperator(operator);
-        invoice.setInvoiceDetails(Collections.singleton(detail)); // Assuming setInvoiceDetails accepts a Set
-        invoice.setDateCreationInvoice(new Date());
-
-        invoiceId = 1L; // Mock ID for testing
-
-        // Mock repository behavior
-        when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
-    }
-
+    // Create and save product using builder
+    product = productRepository.save(
+        Product.builder()
+                .title("Test Product")
+                .price(100f) // Set base price
+                .quantity(50)
+                .category(ProductCategory.ELECTRONICS)
+                .stock(stock) // Associate product with stock
+                .supplier(supplier) // Associate product with supplier
+                .build()
+    );
+}
     @Test
     public void testGenerateDetailedInvoiceSummary() {
         // Act
