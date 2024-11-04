@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     echo 'Installing Snyk...'
-                    sh 'npm install -g snyk'
+                    sh 'npm install -g snyk --unsafe-perm'
                 }
             }
         }
