@@ -292,12 +292,15 @@ pipeline {
         }
 
 
-        stage('Install Trivy') {
-                    steps {
-                        sh 'apt-get update && apt-get install -y trivy'
-                    }
-                }
-                stage('Security Scan') {
+
+         stage('Install Trivy') {
+                     steps {
+                         sh 'apt-get update && apt-get install -y trivy'
+                     }
+                 }
+
+
+        stage('Security Scan') {
                     steps {
                         script {
                             try {
@@ -325,7 +328,6 @@ pipeline {
                         }
                     }
                 }
-            }
 
 
 
