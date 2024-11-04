@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -41,37 +42,42 @@ public class InvoiceServiceTest {
 
     @BeforeEach
     public void setUp() {
-        // Set up mock data for testing using Lombok's @Builder
+        // Create and save Supplier
         Supplier supplier = Supplier.builder()
                 .supplierCategory(SupplierCategory.CONVENTIONNE)
                 .build();
+        supplierRepository.save(supplier);
 
+        // Create and save Operator
         Operator operator = Operator.builder()
                 .fname("Test Operator")
                 .build();
+        operatorRepository.save(operator);
 
+        // Create and save Product
         Product product = Product.builder()
                 .title("Test Product")
                 .price(100.0f)
                 .category(ProductCategory.ELECTRONICS)
                 .build();
+        productRepository.save(product);
 
+        // Create InvoiceDetail
         InvoiceDetail detail = InvoiceDetail.builder()
                 .quantity(2)
                 .product(product)
                 .build();
 
-        invoice = Invoice.builder()
+        // Create and save Invoice with details
+        Invoice invoice = Invoice.builder()
                 .supplier(supplier)
                 .operator(operator)
-                .invoiceDetails(Collections.singleton(detail)) // Assuming setInvoiceDetails accepts a Set
-                .dateCreationInvoice(new Date())
+                .invoiceDetails(new HashSet<>(Collections.singletonList(detail))) // Add detail to a Set
+                .dateCreationInvoice(Date.from(Instant.now()))
                 .build();
 
-        invoiceId = 1L; // Mock ID for testing
-
-        // Mock repository behavior
-        when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
+        invoice = invoiceRepository.save(invoice);
+        invoiceId = invoice.getIdInvoice(); // Store the ID for testing
     }
 
     @AfterEach

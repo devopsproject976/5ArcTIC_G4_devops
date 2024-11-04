@@ -8,12 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.devops_project.entities.*;
 import tn.esprit.devops_project.repositories.*;
 import tn.esprit.devops_project.services.InvoiceServiceImpl;
 
+import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Transactional
@@ -22,6 +26,14 @@ public class InvoiceServiceTestMokito {
     @Mock
     private InvoiceRepository invoiceRepository;
 
+    @Mock
+    private SupplierRepository supplierRepository;
+
+    @Mock
+    private OperatorRepository operatorRepository;
+
+    @Mock
+    private ProductRepository productRepository;
 
 
     @InjectMocks
