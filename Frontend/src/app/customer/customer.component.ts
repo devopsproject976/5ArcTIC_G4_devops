@@ -46,7 +46,7 @@ export class CustomerComponent {
 
   resetForm() {
     this.customer = { name: '', email: '', phone: '' };
-    this.displayForm = false; // Hide form afterscsfsfedfefefefe
+    this.displayForm = false; 
   }
 
   removeCustomer(customerId: number) {
