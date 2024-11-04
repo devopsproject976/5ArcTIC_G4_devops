@@ -28,7 +28,6 @@ public class InvoiceServiceImpl implements IInvoiceService {
 	final OperatorRepository operatorRepository;
 	final InvoiceDetailRepository invoiceDetailRepository;
 	final SupplierRepository supplierRepository;
-	private final StockRepository stockRepository;
 
 
 
@@ -77,8 +76,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
 				.orElseThrow(() -> new IllegalArgumentException("Invoice not found for ID: " + invoiceId));
 
 		Supplier supplier = invoice.getSupplier();
-		Operator operator = Optional.ofNullable(invoice.getOperator())
-				.orElseThrow(() -> new IllegalArgumentException("No operator associated with Invoice ID: " + invoiceId));
+
 
 		float totalAmount = 0.0f;
 		float totalDiscount = 0.0f;

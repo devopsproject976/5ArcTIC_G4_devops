@@ -1,6 +1,5 @@
 package tn.esprit.devops_project;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,10 @@ import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
-public class InvoiceServiceTest {
+ class InvoiceServiceTest {
 
     @Autowired
     private InvoiceRepository invoiceRepository;
@@ -83,7 +81,7 @@ public class InvoiceServiceTest {
 
 
     @Test
-    public void testGenerateDetailedInvoiceSummary() {
+     void testGenerateDetailedInvoiceSummary() {
         // Act
         InvoiceSummary summary = invoiceService.generateDetailedInvoiceSummary(invoiceId); // Call the service method
 

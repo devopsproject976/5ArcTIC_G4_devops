@@ -20,7 +20,7 @@ import javax.transaction.Transactional;
 
 @Transactional
 @SpringBootTest
-public class AppTest {
+ class AppTest {
 
     @Autowired
     private ProductRepository productRepository;
@@ -71,7 +71,7 @@ public class AppTest {
     }
 
     @Test
-    public void testCalculateTotalPrice() {
+     void testCalculateTotalPrice() {
         // Call the method to test with a quantity of 2
         float result = productService.calculateTotalPrice(product.getIdProduct(), 2);
 

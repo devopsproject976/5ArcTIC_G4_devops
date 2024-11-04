@@ -14,7 +14,7 @@ import tn.esprit.devops_project.services.ProductServiceImpl;
 
 import java.util.Optional;
 
-public class MockitoTest {
+ class MockitoTest {
 
     @Mock
     private ProductRepository productRepository;
@@ -55,7 +55,7 @@ public class MockitoTest {
                 .build();
     }
     @Test
-    public void testCalculateTotalPriceWithMockedProduct() {
+     void testCalculateTotalPriceWithMockedProduct() {
         // Arrange
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
@@ -76,7 +76,7 @@ public class MockitoTest {
     }
 
     @Test
-    public void testCalculateTotalPriceProductNotFound() {
+     void testCalculateTotalPriceProductNotFound() {
         // Arrange
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
 

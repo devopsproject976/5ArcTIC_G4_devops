@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class InvoiceServiceMockitoTest {
+ class InvoiceServiceMockitoTest {
 
     @Mock
     private InvoiceRepository invoiceRepository;
@@ -80,7 +80,7 @@ public class InvoiceServiceMockitoTest {
     }
 
     @Test
-    public void testGenerateDetailedInvoiceSummary() {
+     void testGenerateDetailedInvoiceSummary() {
         // Act
         InvoiceSummary summary = invoiceService.generateDetailedInvoiceSummary(invoiceId);
 
