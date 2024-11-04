@@ -30,28 +30,30 @@ public class MockitoTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this); // Initialize mocks
 
-        // Create a mock supplier
-        supplier = new Supplier();
-        supplier.setCode("SUP001");
-        supplier.setLabel("Test Supplier");
-        supplier.setSupplierCategory(SupplierCategory.CONVENTIONNE);
+        // Create a mock supplier using builder
+        supplier = Supplier.builder()
+                .code("SUP001")
+                .label("Test Supplier")
+                .supplierCategory(SupplierCategory.CONVENTIONNE)
+                .build();
 
-        // Create a mock stock
-        stock = new Stock();
-        stock.setTitle("Main Stock");
-        stock.setSupplier(supplier);
+        // Create a mock stock using builder
+        stock = Stock.builder()
+                .title("Main Stock")
+                .supplier(supplier) // Associate stock with supplier
+                .build();
 
-        // Create a mock product
-        product = new Product();
-        product.setIdProduct(1L); // Assign an ID
-        product.setTitle("Test Product");
-        product.setPrice(100f); // Set base price
-        product.setQuantity(50);
-        product.setCategory(ProductCategory.ELECTRONICS);
-        product.setStock(stock); // Associate product with stock
-        product.setSupplier(supplier); // Associate product with supplier
+        // Create a mock product using builder
+        product = Product.builder()
+                .idProduct(1L) // Assign an ID
+                .title("Test Product")
+                .price(100f) // Set base price
+                .quantity(50)
+                .category(ProductCategory.ELECTRONICS)
+                .stock(stock) // Associate product with stock
+                .supplier(supplier) // Associate product with supplier
+                .build();
     }
-
     @Test
     public void testCalculateTotalPriceWithMockedProduct() {
         // Arrange
