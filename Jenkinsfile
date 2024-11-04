@@ -218,7 +218,7 @@ pipeline {
 
                             // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
                             dir('Frontend') {
-                                script {
+                                /*script {
                                         // Build the Angular app
                                         sh 'npm install'  // Install dependencies
                                         sh 'npm run build --prod'  // Build the app
@@ -260,7 +260,7 @@ pipeline {
                                         } else {
                                             error "*** Frontend file could not be found or does not exist at ${frontendArtifactPath}."
                                         }
-                                    }
+                                    }*/
 
 
 
