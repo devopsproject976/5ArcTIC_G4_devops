@@ -140,13 +140,13 @@ pipeline {
                             steps {
                                 script {
                                     dir('Frontend') {
-                                        /*withSonarQubeEnv('SonarQube') {
+                                        withSonarQubeEnv('SonarQube') {
                                             sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner " +
                                                 "-Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} " +
                                                 "-Dsonar.sources=src " +
                                                 "-Dsonar.host.url=${params.SONARQUBE_URL} " +
                                                 "-Dsonar.login=${env.SONAR_TOKEN}"
-                                        }*/
+                                        }
                                     }
                                 }
                             }

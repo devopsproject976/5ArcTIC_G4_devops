@@ -36,6 +36,8 @@ services:
       - nexus-data:/nexus-data
     environment:
       - INSTALL4J_ADD_VM_PARAMS=-Xms1200m -Xmx1200m
+    networks:
+      - app-network
 
   prometheus:
     image: prom/prometheus
@@ -47,6 +49,8 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    networks:
+      - app-network
 
   grafana:
     image: grafana/grafana
@@ -56,6 +60,8 @@ services:
       - grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin  # Set Grafana admin password
+    networks:
+      - app-network
 
 volumes:
   sonarqube_conf:
@@ -72,4 +78,3 @@ volumes:
 networks:
   app-network:
     external: true
-

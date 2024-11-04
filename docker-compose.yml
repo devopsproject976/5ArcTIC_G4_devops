@@ -5,7 +5,7 @@ services:
     container_name: mysql_container
     environment:
       MYSQL_DATABASE: devops
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Allow empty password
+      MYSQL_ALLOW_EMPTY_PASSWORD: root  # Allow empty password
     ports:
       - "3307:3306"  # Host port: 3306, Container port: 3306
     volumes:
