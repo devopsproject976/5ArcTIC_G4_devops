@@ -31,32 +31,42 @@ public class InvoiceServiceTestMokito {
 
     @BeforeEach
     public void setUp() {
-        // Set up mock data for testing
-        Supplier supplier = new Supplier();
-        supplier.setSupplierCategory(SupplierCategory.CONVENTIONNE);
+        // Create and save Supplier
+        Supplier supplier = Supplier.builder()
+                .supplierCategory(SupplierCategory.CONVENTIONNE)
+                .build();
+        supplierRepository.save(supplier);
 
-        Operator operator = new Operator();
-        operator.setFname("Test Operator");
+        // Create and save Operator
+        Operator operator = Operator.builder()
+                .fname("Test Operator")
+                .build();
+        operatorRepository.save(operator);
 
-        Product product = new Product();
-        product.setTitle("Test Product");
-        product.setPrice(100.0f);
-        product.setCategory(ProductCategory.ELECTRONICS);
+        // Create and save Product
+        Product product = Product.builder()
+                .title("Test Product")
+                .price(100.0f)
+                .category(ProductCategory.ELECTRONICS)
+                .build();
+        productRepository.save(product);
 
-        InvoiceDetail detail = new InvoiceDetail();
-        detail.setQuantity(2);
-        detail.setProduct(product);
+        // Create InvoiceDetail
+        InvoiceDetail detail = InvoiceDetail.builder()
+                .quantity(2)
+                .product(product)
+                .build();
 
-        invoice = new Invoice();
-        invoice.setSupplier(supplier);
-        invoice.setOperator(operator);
-        invoice.setInvoiceDetails(Collections.singleton(detail)); // Assuming setInvoiceDetails accepts a Set
-        invoice.setDateCreationInvoice(new Date());
+        // Create and save Invoice with details
+        Invoice invoice = Invoice.builder()
+                .supplier(supplier)
+                .operator(operator)
+                .invoiceDetails(new HashSet<>(Collections.singletonList(detail))) // Add detail to a Set
+                .dateCreationInvoice(Date.from(Instant.now()))
+                .build();
 
-        invoiceId = 1L; // Mock ID for testing
-
-        // Mock repository behavior
-        when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
+        invoice = invoiceRepository.save(invoice);
+        invoiceId = invoice.getIdInvoice(); // Store the ID for testing
     }
 
     @Test
