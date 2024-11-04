@@ -292,34 +292,40 @@ pipeline {
         }
 
 
-        stage('Security Scan') {
-            steps {
-                script {
-                    try {
-                        // Run Trivy scan on backend image
-                        echo "Starting Trivy scan for backend image: ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND}"
-                        sh "trivy image --severity HIGH,CRITICAL ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND} > trivy_backend_report.txt"
-                        echo "Backend image scan completed. Results saved to trivy_backend_report.txt"
+        stage('Install Trivy') {
+                    steps {
+                        sh 'apt-get update && apt-get install -y trivy'
+                    }
+                }
+                stage('Security Scan') {
+                    steps {
+                        script {
+                            try {
+                                // Run Trivy scan on backend image
+                                echo "Starting Trivy scan for backend image: ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND}"
+                                sh "trivy image --severity HIGH,CRITICAL ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND} > trivy_backend_report.txt"
+                                echo "Backend image scan completed. Results saved to trivy_backend_report.txt"
 
-                        // Run Trivy scan on frontend image
-                        echo "Starting Trivy scan for frontend image: ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND}"
-                        sh "trivy image --severity HIGH,CRITICAL ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND} > trivy_frontend_report.txt"
-                        echo "Frontend image scan completed. Results saved to trivy_frontend_report.txt"
+                                // Run Trivy scan on frontend image
+                                echo "Starting Trivy scan for frontend image: ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND}"
+                                sh "trivy image --severity HIGH,CRITICAL ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND} > trivy_frontend_report.txt"
+                                echo "Frontend image scan completed. Results saved to trivy_frontend_report.txt"
 
-                        // Display scan results in the console for immediate visibility
-                        echo "Backend Image Vulnerabilities:"
-                        sh "cat trivy_backend_report.txt"
+                                // Display scan results in the console for immediate visibility
+                                echo "Backend Image Vulnerabilities:"
+                                sh "cat trivy_backend_report.txt"
 
-                        echo "Frontend Image Vulnerabilities:"
-                        sh "cat trivy_frontend_report.txt"
+                                echo "Frontend Image Vulnerabilities:"
+                                sh "cat trivy_frontend_report.txt"
 
-                    } catch (Exception e) {
-                        echo "Security scan failed: ${e.message}"
-                        error("Security scan failed for one or more images.")
+                            } catch (Exception e) {
+                                echo "Security scan failed: ${e.message}"
+                                error("Security scan failed for one or more images.")
+                            }
+                        }
                     }
                 }
             }
-        }
 
 
 
