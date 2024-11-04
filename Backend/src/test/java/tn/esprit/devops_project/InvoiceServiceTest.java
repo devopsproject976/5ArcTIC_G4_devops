@@ -41,41 +41,37 @@ public class InvoiceServiceTest {
 
     @BeforeEach
     public void setUp() {
-        // Create and save Supplier
-        Supplier supplier = new Supplier();
-        supplier.setSupplierCategory(SupplierCategory.CONVENTIONNE);
-        supplierRepository.save(supplier);
+        // Set up mock data for testing using Lombok's @Builder
+        Supplier supplier = Supplier.builder()
+                .supplierCategory(SupplierCategory.CONVENTIONNE)
+                .build();
 
-        // Create and save Operator
-        Operator operator = new Operator();
-        operator.setFname("Test Operator");
-        operatorRepository.save(operator);
+        Operator operator = Operator.builder()
+                .fname("Test Operator")
+                .build();
 
-        // Create and save Product
-        Product product = new Product();
-        product.setTitle("Test Product");
-        product.setPrice(100.0f);
-        product.setCategory(ProductCategory.ELECTRONICS);
-        productRepository.save(product);
+        Product product = Product.builder()
+                .title("Test Product")
+                .price(100.0f)
+                .category(ProductCategory.ELECTRONICS)
+                .build();
 
-        // Create and save InvoiceDetail
-        InvoiceDetail detail = new InvoiceDetail();
-        detail.setQuantity(2);
-        detail.setProduct(product);
+        InvoiceDetail detail = InvoiceDetail.builder()
+                .quantity(2)
+                .product(product)
+                .build();
 
-        // Create and save Invoice with details
-        Invoice invoice = new Invoice();
-        invoice.setSupplier(supplier);
-        invoice.setOperator(operator);
+        invoice = Invoice.builder()
+                .supplier(supplier)
+                .operator(operator)
+                .invoiceDetails(Collections.singleton(detail)) // Assuming setInvoiceDetails accepts a Set
+                .dateCreationInvoice(new Date())
+                .build();
 
-        List<InvoiceDetail> details = new ArrayList<>();
-        details.add(detail);
+        invoiceId = 1L; // Mock ID for testing
 
-        invoice.setInvoiceDetails(new HashSet<>(details));
-        invoice.setDateCreationInvoice(Date.from(Instant.now()));
-
-        invoice = invoiceRepository.save(invoice);
-        invoiceId = invoice.getIdInvoice(); // Store the ID for testing
+        // Mock repository behavior
+        when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
     }
 
     @AfterEach
