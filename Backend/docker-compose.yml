@@ -29,7 +29,7 @@ services:
     container_name: frontend_angular-app
     image: amensmida/amenallahbensmida_5arctic3_g4_angular-app:latest
     build:
-      context: ../Frontend #//
+      context: ../Frontend 
     ports:
       - "4200:80"
     depends_on:
