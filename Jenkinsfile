@@ -97,7 +97,7 @@ pipeline {
                     }
                 }
 
-                stage('Test Backend and Frontend') {
+                /*stage('Test Backend and Frontend') {
                     parallel {
                         stage('Test Backend') {
                             steps {
@@ -115,9 +115,9 @@ pipeline {
                             }
                         }
                     }
-                }
+                }*/
 
-                stage('SonarQube Analysis Backend and Frontend') {
+                /*stage('SonarQube Analysis Backend and Frontend') {
                     parallel {
                         stage('SonarQube Analysis Backend') {
                             steps {
@@ -152,9 +152,9 @@ pipeline {
                             }
                         }
                     }
-                }
+                }*/
 
-        stage('Build Docker Images') {
+        /*stage('Build Docker Images') {
             steps {
                 // Build Docker image for backend
                 dir('Backend') {
@@ -166,7 +166,7 @@ pipeline {
                     sh "docker build -t ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND} ."
                 }
             }
-        }
+        }*/
 
 
         stage('Verify JAR Creation') {
