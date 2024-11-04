@@ -1,6 +1,7 @@
 version: "3"
 services:
   springboot-app:
+    container_name: backend_springboot-app  # Custom container name
     image: amensmida/amenallahbensmida_5arctic3_g4_spring-app:latest
     build:
       context: .  # Changed to current directory
@@ -14,7 +15,7 @@ services:
       - mysqldb
 
   mysqldb:
-    container_name: mysqldb
+    container_name: mysqldb  # Custom container name
     image: mysql
     volumes:
       - ./db:/var/lib/mysql  # Ensure this path is accessible by Jenkins
@@ -25,6 +26,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
 
   angular-app:
+    container_name: frontend_angular-app  # Corrected container name (no space)
     image: amensmida/amenallahbensmida_5arctic3_g4_angular-app:latest
     build:
       context: ../Frontend  # Adjust if necessary
