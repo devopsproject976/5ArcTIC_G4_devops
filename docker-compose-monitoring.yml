@@ -4,15 +4,13 @@ services:
   prometheus:
     image: prom/prometheus
     ports:
-      - "9090:9090"
+      - "9090:9090"  # Map host port 9090 to Prometheus's port 9090
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus.yml:/prometheus/prometheus.yml
-    networks:
-      - monitoring
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Mount your Prometheus configuration file
     command:
-      - '--config.file=/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus/data'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
 
   grafana:
     image: grafana/grafana
@@ -20,13 +18,8 @@ services:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
-    networks:
-      - monitoring
 
 volumes:
   prometheus-data:
   grafana-data:
 
-networks:
-  monitoring:
-    driver: bridge
