@@ -1,102 +1,102 @@
 package tn.esprit.devops_project;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.devops_project.entities.*;
 import tn.esprit.devops_project.repositories.*;
 import tn.esprit.devops_project.services.InvoiceServiceImpl;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 public class InvoiceServiceTest {
 
-    @Mock
+    @Autowired
     private InvoiceRepository invoiceRepository;
 
-    @Mock
+    @Autowired
     private SupplierRepository supplierRepository;
 
-    @Mock
+    @Autowired
     private OperatorRepository operatorRepository;
 
-    @Mock
+    @Autowired
     private ProductRepository productRepository;
 
-    @Mock
+    @Autowired
     private InvoiceDetailRepository invoiceDetailRepository;
 
-    @InjectMocks
+    @Autowired
     private InvoiceServiceImpl invoiceService;
 
     private Long invoiceId;
-    private Invoice invoice;
 
     @BeforeEach
     public void setUp() {
-        // Mock Supplier
+        // Create and save Supplier
         Supplier supplier = Supplier.builder()
                 .supplierCategory(SupplierCategory.CONVENTIONNE)
                 .build();
+        supplierRepository.save(supplier);
 
-        // Mock Operator
+        // Create and save Operator
         Operator operator = Operator.builder()
                 .fname("Test Operator")
                 .build();
+        operatorRepository.save(operator);
 
-        // Mock Product
+        // Create and save Product
         Product product = Product.builder()
                 .title("Test Product")
                 .price(100.0f)
                 .category(ProductCategory.ELECTRONICS)
                 .build();
+        productRepository.save(product);
 
-        // Mock InvoiceDetail
+        // Create InvoiceDetail
         InvoiceDetail detail = InvoiceDetail.builder()
                 .quantity(2)
                 .product(product)
                 .build();
 
-        // Create Invoice with mocked details and operator
-        invoice = Invoice.builder()
+        // Create and save Invoice with details
+        Invoice invoice = Invoice.builder()
                 .supplier(supplier)
-                .operator(operator) // Ensure the operator is associated here
-                .invoiceDetails(new HashSet<>(Collections.singletonList(detail)))
+                .operator(operator)
+                .invoiceDetails(new HashSet<>(Collections.singletonList(detail))) // Add detail to a Set
                 .dateCreationInvoice(Date.from(Instant.now()))
                 .build();
 
-        invoiceId = 1L; // Assign a mock ID
-
-        // Define repository behaviors
-        when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
+        invoice = invoiceRepository.save(invoice);
+        invoiceId = invoice.getIdInvoice(); // Store the ID for testing
     }
+
+
 
     @Test
     public void testGenerateDetailedInvoiceSummary() {
         // Act
-        InvoiceSummary summary = invoiceService.generateDetailedInvoiceSummary(invoiceId);
+        InvoiceSummary summary = invoiceService.generateDetailedInvoiceSummary(invoiceId); // Call the service method
 
         // Assert
         assertNotNull(summary);
 
-        float expectedTotalDiscount = 30; // Total discount should be correctly calculated
-        float expectedTotalTax = 25.5f; // Total tax calculation
+        float expectedTotalDiscount = 30; // Total discount should be correctly calculated as discussed earlier.
+        float expectedTotalTax = 25.5f; // This should now match our calculation.
 
-        float expectedTotalAmount = (2 * 100) * (1 - (0.05f + 0.10f)) + (170 * 0.15f); // Expected amount
+        float expectedTotalAmount = (2 * 100) * (1 - (0.05f + 0.10f)) + (170 * 0.15f); // Calculate expected amount with discounts and taxes
 
-        assertEquals(expectedTotalAmount, summary.getTotalAmount(), 0.01); // Total amount with delta
-        assertEquals(expectedTotalDiscount, summary.getTotalDiscount(), 0.01); // Total discount with delta
-        assertEquals(expectedTotalTax, summary.getTotalTax(), 0.01); // Total tax with delta
+        assertEquals(expectedTotalAmount, summary.getTotalAmount(), 0.01); // Use delta for total amount
+        assertEquals(expectedTotalDiscount, summary.getTotalDiscount(), 0.01); // Use delta for total discount
+        assertEquals(expectedTotalTax, summary.getTotalTax(), 0.01); // Use delta for total tax
     }
 }
