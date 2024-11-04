@@ -1,17 +1,3 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:17-jdk-alpine
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Define build argument
-ARG JAR_FILE
-
-# Copy the dynamic Spring Boot jar file to the container
-COPY ${JAR_FILE} app.jar
-
-# Expose the application port
-EXPOSE 8082
-
-# Run the jar file
+FROM openjdk:11-jre-slim
+COPY target/DevOps_Project-1.0.jar /app/app.jar
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
