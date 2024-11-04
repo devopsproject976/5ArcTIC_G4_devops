@@ -99,6 +99,7 @@
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
+                            <goal>report-aggregate</goal> <!-- Optional: for aggregated report -->
                         </goals>
                     </execution>
                 </executions>
