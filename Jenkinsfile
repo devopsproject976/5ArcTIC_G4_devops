@@ -11,6 +11,7 @@ pipeline {
         NEXUS_PROTOCOL = "http"
         NEXUS_CREDENTIAL_ID = "nexus-credentials"
         DOCKERHUB_CREDENTIAL_ID = "DOCKERHUB_CREDENTIALS" // ID des identifiants Jenkins pour Docker Hub
+        SNYK_TOKEN_CREDENTIAL_ID = "snyk-token"
     }
     stages {
         stage('Checkout') {
@@ -18,6 +19,35 @@ pipeline {
                 checkout scm
             }
         }
+                stage('Install Snyk') {
+            steps {
+                script {
+                    echo 'Installing Snyk...'
+                    sh 'npm install -g snyk'
+                }
+            }
+        }
+
+        stage('Authenticate with Snyk') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: SNYK_TOKEN_CREDENTIAL_ID, variable: 'SNYK_TOKEN')]) {
+                        echo 'Authenticating with Snyk...'
+                        sh "snyk auth ${SNYK_TOKEN}"
+                    }
+                }
+            }
+        }
+
+        stage('Snyk Test') {
+            steps {
+                script {
+                    echo 'Running Snyk test...'
+                    sh 'snyk test'
+                }
+            }
+        }
+
 
         stage('Build Spring Boot') {
             steps {
@@ -43,6 +73,15 @@ pipeline {
                         }
                     }
                     echo "Using JAR file: ${env.JAR_FILE}"
+                }
+            }
+        }
+
+        stage('OWASP ZAP Scan') {
+            steps {
+                script {
+                    echo 'Running OWASP ZAP Scan...'
+                    sh "docker run -t -v ~/Bureau/zap-output:/zap/wrk zaproxy/zap-stable zap.sh -cmd -quickurl http://localhost:4200 -quickout /zap/wrk/output.html"
                 }
             }
         }
