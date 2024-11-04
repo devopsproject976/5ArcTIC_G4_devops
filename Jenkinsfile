@@ -219,6 +219,11 @@ pipeline {
                             // Publish the frontend artifact to Nexus (assuming it's a JAR for this example)
                             dir('Frontend') {
                                 script {
+                                        // Build the Angular app
+                                        sh 'npm install'  // Install dependencies
+                                        sh 'npm run build --prod'  // Build the app
+                                        sh 'ls -l dist/summer-workshop-angular'  // Check the output of the build
+
                                         // Define artifact details for frontend
                                         def frontendGroupId = "tn.esprit"
                                         def frontendArtifactId = "devops-frontend"
@@ -226,10 +231,10 @@ pipeline {
                                         def frontendPackaging = "zip"
                                         def frontendArtifactPath = "devops-frontend-${frontendVersion}.zip"
 
-                                        // Adjust the output directory name based on your Angular project
-                                        dir('dist/devops-frontend') {
+                                        // Use the correct output directory
+                                        dir('dist/summer-workshop-angular') {
                                             // List files for debugging
-                                            sh "ls -l"
+                                            sh "ls -l"  // List files in the output directory
                                             // Create a zip archive of the frontend build output
                                             sh "zip -r ../../${frontendArtifactPath} ."
                                         }
