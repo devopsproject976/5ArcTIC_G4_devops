@@ -16,7 +16,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
-
+@Transactional
+@SpringBootTest
 public class InvoiceServiceTestMokito {
     @Mock
     private InvoiceRepository invoiceRepository;
