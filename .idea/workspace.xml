@@ -100,7 +100,6 @@
       <command value="mvn clean install" />
       <command value="mvn clean verify3" />
       <command value="mvn clean verify" />
-      <command value="mvn test" />
       <command value="mvn clean test" />
       <command value="mvn --builder" />
       <command value="mvn test " />
@@ -110,6 +109,7 @@
       <command value="mvn build" />
       <command value="mvn install " />
       <command value="mvn package -DskipTests " />
+      <command value="mvn test" />
     </option>
   </component>
   <component name="RunManager">
@@ -147,7 +147,8 @@
       <workItem from="1730627523831" duration="6841000" />
       <workItem from="1730660380161" duration="6961000" />
       <workItem from="1730718121395" duration="489000" />
-      <workItem from="1730726894046" duration="534000" />
+      <workItem from="1730726894046" duration="2036000" />
+      <workItem from="1730737081361" duration="88000" />
     </task>
     <servers />
   </component>
