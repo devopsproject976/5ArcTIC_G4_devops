@@ -13,17 +13,19 @@ pipeline {
         DOCKERHUB_CREDENTIAL_ID = "DOCKERHUB_CREDENTIALS" // ID des identifiants Jenkins pour Docker Hub
         SNYK_TOKEN_CREDENTIAL_ID = "snyk-token"
     }
+    
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-                stage('Install Snyk') {
+
+        stage('Install Snyk') {
             steps {
                 script {
                     echo 'Installing Snyk...'
-                    sh 'npm install -g snyk --unsafe-perm'
+                    sh 'npm install snyk'
                 }
             }
         }
@@ -33,7 +35,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: SNYK_TOKEN_CREDENTIAL_ID, variable: 'SNYK_TOKEN')]) {
                         echo 'Authenticating with Snyk...'
-                        sh "snyk auth ${SNYK_TOKEN}"
+                        sh "./node_modules/.bin/snyk auth ${SNYK_TOKEN}"
                     }
                 }
             }
@@ -43,11 +45,10 @@ pipeline {
             steps {
                 script {
                     echo 'Running Snyk test...'
-                    sh 'snyk test'
+                    sh './node_modules/.bin/snyk test'
                 }
             }
         }
-
 
         stage('Build Spring Boot') {
             steps {
@@ -138,7 +139,7 @@ pipeline {
                 stage('Build Angular Docker Image') {
                     steps {
                         echo 'Building Docker image for Angular...'
-                        dir('Frontend') { // Changer le répertoire vers Frontend
+                        dir('Frontend') {
                             script {
                                 sh "docker build -t ${params.DOCKERHUB_REPO_FRONTEND} ."
                             }
