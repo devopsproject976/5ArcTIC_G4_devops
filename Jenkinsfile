@@ -177,7 +177,7 @@ pipeline {
                     }
                 }
 
-                 /* stage('Publish to Nexus') {
+                  stage('Publish to Nexus') {
                     steps {
                         script {
                             echo "NEXUS_URL: ${NEXUS_URL}"
@@ -232,7 +232,7 @@ pipeline {
                             }
                         }
                     }
-                }*/
+                }
 
 
 
@@ -257,17 +257,6 @@ pipeline {
 
 
 
-
-
-
-        stage('Stop Services') {
-            steps {
-                script {
-                    // Stop and remove services
-                    sh 'docker-compose -f docker-compose.yml -f docker-compose-tools.yml down'
-                }
-            }
-        }
 
     }
 
