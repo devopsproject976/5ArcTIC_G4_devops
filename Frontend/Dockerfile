@@ -1,0 +1,19 @@
+
+FROM node:16 AS build
+
+WORKDIR /app
+
+
+# Copy the Angular project files
+COPY . .
+
+# Install dependencies and build the project
+RUN npm install
+RUN npm run build --prod
+
+# Serve the application with NGINX
+FROM nginx:alpine
+
+COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
+EXPOSE 80
+
