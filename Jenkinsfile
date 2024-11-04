@@ -305,13 +305,16 @@ pipeline {
             steps {
                 script {
                     try {
+                        // Set a higher timeout value for Trivy
+                        env.TRIVY_TIMEOUT = '600s' // 10 minutes
+
                         // Run Trivy scan on backend image
                         echo "Starting Trivy scan for backend image: ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND}"
-                        sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND} > trivy_backend_report.txt"
+                        sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -e TRIVY_TIMEOUT=${TRIVY_TIMEOUT} aquasec/trivy:latest image --severity HIGH,CRITICAL ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND} > trivy_backend_report.txt"
 
                         // Run Trivy scan on frontend image
                         echo "Starting Trivy scan for frontend image: ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND}"
-                        sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND} > trivy_frontend_report.txt"
+                        sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -e TRIVY_TIMEOUT=${TRIVY_TIMEOUT} aquasec/trivy:latest image --severity HIGH,CRITICAL ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND} > trivy_frontend_report.txt"
 
                         // Display scan results in the console
                         echo "Backend Image Vulnerabilities:"
@@ -327,6 +330,7 @@ pipeline {
                 }
             }
         }
+
 
 
 
