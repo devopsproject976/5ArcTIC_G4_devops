@@ -1,34 +1,34 @@
-  version: "3"
-  services:
-    springboot-app:
-      image: amensmida/devopsback:latest
-      build:
-        context: .  # Changed to current directory
-      ports:
-        - "8082:8082"
-      environment:
-        SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/test?createDatabaseIfNotExist=true
-        SPRING_DATASOURCE_USERNAME: root
-        SPRING_DATASOURCE_PASSWORD: root
-      depends_on:
-        - mysqldb
+version: "3"
+services:
+  springboot-app:
+    image: amensmida/amenallahbensmida_5arctic3_g4_spring-app:latest
+    build:
+      context: .  # Changed to current directory
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/test?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysqldb
 
-    mysqldb:
-      container_name: mysqldb
-      image: mysql
-      volumes:
-        - ./db:/var/lib/mysql  # Ensure this path is accessible by Jenkins
-      ports:
-        - "3307:3306"
-      environment:
-        MYSQL_DATABASE: test
-        MYSQL_ROOT_PASSWORD: root
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    volumes:
+      - ./db:/var/lib/mysql  # Ensure this path is accessible by Jenkins
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: root
 
-    angular-app:
-      image: amensmida/devopsfront:latest
-      build:
-        context: ../Frontend  # Adjust if necessary
-      ports:
-        - "4200:80"
-      depends_on:
-        - springboot-app
+  angular-app:
+    image: amensmida/amenallahbensmida_5arctic3_g4_angular-app:latest
+    build:
+      context: ../Frontend  # Adjust if necessary
+    ports:
+      - "4200:80"
+    depends_on:
+      - springboot-app
