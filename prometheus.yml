@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 10s
+
+scrape_configs:
+  - job_name: 'spring-boot-app'  
+    metrics_path: '/actuator/prometheus'  
+    static_configs:
+      - targets: ['192.168.157.133:8082']  
+
+  - job_name: 'jenkins'  # Ajoutez un job pour Jenkins
+    metrics_path: '/prometheus'  # Chemin des métriques Jenkins
+    static_configs:
+      - targets: ['192.168.157.133:8080']  # Remplacez par l'adresse de votre serveur Jenkins
+
+  - job_name: 'ubuntu-machine'  # Nom du job pour la machine Ubuntu
+    static_configs:
+      - targets: ['192.168.157.133:9100']  # Remplacez par l'adresse de votre machine Ubuntu
+
+
