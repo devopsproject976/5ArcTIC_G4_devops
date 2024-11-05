@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the Angular application for production
-RUN npm install -g @angular/cli && ng build --prod
+RUN npm run build --prod
 
 # Use a lightweight server to serve the application
 FROM node:18 AS production
