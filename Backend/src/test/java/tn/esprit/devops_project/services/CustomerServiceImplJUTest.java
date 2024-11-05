@@ -54,7 +54,7 @@
         void testAddCustomerWithDuplicateEmail() {
             Customer duplicateCustomer = new Customer();
             duplicateCustomer.setName("Duplicate Customer");
-            duplicateCustomer.setEmail("test@example.com"); // Same email as the initial customer
+            duplicateCustomer.setEmail("test@example.com");
             duplicateCustomer.setPhone("1112223333");
 
             Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -86,7 +86,7 @@
         ///////////////////////////////////////////////////
         @Test
         void testDeleteNonExistingCustomer() {
-            Long nonExistingId = 999L; // Assuming this ID does not exist
+            Long nonExistingId = 999L;
 
             Exception exception = assertThrows(NoSuchElementException.class, () -> {
                 customerService.deleteCustomer(nonExistingId);

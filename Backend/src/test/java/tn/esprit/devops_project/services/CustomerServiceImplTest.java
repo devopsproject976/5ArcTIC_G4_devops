@@ -73,7 +73,7 @@ class CustomerServiceImplTest {
 
     @Test
     void testDeleteNonExistingCustomer() {
-        Long nonExistingId = 999L; // Assuming this ID does not exist
+        Long nonExistingId = 999L;
 
         Exception exception = assertThrows(NoSuchElementException.class, () -> {
             customerService.deleteCustomer(nonExistingId);

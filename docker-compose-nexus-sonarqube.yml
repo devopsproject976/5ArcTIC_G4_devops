@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  nexus:
+    image: sonatype/nexus3
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+
+  sonarqube:
+    image: sonarqube:8.9.7-community
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-logs:/opt/sonarqube/logs
+      - sonarqube-extensions:/opt/sonarqube/extensions
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus.yml:/prometheus/prometheus.yml
+    command:
+      - '--config.file=/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus/data'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  nexus-data:
+    driver: local
+    driver_opts:
+      size: 10G  
+
+  sonarqube-data:
+    driver: local
+    driver_opts:
+      size: 10G  
+
+  sonarqube-logs:
+    driver: local
+    driver_opts:
+      size: 10G  
+
+  sonarqube-extensions:
+    driver: local
+    driver_opts:
+      size: 10G  
+
+  prometheus-data:
+    driver: local
+    driver_opts:
+      size: 10G  
+
+  grafana-data:
+    driver: local
+    driver_opts:
+      size: 10G 
