@@ -19,7 +19,7 @@ RUN npm run build -- --configuration production
 FROM nginx:alpine
 
 # Copy built Angular files to NGINX's default HTML folder
-COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
+COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
 # Expose port 80 to the outside world
 EXPOSE 80
