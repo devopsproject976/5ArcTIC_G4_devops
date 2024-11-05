@@ -1,59 +1,29 @@
-version: "3"
+version: '3.8'
 
 services:
-  springboot-app:
-    container_name: backend_springboot-app
-    image: amensmida/amenallahbensmida_5arctic3_g4_spring-app:latest
-    build:
-      context: .
-    ports:
-      - "8082:8082"
+  mysql:
+    image: mysql:latest
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/test?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-    depends_on:
-      - mysqldb
-    volumes:
-      - springboot-data:/app/data
-
-  mysqldb:
-    container_name: mysqldb
-    image: mysql
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devops1
+    ports:
+      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_DATABASE: test
-      MYSQL_ROOT_PASSWORD: root
-    depends_on:
-      - springboot-app
 
-  angular-app:
-    container_name: frontend_angular-app
-    image: amensmida/amenallahbensmida_5arctic3_g4_angular-app:latest
-    build:
-      context: ../Frontend
+  spring:
+    image: amensmida/amenallahbensmida_5arctic3_g4_spring-app:latest
     ports:
-      - "4200:80"
+      - "8082:8082"
     depends_on:
-      - springboot-app
-    volumes:
-      - angular-data:/app/data
+      - mysql
+
+  angular:
+    image: amensmida/amenallahbensmida_5arctic3_g4_angular-app:latest
+    ports:
+      - "4200:4200"
+    depends_on:
+      - spring
 
 volumes:
-  springboot-data:
-    driver: local
-    driver_opts:
-      size: 10G  
-
-  mysql-data:
-    driver: local
-    driver_opts:
-      size: 10G  
-
-  angular-data:
-    driver: local
-    driver_opts:
-      size: 10G  
+  mysql-data: {}
