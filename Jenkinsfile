@@ -20,22 +20,21 @@ pipeline {
             }
         }
 
-       stage('Build Spring Boot') {
-    steps {
-        dir('Backend') {
-            echo 'Building Spring Boot application...'
-            script {
-                withCredentials([string(credentialsId: 'sonar', variable: 'sonar')]) {
-                    def mvnBuild = sh(script: "mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=${SONAR_TOKEN}", returnStatus: true)
-                    if (mvnBuild != 0) {
-                        error "Maven build failed with status: ${mvnBuild}"
+        stage('Build Spring Boot') {
+            steps {
+                dir('Backend') {
+                    echo 'Building Spring Boot application...'
+                    script {
+                        withCredentials([string(credentialsId: 'sonar', variable: 'sonar')]) {
+                            def mvnBuild = sh(script: "mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops -Dsonar.login=${SONAR_TOKEN}", returnStatus: true)
+                            if (mvnBuild != 0) {
+                                error "Maven build failed with status: ${mvnBuild}"
+                            }
+                        }
                     }
                 }
             }
         }
-    }
-}
-
 
         stage('Find JAR Version') {
             steps {
@@ -122,12 +121,14 @@ pipeline {
                 }
             }
         }
+    }
 
-        post {
-            success {
-                echo 'Build and Docker push succeeded for backend and frontend!'
-            }
-            failure {
-                echo 'Build or Docker push failed.'
-            }
+    post {
+        success {
+            echo 'Build and Docker push succeeded for backend and frontend!'
         }
+        failure {
+            echo 'Build or Docker push failed.'
+        }
+    }
+}
