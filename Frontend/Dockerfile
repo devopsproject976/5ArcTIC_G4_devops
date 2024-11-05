@@ -7,14 +7,14 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Installer les dépendances de production uniquement
-RUN npm install --omit=dev
+# Install dependencies including Angular CLI
+RUN npm install --omit=dev && npm install -g @angular/cli
 
 # Copy the rest of the application files
 COPY . .
 
 # Build the Angular application for production
-RUN npm run build --prod
+RUN ng build --prod
 
 # Use a lightweight server to serve the application
 FROM node:18 AS production
