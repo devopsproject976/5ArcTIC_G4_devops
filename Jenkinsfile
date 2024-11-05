@@ -13,7 +13,7 @@ pipeline {
         DOCKERHUB_CREDENTIAL_ID = "DOCKERHUB_CREDENTIALS" // ID des identifiants Jenkins pour Docker Hub
         SNYK_TOKEN_CREDENTIAL_ID = "snyk-token"
     }
-    
+    //commentaire
     stages {
         stage('Checkout') {
             steps {
