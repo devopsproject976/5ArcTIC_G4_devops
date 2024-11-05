@@ -16,4 +16,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByStockIdStock(Long idStock);
     List<Product> findBySupplier(Supplier supplier);
 
+    List<Product> findByQuantityLessThan(int threshold);
+
+    List<Product> findByTitleContainingIgnoreCase(String title);
+
+    List<Product> findByPriceBetween(float minPrice, float maxPrice);
+
+
 }

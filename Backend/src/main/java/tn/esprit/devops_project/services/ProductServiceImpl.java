@@ -12,9 +12,6 @@ import tn.esprit.devops_project.repositories.ProductRepository;
 import tn.esprit.devops_project.repositories.StockRepository;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -62,6 +59,36 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findByStockIdStock(id);
     }
 
+    // 3. Gérer la vente d'un produit et mettre à jour le stock
+    @Transactional
+    public void sellProduct(Long productId, int quantitySold) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NullPointerException("Product not found"));
+
+        if (product.getQuantity() < quantitySold) {
+            throw new IllegalArgumentException("Not enough stock for product: " + product.getTitle());
+        }
+        product.setQuantity(product.getQuantity() - quantitySold);
+        productRepository.save(product);
+    }
+
+    // 4. Calculer les produits en rupture de stock
+    @Override
+    public List<Product> findLowStockProducts(int threshold) {
+        return productRepository.findByQuantityLessThan(threshold);
+    }
+
+    // 5. Rechercher des produits par titre
+    @Override
+    public List<Product> searchProductsByTitle(String title) {
+        return productRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    // 6. Rechercher des produits dans une plage de prix
+    @Override
+    public List<Product> searchProductsByPriceRange(float minPrice, float maxPrice) {
+        return productRepository.findByPriceBetween(minPrice, maxPrice);
+    }
 
 
 

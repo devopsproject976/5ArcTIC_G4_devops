@@ -15,4 +15,12 @@ public interface IProductService {
     List<Product> retreiveProductStock(Long id);
 
 
+    // 4. Calculer les produits en rupture de stock
+    List<Product> findLowStockProducts(int threshold);
+
+    // 5. Rechercher des produits par titre
+    List<Product> searchProductsByTitle(String title);
+
+    // 6. Rechercher des produits dans une plage de prix
+    List<Product> searchProductsByPriceRange(float minPrice, float maxPrice);
 }
