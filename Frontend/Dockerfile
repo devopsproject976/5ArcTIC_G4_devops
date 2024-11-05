@@ -16,4 +16,3 @@ FROM nginx:alpine
 
 COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
 EXPOSE 80
-
