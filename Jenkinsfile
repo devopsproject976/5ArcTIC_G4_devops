@@ -52,63 +52,59 @@ pipeline {
             }
         }
 
-        stage('Publish to Nexus and Build Docker Images') {
-            parallel {
-                stage('Publish to Nexus') {
-                    steps {
-                        dir('Backend') {
-                            script {
-                                def groupId = "tn.esprit"
-                                def artifactId = "5ArcTIC3-G4-devops"
-                                def version = "1.0-SNAPSHOT"
-                                def packaging = "jar"
-                                def artifactPath = "${env.JAR_FILE}"
-                                def pomFile = "pom.xml"
+        stage('Publish Backend Artifacts to Nexus') {
+            steps {
+                dir('Backend') {
+                    script {
+                        def groupId = "tn.esprit"
+                        def artifactId = "5ArcTIC3-G4-devops"
+                        def version = "1.0-SNAPSHOT"
+                        def packaging = "jar"
+                        def artifactPath = "${env.JAR_FILE}"
+                        def pomFile = "pom.xml"
 
-                                if (fileExists(artifactPath)) {
-                                    echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
+                        if (fileExists(artifactPath)) {
+                            echo "*** File: ${artifactPath}, group: ${groupId}, packaging: ${packaging}, version: ${version}"
 
-                                    nexusArtifactUploader(
-                                        nexusVersion: NEXUS_VERSION,
-                                        protocol: NEXUS_PROTOCOL,
-                                        nexusUrl: params.NEXUS_URL,
-                                        groupId: groupId,
-                                        artifactId: artifactId,
-                                        version: version,
-                                        repository: params.NEXUS_REPOSITORY,
-                                        credentialsId: NEXUS_CREDENTIAL_ID,
-                                        artifacts: [
-                                            [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
-                                            [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
-                                        ]
-                                    )
-                                } else {
-                                    error "*** File could not be found or does not exist at ${artifactPath}."
-                                }
-                            }
+                            nexusArtifactUploader(
+                                nexusVersion: NEXUS_VERSION,
+                                protocol: NEXUS_PROTOCOL,
+                                nexusUrl: params.NEXUS_URL,
+                                groupId: groupId,
+                                artifactId: artifactId,
+                                version: version,
+                                repository: params.NEXUS_REPOSITORY,
+                                credentialsId: NEXUS_CREDENTIAL_ID,
+                                artifacts: [
+                                    [artifactId: artifactId, classifier: '', file: artifactPath, type: packaging],
+                                    [artifactId: artifactId, classifier: '', file: pomFile, type: "pom"]
+                                ]
+                            )
+                        } else {
+                            error "*** File could not be found or does not exist at ${artifactPath}."
                         }
                     }
                 }
+            }
+        }
 
-                stage('Build Spring Docker Image') {
-                    steps {
-                        echo 'Building Docker image for Spring Boot...'
-                        dir('Backend') {
-                            script {
-                                sh "docker build -t ${params.DOCKERHUB_REPO_BACKEND} -f Dockerfile --build-arg JAR_FILE=${env.JAR_FILE} ."
-                            }
-                        }
+        stage('Build Spring Docker Image') {
+            steps {
+                echo 'Building Docker image for Spring Boot...'
+                dir('Backend') {
+                    script {
+                        sh "docker build -t ${params.DOCKERHUB_REPO_BACKEND} -f Dockerfile --build-arg JAR_FILE=${env.JAR_FILE} ."
                     }
                 }
+            }
+        }
 
-                stage('Build Angular Docker Image') {
-                    steps {
-                        echo 'Building Docker image for Angular...'
-                        dir('Frontend') {
-                            script {
-                                sh "docker build -t ${params.DOCKERHUB_REPO_FRONTEND} ."
-                            }
-                        }
+        stage('Build Angular Docker Image') {
+            steps {
+                echo 'Building Docker image for Angular...'
+                dir('Frontend') {
+                    script {
+                        sh "docker build -t ${params.DOCKERHUB_REPO_FRONTEND} ."
                     }
                 }
             }
@@ -126,14 +122,12 @@ pipeline {
                 }
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Build and Docker push succeeded for backend and frontend!'
+        post {
+            success {
+                echo 'Build and Docker push succeeded for backend and frontend!'
+            }
+            failure {
+                echo 'Build or Docker push failed.'
+            }
         }
-        failure {
-            echo 'Build or Docker push failed.'
-        }
-    }
-}

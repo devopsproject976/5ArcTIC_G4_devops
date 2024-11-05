@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1b2493ab-d8f6-416c-b5dc-f6850e21f5f8" name="Changes" comment="" />
+    <list default="true" id="1b2493ab-d8f6-416c-b5dc-f6850e21f5f8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,6 +62,7 @@
     &quot;Maven.5ArcTIC_G4_Attia_Hamouda [package...].executor&quot;: &quot;Run&quot;,
     &quot;Maven.5ArcTIC_G4_Attia_Hamouda [package].executor&quot;: &quot;Run&quot;,
     &quot;Maven.5ArcTIC_G4_Attia_Hamouda [test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.5ArcTIC_G4_Attia_Hamouda [validate].executor&quot;: &quot;Run&quot;,
     &quot;Maven.DevOps_Project [clean,test].executor&quot;: &quot;Run&quot;,
     &quot;Maven.DevOps_Project [install].executor&quot;: &quot;Run&quot;,
     &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
@@ -93,19 +99,20 @@
       <command value="mvn clean" />
       <command value=" mvn clean install " />
       <command value="mvn install" />
-      <command value="mvn clean install" />
       <command value="mvn clean verify3" />
       <command value="mvn clean verify" />
       <command value="mvn clean test" />
       <command value="mvn --builder" />
       <command value="mvn test " />
       <command value="mvn package " />
-      <command value="mvn clean package" />
       <command value="mvn compile " />
       <command value="mvn build" />
-      <command value="mvn install " />
       <command value="mvn package -DskipTests " />
       <command value="mvn test" />
+      <command value="mvn install " />
+      <command value="mvn clean install" />
+      <command value="mvn clean package" />
+      <command value="mvn validate" />
     </option>
   </component>
   <component name="RunManager">
@@ -144,7 +151,8 @@
       <workItem from="1730660380161" duration="6961000" />
       <workItem from="1730718121395" duration="489000" />
       <workItem from="1730726894046" duration="2036000" />
-      <workItem from="1730737081361" duration="392000" />
+      <workItem from="1730737081361" duration="5338000" />
+      <workItem from="1730792143554" duration="1311000" />
     </task>
     <servers />
   </component>
