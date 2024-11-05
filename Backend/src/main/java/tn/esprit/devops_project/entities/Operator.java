@@ -33,5 +33,5 @@ public class Operator implements Serializable{
 	@OneToMany
 	@JsonIgnore
 	Set<Invoice> invoices;
-	
+	//aa
 }
