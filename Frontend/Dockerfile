@@ -3,12 +3,17 @@ FROM node:16 AS build
 
 WORKDIR /app
 
-# Copy the Angular project files
+# Copy package.json and package-lock.json to install dependencies
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the Angular project files
 COPY . .
 
-# Install dependencies and build the project
-RUN npm install
-RUN npm run build --prod
+# Build the Angular project
+RUN npm run build -- --configuration production
 
 # Stage 2: Serve the application with NGINX
 FROM nginx:alpine
