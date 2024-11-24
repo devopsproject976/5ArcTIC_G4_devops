@@ -1,0 +1,229 @@
+pipeline {
+    agent any
+    tools {
+        nodejs 'NodeJS' // Define Node.js version to use
+    }
+
+    parameters {
+        string(name: 'NEXUS_URL', defaultValue: 'localhost:8081', description: 'Nexus URL')
+        string(name: 'NEXUS_REPOSITORY', defaultValue: 'maven-snapshots', description: 'Nexus Repository Name')
+        string(name: 'SONARQUBE_URL', defaultValue: 'http://localhost:9001', description: 'SonarQube URL')
+    }
+
+    environment {
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
+        NEXUS_CREDENTIAL_ID = "NEXUS_CREDENTIALS"
+        SONARQUBE_CREDENTIALS = 'SONARQUBE_CREDENTIALS_ID'
+        JIRA_CREDENTIALS = 'JIRA' // Credentials ID for JIRA
+    }
+
+    stages {
+        stage('Continuous Integration') {
+            stages {
+                stage('Checkout') {
+                    steps {
+                        git branch: 'SofienDaadoucha_5ArcTIC3_G4',
+                            url: 'https://github.com/devopsproject976/5ArcTIC_G4_devops.git',
+                            credentialsId: 'git'
+                    }
+                }
+
+                stage('Build and Code Analysis - Backend') {
+                    steps {
+                        dir('Backend') {
+                            echo 'Building and running SonarQube analysis for backend...'
+                            withSonarQubeEnv('sonar-jenkins') {
+                                sh 'mvn clean package jacoco:report sonar:sonar -Dsonar.projectKey=5arctic3_g4_devops'
+                            }
+                        }
+                    }
+                }
+
+                stage('Build and Lint - Angular') {
+                    steps {
+                        dir('Frontend') {
+                            echo 'Building Angular application and running lint...'
+                            sh '''
+                               npm ci
+                               npm run build --prod
+                            '''
+                        }
+                    }
+                }
+
+                stage('Export SonarQube Metrics') {
+                    steps {
+                        script {
+                            withSonarQubeEnv('sonar-jenkins') {
+                                sh """
+                                    curl -s -u ${SONAR_AUTH_TOKEN}: ${SONARQUBE_URL}/api/measures/component_tree?ps=100 \
+                                    --get --data-urlencode "component=5arctic3_g4_devops" \
+                                    --data-urlencode "metricKeys=ncloc,bugs,vulnerabilities,code_smells,security_hotspots,coverage,duplicated_lines_density" \
+                                    -o codeReport.json
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Continuous Deployment') {
+            stages {
+                stage('Publish to Nexus') {
+                    steps {
+                        dir('Backend') {
+                            script {
+                                def pom = readMavenPom file: "pom.xml"
+                                def artifactPath = findFiles(glob: "target/*.${pom.packaging}")[0]?.path
+                                if (artifactPath) {
+                                    nexusArtifactUploader(
+                                        nexusVersion: NEXUS_VERSION,
+                                        protocol: NEXUS_PROTOCOL,
+                                        nexusUrl: params.NEXUS_URL,
+                                        groupId: pom.groupId,
+                                        version: pom.version,
+                                        repository: params.NEXUS_REPOSITORY,
+                                        credentialsId: NEXUS_CREDENTIAL_ID,
+                                        artifacts: [
+                                            [artifactId: pom.artifactId, file: artifactPath, type: pom.packaging],
+                                            [artifactId: pom.artifactId, file: "pom.xml", type: "pom"]
+                                        ]
+                                    )
+                                } else {
+                                    error "Artifact not found or does not exist."
+                                }
+                            }
+                        }
+                    }
+                }
+
+                stage('Build Docker Image') {
+                    steps {
+                        echo 'Building Docker images for both backend and frontend...'
+                        dir('Backend') {
+                            sh 'docker build -t soufi2001/devopsback:SofienDaadoucha-5arctic3-g4-devops .'
+                        }
+                        dir('Frontend') {
+                            sh 'docker build -t soufi2001/devopsfront:SofienDaadoucha-5arctic3-g4-devops .'
+                        }
+                    }
+                }
+
+                stage('Trivy Scan') {
+    steps {
+        script {
+            // Define the Docker image to scan
+            def imageToScan = 'soufi2001/devopsback:SofienDaadoucha-5ArcTIC3-devops'
+
+            // Run Trivy scan using Docker and save results to a file
+            sh """
+            docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v /var/lib/jenkins/.trivy-cache:/root/.cache/trivy \
+            -v \$(pwd):/output \
+            aquasec/trivy:latest image --scanners vuln --severity HIGH,CRITICAL \
+            -f json -o /output/trivy-results.json ${imageToScan}
+            """
+
+            // Inform that the results have been generated
+            echo "Trivy scan results have been saved to trivy-results.json."
+        }
+    }
+}
+
+                stage('Push Docker Images') {
+                    steps {
+                        echo 'Pushing Docker images to DockerHub...'
+                        withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            sh 'docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'
+                            sh 'docker push soufi2001/devopsback:SofienDaadoucha-5arctic3-g4-devops'
+                            sh 'docker push soufi2001/devopsfront:SofienDaadoucha-5arctic3-g4-devops'
+                        }
+                    }
+                }
+                
+            }
+        }
+    }
+
+    post {
+    failure {
+        script {
+            // JIRA failure notification
+            withCredentials([usernamePassword(credentialsId: 'Jira', usernameVariable: 'JIRA_USER', passwordVariable: 'JIRA_TOKEN')]) {
+                try {
+                    def newIssue = [
+                        fields: [
+                            project: [key: 'CPG'], // Replace with your project key
+                            summary: "Pipeline failure for job ${env.JOB_NAME}",
+                            description: """Pipeline **${env.JOB_NAME} #${env.BUILD_NUMBER}** failed.
+                                           \nFailure reason: ${currentBuild.result}
+                                           \nBuild URL: ${env.BUILD_URL}
+                                           \nTrivy Report and Sonar Report are attached in the email notification.""",
+                            issuetype: [name: 'Bug'] // Adjust as necessary
+                        ]
+                    ]
+                    def response = jiraNewIssue(issue: newIssue, site: 'test jenkins')
+                    echo response.successful ? "Created new JIRA issue ${response.data.key}." : "Failed to create JIRA issue."
+                } catch (Exception e) {
+                    echo "Error while interacting with JIRA for failure notification: ${e.message}"
+                }
+            }
+
+            // Email failure notification with attachments
+            emailext(
+                to: 'daadsoufi0157@gmail.com',
+                subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """Pipeline **${env.JOB_NAME} #${env.BUILD_NUMBER}** has failed.
+                         \nFailure reason: ${currentBuild.result}
+                         \nBuild URL: ${env.BUILD_URL}
+                         \nThe Trivy scan results and Sonar code analysis report are attached.""",
+                attachLog: true,
+                attachmentsPattern: "trivy-results.json, codeReport.json"
+            )
+            echo "Sent email notification for failed build with attachments."
+        }
+    }
+    success {
+        script {
+            // JIRA success notification
+            withCredentials([usernamePassword(credentialsId: 'Jira', usernameVariable: 'JIRA_USER', passwordVariable: 'JIRA_TOKEN')]) {
+                try {
+                    def newIssue = [
+                        fields: [
+                            project: [key: 'CPG'], // Replace with your project key
+                            summary: "Pipeline success for job ${env.JOB_NAME}",
+                            description: """The build **${env.JOB_NAME} #${env.BUILD_NUMBER}** has succeeded.
+                                           \nBuild URL: ${env.BUILD_URL}
+                                           \nTrivy Report and Sonar Report are attached in the email notification.""",
+                            issuetype: [name: 'Task'] // Adjust as necessary
+                        ]
+                    ]
+                    def response = jiraNewIssue(issue: newIssue, site: 'test jenkins')
+                    echo response.successful ? "Created new JIRA issue ${response.data.key}." : "Failed to create JIRA issue."
+                } catch (Exception e) {
+                    echo "Error while interacting with JIRA on success notification: ${e.message}"
+                }
+            }
+
+            // Email success notification with attachments
+            emailext(
+                to: 'daadsoufi0157@gmail.com',
+                subject: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """The build **${env.JOB_NAME} #${env.BUILD_NUMBER}** has succeeded!
+                         \nYou can view the build details here: ${env.BUILD_URL}.
+                         \nThe Trivy scan results and Sonar code analysis report are attached.""",
+                attachLog: true,
+                attachmentsPattern: "trivy-results.json, codeReport.json"
+            )
+            echo "Sent email notification for successful build with attachments."
+        }
+    }
+}
+
+        
+}
+    
+
